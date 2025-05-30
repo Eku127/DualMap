@@ -3,7 +3,7 @@
 
 
 <p align="center">
-  <img src="media/teaser-new-7.jpg" width="80%">
+  <img src="media/teaser-new-7.jpg" width="60%">
 </p>
 
 
