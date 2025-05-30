@@ -57,7 +57,6 @@ pip install -e . --no-deps
 
 ### (Optional) Setup ROS 2 Environment
 Setting up ROS2 environment for ROS support and applications.
-
 We recommend [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html).
 Once installed, activate the environment:
 
@@ -66,8 +65,6 @@ source /opt/ros/humble/setup.bash
 ```
 
 ### (Optional) Setup Habitat Data Collector
-
-> For the best DualMap experience, we strongly recommend setting up the  **Habitat Data Collector**.
 
 [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the Habitat simulator. It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external ROS topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
