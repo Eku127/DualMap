@@ -1,0 +1,7 @@
+{
+    "git.detectSubmodules": false,
+    "git.ignoredRepositories": [
+        "**/3rdparty/habitat-data-collector",
+        "**/3rdparty/mobileclip"
+    ]
+}
