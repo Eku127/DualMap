@@ -1,14 +1,17 @@
-# DualMap
-[[Project Page]](https://eku127.github.io/DualMap/) [[Paper]](https://arxiv.org/abs/2103.xxxx) 
-[[Video]](https://youtu.be/ZmZDvhyXL_g) 
+<h1 align="center">DualMap</h1>
+
+<h3 align="center">
+  <a href="https://eku127.github.io/DualMap/">Project Page</a> |
+  <a href="https://arxiv.org/abs/2103.xxxx">Paper</a> |
+  <a href="https://youtu.be/ZmZDvhyXL_g">Video</a>
+</h3>
 
 <p align="center">
   <img src="media/teaser-new-7.jpg" width="60%">
 </p>
 
-**DualMap** is an online open-vocabulary mapping system that enables robots to understand and navigate dynamic 3D environments using natural language. It combines a global abstract map for high-level planning and a local concrete map for precise execution, allowing real-time adaptation to scene changes. With efficient object tracking and segmentation, DualMap avoids costly 3D object merging and achieves fast, accurate navigation in both simulation and real-world settings.
 
-
+**DualMap** is an online open-vocabulary mapping system that enables robots to understand and navigate dynamic 3D environments using natural language. 
 
 The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams(**Record3d Mode**). We provide examples for each input type.
 
