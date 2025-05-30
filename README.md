@@ -21,9 +21,10 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 - [ ] Environment setup & dataset links  
 - [ ] Simulation tools for dynamic scenes  
-- [ ] Offline query
 - [ ] Full system code (mapping + querying)  
-- [ ] Evaluation & benchmarking scripts  
+- [ ] Evaluation & benchmarking scripts
+- [ ] [Examples] Offline query
+- [ ] [Examples] Realworld guidance
 
 ## Installation
 
@@ -55,12 +56,35 @@ pip install -e . --no-deps
 ```
 
 ### (Optional) Setup ROS 2 Environment
+Setting up ROS2 environment for ROS support and applications.
+
 We recommend [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html).
 Once installed, activate the environment:
 
 ```bash
 source /opt/ros/humble/setup.bash
 ```
+
+### (Optional) Setup Habitat Data Collector
+
+> For the best DualMap experience, we strongly recommend setting up the  **Habitat Data Collector**.
+
+[Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the Habitat simulator. It provides:
+
+1. Free control over the agent’s movement and viewpoint
+
+2. Interactive manipulation of objects within the scene (placement and relocation)
+
+3. Data recording, including ROS bag logging and dataset generation
+
+4. An interface to receive external navigation commands and guide the agent accordingly
+
+DualMap supports two modes of using the collector:
+
+1. Offline Mode: DualMap can map scenes from previously recorded data (Dataset or ROS Bag) from the collector.
+
+2. Online Mode: DualMap subscribes to live ROS topics from the collector for real-time mapping and language-based querying. It publishes navigation trajectories, which the collector follows to move the agent.
+
 
 ## Dataset
 
