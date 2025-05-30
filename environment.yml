@@ -1,0 +1,39 @@
+name: dualmap
+channels:
+  - nvidia
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cmake
+  - pip
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.4
+  - faiss-cpu=1.9.0
+  - mkl
+  - blas=1.0=mkl
+  - pip:
+      - tyro
+      - open_clip_torch
+      - wandb
+      - h5py
+      - openai
+      - hydra-core
+      - distinctipy
+      - ultralytics
+      - dill
+      - supervision
+      - open3d
+      - imageio
+      - natsort
+      - kornia
+      - rerun-sdk
+      - pyliblzfse
+      - pypng
+      - tabulate
+      - plyfile
+      - "numpy<2.0"
+      - git+https://github.com/ultralytics/CLIP.git

@@ -6,7 +6,7 @@
 </h3>
 
 <p align="center">
-  <img src="media/teaser-new-7.jpg" width="60%">
+  <img src="media/teaser.jpg" width="60%">
 </p>
 
 

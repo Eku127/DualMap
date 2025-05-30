@@ -1,0 +1,6 @@
+[submodule "3rdparty/mobileclip"]
+	path = 3rdparty/mobileclip
+	url = git@github.com:apple/ml-mobileclip.git
+[submodule "3rdparty/habitat-data-collector"]
+	path = 3rdparty/habitat-data-collector
+	url = git@github.com:Eku127/habitat-data-collector.git
