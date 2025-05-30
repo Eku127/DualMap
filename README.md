@@ -1,11 +1,59 @@
 # DualMap
 [[Project Page]](https://eku127.github.io/DualMap/) [[Paper]](https://arxiv.org/abs/2103.xxxx) 
-
+[[Video]](https://youtu.be/ZmZDvhyXL_g) 
 
 <p align="center">
   <img src="media/teaser-new-7.jpg" width="60%">
 </p>
 
+**DualMap** is an online open-vocabulary mapping system that enables robots to understand and navigate dynamic 3D environments using natural language. It combines a global abstract map for high-level planning and a local concrete map for precise execution, allowing real-time adaptation to scene changes. With efficient object tracking and segmentation, DualMap avoids costly 3D object merging and achieves fast, accurate navigation in both simulation and real-world settings.
 
 
-DualMap s an online open-vocabulary mapping system that helps robots understand and navigate dynamic 3D environments with natural language. By combining a global abstract map for planning and a local concrete map for execution, it handles scene changes in real time. With efficient object tracking and segmentation, DualMap skips expensive 3D merging and enables fast, accurate navigation in both simulation and the real world.
+
+The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams(**Record3d Mode**). We provide examples for each input type.
+
+## Updates
+**[2025.06]** Full code release is coming soon—stay tuned!
+
+## Release Plan
+
+- [ ] Environment setup & dataset links  
+- [ ] Simulation tools for dynamic scenes  
+- [ ] Offline query & visualization demos  
+- [ ] Full system code (mapping + querying)  
+- [ ] Evaluation & benchmarking scripts  
+
+## Installation
+
+> ✅ Tested on **Ubuntu 22.04** with **ROS 2 Humble** and **Python 3.10+**
+
+### 1. Clone the Repository (with submodules)
+
+```bash
+git clone --recurse-submodules git@github.com:Eku127/DualMap.git
+cd DualMap
+```
+
+### 2. Create Conda Environment
+```bash
+conda env create -f environment.yml
+conda activate dualmap
+```
+
+### 3. Install MobileCLIP
+```bash
+cd 3rdparty/mobileclip
+pip install -e . --no-deps
+```
+
+### (Optional) Setup ROS 2 Environment
+We recommend [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html).
+Once installed, activate the environment:
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+## Dataset
+
+## Examples
