@@ -69,9 +69,9 @@ source /opt/ros/humble/setup.bash
 
 > For the best DualMap experience, we strongly recommend setting up the  **Habitat Data Collector**.
 
-[Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the Habitat simulator. It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external Ros topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
+[Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the Habitat simulator. It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external ROS topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
-> For installation and usage details, please refer to the [Habitat Data Collector repo](https://github.com/Eku127/habitat-data-collector).
+> For the best DualMap experience, we strongly recommend setting up the Habitat Data Collector. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
 
 
 ## Dataset
