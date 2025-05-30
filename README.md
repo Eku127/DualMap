@@ -21,7 +21,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 - [ ] Environment setup & dataset links  
 - [ ] Simulation tools for dynamic scenes  
-- [ ] Offline query & visualization demos  
+- [ ] Offline query
 - [ ] Full system code (mapping + querying)  
 - [ ] Evaluation & benchmarking scripts  
 
@@ -34,6 +34,12 @@ The system supports multiple input sources, including offline datasets (**Datase
 ```bash
 git clone --recurse-submodules git@github.com:Eku127/DualMap.git
 cd DualMap
+```
+
+>  Cloning may take some time, especially for Habitat-related submodules. If you forget `--recurse-submodules`, you can initialize them manually:
+
+```bash
+git submodule update --init --recursive
 ```
 
 ### 2. Create Conda Environment
