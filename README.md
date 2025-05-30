@@ -1,6 +1,5 @@
-<h1 align="center">DualMap</h1>
-
-<h3 align="center">
+# DualMap
+<h3>
   <a href="https://eku127.github.io/DualMap/">Project Page</a> |
   <a href="https://arxiv.org/abs/2103.xxxx">Paper</a> |
   <a href="https://youtu.be/ZmZDvhyXL_g">Video</a>
