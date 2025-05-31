@@ -75,7 +75,7 @@ source /opt/ros/humble/setup.bash
 
 [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external ROS topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
-> For the best DualMap experience, **we strongly recommend setting up the Habitat Data Collector**. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
+> For the best DualMap experience (especially navigation tests), **we strongly recommend setting up the Habitat Data Collector**. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
 
 
 ## Dataset
@@ -114,6 +114,21 @@ See the **Examples** section for detailed dataset usage. The usage of **scene co
 
 ## Examples
 
+### Run with Datasets
+_Coming soon: Reproduce offline mapping results with provided static and dynamic HM3D datasets._
+
+
+### Run with ROS
+_Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot._
+
+### Run with iPhone
+_Coming soon: Real-time data streaming from Record3D to DualMap with open vocabulary semantic mapping._
+
+### Offline Map Query
+_Coming soon: Run standalone queries on prebuilt scene maps using natural language._
+
+
 ## Evaluation
-TBD
+Evaluation code and result reproduction tools will be released in future updates.
+
 
