@@ -83,6 +83,12 @@ source /opt/ros/humble/setup.bash
 ### Replica & ScanNet
 
 ### HM3D Dynamic Scene Data
+
+<p align="center">
+  <img src="media/scene_configuration.jpg" width="100%">
+</p>
+
+
 We release both static and dynamic HM3D scene data to support faithful reproduction of the results presented in the "Navigation in Simulation" section. Researchers can use this dataset to replicate both the static and dynamic environments evaluated in our experiments.
 
 > The dataset includes three HM3D scenes tested in the paper.
