@@ -21,8 +21,8 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 - [ ] Environment setup & dataset links  
 - [ ] Simulation tools for dynamic scenes  
-- [ ] Full system code (mapping + querying)  
-- [ ] Evaluation & benchmarking scripts
+- [ ] Full system code   
+- [ ] Evaluation Code
 - [ ] [Examples] Offline query
 - [ ] [Examples] Realworld guidance
 
@@ -66,6 +66,11 @@ source /opt/ros/humble/setup.bash
 
 ### (Optional) Setup Habitat Data Collector
 
+<p align="center">
+  <img src="media/collector.jpg" width="100%">
+</p>
+
+
 [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external ROS topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
 > For the best DualMap experience, we strongly recommend setting up the Habitat Data Collector. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
@@ -73,4 +78,12 @@ source /opt/ros/humble/setup.bash
 
 ## Dataset
 
+### Replica & ScanNet
+
+### HM3D Dynamic Scene Data
+We provide both static and dynamic HM3D scene data to support faithful reproduction of our results in the "Navigation in Simulation" section. Researchers can use this data to replicate both the static and dynamic environments used in our experiments.
+
 ## Examples
+
+## Evaluation
+TBD
