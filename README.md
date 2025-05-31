@@ -83,11 +83,39 @@ source /opt/ros/humble/setup.bash
 ### Replica & ScanNet
 
 ### HM3D Dynamic Scene Data
-We provide both static and dynamic HM3D scene data to support faithful reproduction of our results in the "Navigation in Simulation" section. Researchers can use this data to replicate both the static and dynamic environments used in our experiments.
+We release both static and dynamic HM3D scene data to support faithful reproduction of the results presented in the "Navigation in Simulation" section. Researchers can use this dataset to replicate both the static and dynamic environments evaluated in our experiments.
 
-You can download the data from these links: [OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/ErSvH_QPouBLsHE0AzZAw0oBQFqRIjdrEOxAHN7OBO0nHg?e=PvmkUo), including three HM3D scenes tested in our paper. For each scene, the structure is like the following:
+> The dataset includes three HM3D scenes tested in the paper.
+
+You can download the data here:
+🔗 [OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/ErSvH_QPouBLsHE0AzZAw0oBQFqRIjdrEOxAHN7OBO0nHg?e=PvmkUo)
+
+
+#### Per-Scene Directory Structure
+Each scene folder follows the structure below:
+
+```
+00829-QaLdnwvtxbs/                    # Example scene ID
+├── data.zip                          # RGB-D + pose + intrinsic offline dataset (5.08 GB)
+├── static_scene_config.json          # Static scene configuration
+├── dynamic_scene_config/             # Dynamic scene configurations
+│   ├── cross_anchor/                       
+│   │   ├── 0128-1.json
+│   │   └── ...
+│   └── in_anchor/                          
+│       ├── 0128-1.json
+│       └── ...
+├── global_map/                       # Prebuilt abstract map from rosbag and dataset
+│   └── ...
+├── rosbag2_odom/                     # ROS bag of static scene traversal
+│   └── ...
+├── class_bbox.json                   # Object bounding boxes (for evaluation)
+├── class_num.json                    # Object class count summary (for evaluation)
+```
+See the **Examples** section for detailed dataset usage. The usage of scene configuration is documented in [Habitat Data Collector documentation](https://github.com/Eku127/habitat-data-collector/blob/main/documents/config_reference/config_reference.md#-scene-configuration).
 
 ## Examples
 
 ## Evaluation
 TBD
+
