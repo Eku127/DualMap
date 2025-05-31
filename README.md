@@ -85,6 +85,8 @@ source /opt/ros/humble/setup.bash
 ### HM3D Dynamic Scene Data
 We provide both static and dynamic HM3D scene data to support faithful reproduction of our results in the "Navigation in Simulation" section. Researchers can use this data to replicate both the static and dynamic environments used in our experiments.
 
+You can download the data from these links: [OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/ErSvH_QPouBLsHE0AzZAw0oBQFqRIjdrEOxAHN7OBO0nHg?e=PvmkUo), including three HM3D scenes tested in our paper. For each scene, the structure is like the following:
+
 ## Examples
 
 ## Evaluation
