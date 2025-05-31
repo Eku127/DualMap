@@ -110,7 +110,7 @@ Each scene folder follows the structure below:
 ├── class_bbox.json                   # Object bounding boxes (for evaluation)
 ├── class_num.json                    # Object class count summary (for evaluation)
 ```
-See the **Examples** section for detailed dataset usage. The usage of scene configuration is documented in [Habitat Data Collector documentation](https://github.com/Eku127/habitat-data-collector/blob/main/documents/config_reference/config_reference.md#-scene-configuration).
+See the **Examples** section for detailed dataset usage. The usage of **scene configuration** is documented in [Habitat Data Collector documentation](https://github.com/Eku127/habitat-data-collector/blob/main/documents/config_reference/config_reference.md#-scene-configuration).
 
 ## Examples
 
