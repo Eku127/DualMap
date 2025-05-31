@@ -106,9 +106,7 @@ Each scene folder follows the structure below:
 │       ├── 0128-1.json
 │       └── ...
 ├── global_map/                       # Prebuilt abstract map from rosbag and dataset
-│   └── ...
-├── rosbag2_odom/                     # ROS bag of static scene traversal
-│   └── ...
+├── rosbag2_odom/                     # ROS2 bag of static scene traversal
 ├── class_bbox.json                   # Object bounding boxes (for evaluation)
 ├── class_num.json                    # Object class count summary (for evaluation)
 ```
