@@ -1,0 +1,7 @@
+dataset_name: 'self_collected'
+
+ros_topics:
+  rgb: "/camera/rgb/image_raw"
+  depth: "/camera/depth/image_raw"
+  odom: "/camera/pose"
+  camera_info: "/camera_info"

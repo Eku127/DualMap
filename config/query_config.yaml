@@ -1,0 +1,5 @@
+defaults:
+  - system_config
+  - _self_
+
+map_dir: "<PATH TO MAP>"

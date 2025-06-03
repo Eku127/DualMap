@@ -1,0 +1,15 @@
+# For online running the data, we use compressed data
+dataset_name: 'car_online'
+
+ros_topics:
+  rgb: "/orbbec_camera/color/image_raw/compressed"
+  depth: "/orbbec_camera/depth/image_raw/compressedDepth"
+  odom: "/fastlio_odom"
+  camera_info: "/orbbec_camera/color/camera_info"
+
+# We use camera to lidar as default extrinsics
+extrinsics:
+  - [-0.03643072, -0.07344723, 0.99663349, 0.05395146]
+  - [-0.99904654, 0.02668624, -0.03455228, 0.00307242]
+  - [-0.02405863, -0.99694200, -0.07434940, 0.75940953]
+  - [0.0, 0.0, 0.0, 1.0]

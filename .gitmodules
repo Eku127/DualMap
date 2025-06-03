@@ -1,0 +1,3 @@
+[submodule "3rdparty/mobileclip"]
+	path = 3rdparty/mobileclip
+	url = git@github.com:apple/ml-mobileclip.git

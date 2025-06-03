@@ -1,0 +1,39 @@
+# The repo absolute path
+# repo_root: /home/ubuntu/my_code/concept-graphs
+# data_root: /home/ubuntu/workspace/dataset
+
+# replica or self_collected
+
+# dataset_name: self_collected
+# scene_id: 17DRP5sb8fy_2
+# dataset_path: /home/eku/workspace/dualmap/data/mp3d
+# dataset_conf_path: dataset/dataset_config/self_collected.yaml
+# dataset_gt_path: ../dataset/Replica-Dataset/Replica_original
+
+# Real Data
+# dataset_name: self_collected
+# scene_id: go_around
+# dataset_path: /home/eku/workspace/dataset/real_car
+# dataset_conf_path: dataset/dataset_config/car.yaml
+# dataset_gt_path: ../dataset/Replica-Dataset/Replica_original
+
+# Replica Dataset
+dataset_name: replica
+scene_id: room_0
+dataset_path: ../dataset/Replica
+dataset_conf_path: dataset/dataset_config/replica.yaml
+dataset_gt_path: ../dataset/Replica-Dataset/Replica_original
+
+# ScanNet Dataset
+# dataset_name: scannet
+# scene_id: scene0011_00
+# dataset_path: ../dataset/scannet
+# dataset_conf_path: dataset/dataset_config/scannet.yaml
+# dataset_gt_path: ../dataset/scannet200/val
+# dataset_gt_path: ../dataset/scannet
+
+# output directory
+output_path: ./output/test
+
+# logging config
+logging_config: ./config/logging_config.yaml

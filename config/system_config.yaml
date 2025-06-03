@@ -1,0 +1,28 @@
+defaults:
+  - base_config
+  - _self_
+
+yolo:
+  _target_: _self_
+  model_path: model/yolov8l-world.pt
+  classes_path: ${output_path}/${dataset_name}_${scene_id}/classes_info/${dataset_name}_${scene_id}_names.txt
+  bg_classes: ["wall", "floor", "ceiling"]
+  skip_bg: false
+
+  ### Use Given class list
+  use_given_classes: true
+  given_classes_path: ./model/gpt_indoor_class.txt
+  # Pre-set for stable filter, do not delete this
+  num_classes: 0
+
+clip:
+  _target_: _self_
+  model_name:  MobileCLIP-S2
+  # model_name: ViT-H-14
+  pretrained: datacompdr
+  # pretrained: laion2b_s32b_b79k
+  clip_length: 512
+  # clip_length: 1024
+
+####### Application level configs
+device: cuda

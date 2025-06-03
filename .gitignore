@@ -1,0 +1,10 @@
+output
+outputs
+*.pyc
+*.pt
+data
+habitat-sim
+results
+path
+log
+__pycache__/

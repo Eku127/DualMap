@@ -1,0 +1,101 @@
+chair
+sofa
+table
+bed
+desk
+cabinet
+shelf
+book
+lamp
+tv
+television stand
+refrigerator
+microwave
+oven
+sink
+washing machine
+dryer
+stove
+dishwasher
+toaster
+kettle
+coffee maker
+towel
+toilet
+shower
+bathtub
+mirror
+picture frame
+door
+window
+floor lamp
+ceiling lamp
+fan
+air conditioner
+heater
+carpet
+rug
+trash can
+recycling bin
+iron
+ironing board
+broom
+vacuum cleaner
+trash bag
+laundry basket
+tissues
+soap dispenser
+toilet paper
+toothbrush
+toothpaste
+hair dryer
+shampoo
+conditioner
+conditioner dispenser
+toilet brush
+shampoo bottle
+soap bar
+candle
+plant
+pot
+vase
+clock
+speaker
+remote control
+fan heater
+curtains
+blinds
+curtain rod
+frame
+desk chair
+bed frame
+dresser
+nightstand
+wardrobe
+closet
+pillows
+blanket
+mattress
+pillowcase
+slippers
+shoes
+hangers
+coat rack
+wall
+floor
+ceiling
+staircase
+hallway
+entryway
+shelf unit
+drawer
+light switch
+outlet
+plug
+router
+computer
+monitor
+keyboard
+mouse
+printer
+unknown
