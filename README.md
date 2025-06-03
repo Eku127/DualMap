@@ -30,7 +30,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## Installation
 
-> ✅ Tested on **Ubuntu 22.04** with **ROS 2 Humble** and **Python 3.10+**
+> ✅ Tested on **Ubuntu 22.04** with **ROS 2 Humble** and **Python 3.10**
 
 ### 1. Clone the Repository (with submodules)
 
@@ -38,12 +38,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 git clone --recurse-submodules git@github.com:Eku127/DualMap.git
 cd DualMap
 ```
-
->  Cloning may take some time, especially for Habitat-related submodules. If you forget `--recurse-submodules`, you can initialize them manually:
-
-```bash
-git submodule update --init --recursive
-```
+>  Make sure to use `--recurse-submodules` to get `mobileclip`.
 
 ### 2. Create Conda Environment
 ```bash
@@ -55,6 +50,7 @@ conda activate dualmap
 ```bash
 cd 3rdparty/mobileclip
 pip install -e . --no-deps
+cd ../..
 ```
 
 ### (Optional) Setup ROS 2 Environment
@@ -158,3 +154,5 @@ We ensure that you can reproduce all the results in our paper.
 We are grateful to the authors of [HOVSG](https://github.com/hovsg/HOV-SG) and [ConceptGraphs](https://github.com/concept-graphs/concept-graphs) for their contributions and inspiration.
 
 Special thanks to @[TOM-Huang](https://github.com/Tom-Huang) for his valuable advice and support throughout the development of this project.
+
+We also thank the developers of [MobileCLIP](https://github.com/apple/ml-mobileclip), [CLIP](https://github.com/openai/CLIP), [Segment Anything (SAM)](https://github.com/facebookresearch/segment-anything), [MobileSAM](https://github.com/ChaoningZhang/MobileSAM), [FastSAM](https://github.com/CASIA-IVA-Lab/FastSAM), and [YOLO-World](https://github.com/AILab-CVC/YOLO-World) for their excellent open-source work, which provided strong technical foundations for this project.
