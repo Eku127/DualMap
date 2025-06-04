@@ -129,6 +129,9 @@ _Coming soon: Reproduce offline mapping results with Replica, ScanNet and self c
 _Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot._
 
 ### Run with iPhone [TBD]
+<p align="center">
+    <img src="resources/image/app_iphone.jpg" width="90%">
+</p>
 _Coming soon: Real-time data streaming from Record3D to DualMap with open vocabulary semantic mapping._
 
 ### Offline Map Query
