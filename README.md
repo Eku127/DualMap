@@ -146,6 +146,9 @@ We provide two prebuilt map examples for offline querying: one from iPhone data 
 👉 Follow [this guide](resources/doc/app_offline_query.md) to run the query application.
 
 ### Visualization
+<p align="center">
+    <img src="resources/image/app_visual.jpg" width="100%">
+</p>
 _Coming soon: The system supports both Rerun and Rviz visualization_
 
 ## Evaluation [TBD]
