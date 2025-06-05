@@ -128,10 +128,16 @@ _Coming soon: Reproduce offline mapping results with Replica, ScanNet and self c
 ### Run with ROS [TBD]
 _Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot._
 
+#### ROS1 Support
+This system can also work with **ROS1 Noetic** by using the `ros1_bridge`.
+
+To set up the bridge between **ROS1 Noetic** and **ROS2 Humble** on **Ubuntu 22.04**, follow the instructions in [this guide](resources/doc/ros_communication.md). All commands have been tested and confirmed to work.
+
 ### Run with iPhone [TBD]
 <p align="center">
     <img src="resources/image/app_iphone.jpg" width="90%">
 </p>
+
 _Coming soon: Real-time data streaming from Record3D to DualMap with open vocabulary semantic mapping._
 
 ### Offline Map Query
@@ -149,6 +155,7 @@ We provide two prebuilt map examples for offline querying: one from iPhone data 
 <p align="center">
     <img src="resources/image/app_visual.jpg" width="100%">
 </p>
+
 _Coming soon: The system supports both Rerun and Rviz visualization_
 
 ## Evaluation [TBD]
