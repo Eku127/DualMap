@@ -64,6 +64,8 @@ source /opt/ros/humble/setup.bash
 
 > DualMap’s navigation functionality and real-world integration are based on ROS 2. Installation is strongly recommended.
 
+> **ROS1 noetic** is also supported by using `ros1_bridge`, you can setup by follow [this guide](resources/doc/ros_communication.md).
+
 ### (Optional) Setup Habitat Data Collector
 
 <p align="center">
