@@ -196,9 +196,68 @@
       </div>
     </div> -->
     <!--/ Paper video. -->
+
+
   </div>
 </section>
 
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- 居中的标题 -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3" style="font-weight: bold; color: black;">
+          Real-World Embodied Task Viewer
+        </h2>
+      </div>
+    </div>
+
+    <!-- 左对齐的描述文字 -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <p class="subtitle is-6 mt-2" style="color: #333; text-ali5px; font-size: 16px;">
+          We use <strong>wheeled</strong> and <strong>quadruped</strong> robot platforms to perform mapping and querying of moved objects across <strong>four different real-world scenes</strong>. Select a scene and task below to view the real-world result.
+        </p>
+      </div>
+    </div>
+
+    <!-- 下拉菜单组（仍保持居中） -->
+    <div class="field is-grouped is-grouped-centered mb-4" style="justify-content: center;">
+      <!-- Scene Selector -->
+      <div class="control" style="display: flex; align-items: center; margin-right: 20px;">
+        <span style="font-weight: bold; margin-right: 6px;">Scene:</span>
+        <div class="select">
+          <select id="scene-select" onchange="updateTaskOptions()">
+            <option value="apartment">Apartment</option>
+            <option value="meetingroom">Meetingroom</option>
+            <option value="hallway">Hallway</option>
+            <option value="outdoor">Outdoor</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Task Selector -->
+      <div class="control" style="display: flex; align-items: center;">
+        <span style="font-weight: bold; margin-right: 6px;">Task:</span>
+        <div class="select">
+          <select id="task-select" onchange="updateVideo()">
+            <!-- 动态生成 -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 视频展示 -->
+    <div class="columns is-centered">
+      <div class="column is-three-quarters has-text-centered">
+        <video id="scene-video" autoplay muted controls style="width: 100%; border-radius: 12px;">
+          <source src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="section" id="System Pipeline">
   <div class="container is-max-desktop content">
@@ -225,37 +284,7 @@
       To increase object diversity in HM3D scenes, we randomly place various YCB objects and simulate dynamic changes by altering their locations via <a href="https://github.com/Eku127/habitat-data-collector" target="_blank">our tools</a>. 
       We show two examples of navigation under <em>cross-anchor changes</em>, with the corresponding <em>abstract map</em> in the bottom-right.
     </p>
-    
-    
-<!-- 
-    <section class="hero is-light is-small">
-      <div class="hero-body">
-        <div class="container">
-          <div id="results-carousel" class="carousel results-carousel" data-slides-to-show="1">
-    
-            <div class="item item-chair-tp has-text-centered">
-              <video poster=""  autoplay muted loop playsinline style="width: 100%; max-height: 400px;">
-                <source src="static/video/dynamic-sim-split-1.mp4" type="video/mp4">
-              </video>
-              <p class="is-size-6 has-text-grey" style="margin-top: 0.5rem;">
-                <b>Query:</b> "Find the red plate"
-              </p>
-            </div>
-    
-            <div class="item item-chair-tp has-text-centered">
-              <video poster=""  autoplay muted loop playsinline style="width: 100%; max-height: 400px;">
-                <source src="static/video/dynamic-sim-split-2.mp4" type="video/mp4">
-              </video>
-              <p class="is-size-6 has-text-grey" style="margin-top: 0.5rem;">
-                <b>Query:</b> "Find the bowl"
-              </p>
-            </div>
-    
-          </div>
-        </div>
-      </div>
-    </section> -->
-
+ 
     <div class="swiper mySwiper" style="max-width: 90%; margin: 0 auto;">
       <div class="swiper-wrapper">
         
@@ -285,60 +314,6 @@
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
     </div>
-
-
-    <!-- <h3 class="title" style="margin-top: 4em;">More Qualitative Real-World Results</h3>
-    <h4 class="title">Navigation in Three-bedroom Apartment</h4>
-    <p style="text-indent: 2em;">
-      We showcase <b>five</b> navigation cases in a three-bedroom apartment, as well as one challenging scenario in which a backpack is relocated from the sofa to the kitchen counter.
-    </p>
-
-    <section class="hero is-light is-small">
-      <div class="hero-body">
-        <div class="container">
-          <div id="results-carousel" class="carousel results-carousel" data-slides-to-show="1">
-            <div class="item item-steve">
-              <video poster=""  autoplay controls muted loop playsinline height="100%">
-                <source src="static/video/orange-ball_x264.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="item item-chair-tp">
-              <video poster=""  autoplay controls muted loop playsinline height="100%">
-                <source src="static/video/laptop_x264.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="item item-chair-tp">
-              <video poster=""  autoplay controls muted loop playsinline height="100%">
-                <source src="static/video/green-bottle_x264.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="item item-chair-tp">
-              <video poster=""  autoplay controls muted loop playsinline height="100%">
-                <source src="static/video/red-cushion_x264.mp4" type="video/mp4">
-              </video>
-            </div>
-            <div class="item item-chair-tp">
-              <video poster=""  autoplay controls muted loop playsinline height="100%">
-                <source src="static/video/realworld-challenge_x264.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  <br>
-  <h4 class="title">Navigation with Functional Changes</h4>
-
-  <p style="text-indent: 2em;">
-    The DualMap system is capable of handling not only navigation under object location changes, but also navigation involving functional changes of objects.
-  </p>
-
-  <div class="has-text-centered" style="max-width: 720px; margin: 1.5rem auto;">
-    <video  autoplay controls muted loop playsinline style="width: 100%; max-height: 400px; border-radius: 6px;">
-      <source src="static/video/meetingroom_x264.mp4" type="video/mp4">
-    </video>
-  </div> -->
 
   <h3 class="title" style="margin-top: 4em;">Open-Vocabulary Mapping on the Go — with Just an iPhone!</h3>
   <p>
@@ -406,6 +381,68 @@
     </code></pre>
   </div>
 </section>
+
+
+
+
+<script>
+  // 原始任务列表
+  const taskOptions = {
+    apartment: ["mapping", "dishwashing soap", "instant noodles", "yellow cushion", "green bottle & keyboard"],
+    meetingroom: ["mapping", "book", "green bottle", "lemon tea", "laptop"],
+    hallway: ["mapping", "black backpack", "orange cushion", "bottle & keyboard"],
+    outdoor: ["mapping", "red backpack", "laptop"]
+  };
+
+  // 转换为标题格式（每个词首字母大写）
+  function toTitleCase(str) {
+    return str.split(" ").map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(" ");
+  }
+
+  // 显示名称（用于下拉框） + 保留原始 task 作为 value
+  function formatDisplayName(task) {
+    if (task === "mapping") {
+      return "Mapping";
+    } else {
+      return `Query: ${toTitleCase(task.replace(/&/g, "and"))}`;
+    }
+  }
+
+  // 转换为视频文件路径（保持原文件名不变）
+  function toFileName(scene, taskName) {
+    const safeTask = taskName.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-");
+    return `static/video/new-realworld-video/${scene}-${safeTask}.mp4`;
+  }
+
+  // 更新任务选项
+  function updateTaskOptions() {
+    const scene = document.getElementById("scene-select").value;
+    const taskSelect = document.getElementById("task-select");
+    taskSelect.innerHTML = "";
+
+    taskOptions[scene].forEach(task => {
+      const option = document.createElement("option");
+      option.value = task;  // 原始值用于拼接文件路径
+      option.textContent = formatDisplayName(task);  // 显示内容
+      taskSelect.appendChild(option);
+    });
+
+    updateVideo();
+  }
+
+  // 更新视频
+  function updateVideo() {
+    const scene = document.getElementById("scene-select").value;
+    const task = document.getElementById("task-select").value;
+    const videoPath = toFileName(scene, task);
+    document.getElementById("scene-video").src = videoPath;
+  }
+
+  // 初始化
+  window.onload = updateTaskOptions;
+</script>
 
 
 <footer class="footer">
