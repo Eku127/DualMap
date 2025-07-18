@@ -2,7 +2,7 @@
 <h3>
   <a href="https://eku127.github.io/DualMap/">Project Page</a> |
   <a href="https://arxiv.org/abs/2506.01950">Paper</a> |
-  <a href="https://youtu.be/ZmZDvhyXL_g">Video</a>
+  <!-- <a href="https://youtu.be/ZmZDvhyXL_g">Video</a> -->
 </h3>
 
 <p align="center">
@@ -64,7 +64,7 @@ source /opt/ros/humble/setup.bash
 
 > DualMap’s navigation functionality and real-world integration are based on ROS 2. Installation is strongly recommended.
 
-> **ROS1 noetic** is also supported by using `ros1_bridge`, you can setup by follow [this guide](resources/doc/ros_communication.md).
+> **ROS1 noetic** is also supported, you can setup the ROS 1 by follow [this guide](resources/doc/ros_communication.md).
 
 ### (Optional) Setup Habitat Data Collector
 
@@ -128,7 +128,11 @@ _Coming soon: Reproduce offline mapping results with Replica, ScanNet and self c
 
 
 ### Run with ROS [TBD]
-_Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot._
+<p align="center">
+    <img src="resources/image/app_ros.jpg" width="70%">
+</p>
+
+_Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot. Both ROS1 and ROS2 are supported_
 
 #### ROS1 Support
 This system can also work with **ROS1 Noetic** by using the `ros1_bridge`.
