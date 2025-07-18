@@ -168,6 +168,20 @@ _Coming soon: The system supports both Rerun and Rviz visualization_
 Evaluation code and result reproduction tools will be released in future updates.
 We ensure that you can reproduce all the results in our paper.
 
+
+## Citation
+
+If you find our work helpful, please consider starring this repo 🌟 and cite:
+
+```bibtex
+@article{jiang2025dualmap,
+  title={DualMap: Online Open-Vocabulary Semantic Mapping for Natural Language Navigation in Dynamic Changing Scenes},
+  author={Jiang, Jiajun and Zhu, Yiming and Wu, Zirui and Song, Jie},
+  journal={arXiv preprint arXiv:2506.01950},
+  year={2025}
+}
+```
+
 ## Acknowledgment
 
 We are grateful to the authors of [HOVSG](https://github.com/hovsg/HOV-SG) and [ConceptGraphs](https://github.com/concept-graphs/concept-graphs) for their contributions and inspiration.
