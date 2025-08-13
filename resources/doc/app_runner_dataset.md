@@ -116,6 +116,45 @@ We provide scripts to run and evaluate the entire dataset for both Replica and S
      bash scripts/dualmap_scannet.sh
      ```
 
+After finishing the script run, all evaluation results from all scenes will be saved in `output_path`.
+
+To get aggregated results, run:
+```
+python scripts/save_as_xlsx.py --dataset ${dataset_name} --eval_path ${output_path}/eval
+```
+Make sure to replace `${dataset_name}` and `${output_path}` with the actual parameter values you used. 
+
+## Offline Query
+
+After running and saving the concrete map, you can simply run the following command to perform an offline query.
+```
+python -m applications.offline_local_map_query
+```
+
+The map loaded during the query is determined by the settings in `base_config.yaml`.  
+For more details, please refer to [this guide](./app_offline_query.md).
 
 
 ## Troubleshooting
+
+#### Runner -> ERROR - [Detector][Init] Error loading CLIP model
+
+> ERROR - [Detector][Init] Error loading CLIP model: Failed to download file (open_clip_pytorch_model.bin) for apple/MobileCLIP-S2-OpenCLIP. Last error: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443)
+
+This error may also lead to `AttributeError: 'Detector' object has no attribute 'fastsam/yolo'`. The root cause is that the current machine cannot connect to `huggingface.co`. Since our CLIP implementation uses the OpenCLIP library and relies on weights downloaded from Hugging Face, the absence of a connection will trigger this error. 
+
+To resolve it, enable a proxy so that the machine can connect to `huggingface.co` and download the required weights.
+
+Further, you can also try to load local CLIP weights, please refer to [this link](https://github.com/mlfoundations/open_clip?tab=readme-ov-file#loading-models) for more information.
+
+
+#### Evaluation-> Error: File not found: replica_room_0_id_names.json
+
+> FileNotFoundError: Error: File not found: ./output/map_results/replica_room_0/classes_info/replica_room_0_id_names.json
+
+This error occurs when running the Replica dataset evaluation without first generating the class color file.  
+Make sure to run the following command **before** executing `python -m evaluation.sem_seg_eval`:
+```
+python -m applications.generate_replica_class_color
+```
+
