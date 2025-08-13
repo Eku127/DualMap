@@ -331,8 +331,9 @@ class Dualmap:
             elapsed_time = end_time - start_time
             self.detector.visualize_time(elapsed_time)
 
-            mem_usage = self.get_total_memory_by_keyword()
-            self.detector.visualize_memory(mem_usage)
+            # TODO: psutil seems not that correct
+            # mem_usage = self.get_total_memory_by_keyword()
+            # self.detector.visualize_memory(mem_usage)
 
         if self.calculate_path and self.global_map_manager.has_global_map():
             logger.info("[Core] Global Navigation enabled! Triggering functionality...")

@@ -15,9 +15,10 @@
 The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams(**Record3d Mode**). We provide examples for each input type.
 
 ## Updates
+**[2025.08]** Dataset-based running application and evaluation code released
+
 **[2025.06]** We released the Offline Query Examples — check it out [here](#offline-map-query)
 
-**[2025.08]** Dataset-based running application and evaluation code released  
 
 ## Release Plan
 
