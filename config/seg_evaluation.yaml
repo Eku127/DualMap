@@ -4,6 +4,8 @@ defaults:
   - _self_
 
 # output debug charts, pcds, configs, etc.
+# if running replica dataset and is_debug is True, you have to run generate_replica_class_color first
+# python -m applications.generate_replica_class_color
 is_debug: true
 
 # path to the classes and color configuration

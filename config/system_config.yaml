@@ -141,6 +141,7 @@ no_update: False
 
 ### END PROCESS CONFIG
 # if True, the system save the map objects, calculate the time cost, and end the process safely
+# In ROS mode, this will trigger the end of the system if no new data input for a while
 use_end_process: True
 
 

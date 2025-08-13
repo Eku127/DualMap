@@ -16,6 +16,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## Updates
 **[2025.06]** We released the Offline Query Examples — check it out [here](#offline-map-query)
+
 **[2025.08]** Dataset-based running application and evaluation code released  
 
 ## Release Plan
@@ -135,8 +136,15 @@ dataset/
 
 ## Applications
 
-### Run with Datasets [TBD]
-_Coming soon: Reproduce offline mapping results with Replica, ScanNet and self collected datasets._
+### Run with Datasets
+
+DualMap supports running with **offline datasets**. Currently supported datasets include:
+1. Replica Dataset  
+2. ScanNet Dataset  
+3. TUM RGB-D Dataset  
+4. Self-collected data using [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector)  
+
+Follow [this guide](resources/doc/app_runner_dataset.md) to run DualMap with these datasets and reproduce our offline mapping results.
 
 
 ### Run with ROS [TBD]
@@ -146,10 +154,10 @@ _Coming soon: Reproduce offline mapping results with Replica, ScanNet and self c
 
 _Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot. Both ROS1 and ROS2 are supported_
 
-#### ROS1 Support
+<!-- #### ROS1 Bridge
 This system can also work with **ROS1 Noetic** by using the `ros1_bridge`.
 
-To set up the bridge between **ROS1 Noetic** and **ROS2 Humble** on **Ubuntu 22.04**, follow the instructions in [this guide](resources/doc/ros_communication.md). All commands have been tested and confirmed to work.
+To set up the bridge between **ROS1 Noetic** and **ROS2 Humble** on **Ubuntu 22.04**, follow the instructions in [this guide](resources/doc/ros_communication.md). All commands have been tested and confirmed to work. -->
 
 ### Run with iPhone [TBD]
 <p align="center">
