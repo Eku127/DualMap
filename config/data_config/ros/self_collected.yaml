@@ -5,3 +5,9 @@ ros_topics:
   depth: "/camera/depth/image_raw"
   odom: "/camera/pose"
   camera_info: "/camera_info"
+
+intrinsic:
+  fx: 600
+  fy: 600
+  cx: 600
+  cy: 340

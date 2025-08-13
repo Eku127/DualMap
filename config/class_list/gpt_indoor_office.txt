@@ -1,0 +1,100 @@
+wall
+floor
+ceiling
+door
+window
+chair
+table
+desk
+sofa
+cabinet
+shelf
+drawer
+bed
+lamp
+monitor
+keyboard
+mouse
+laptop
+phone
+printer
+scanner
+whiteboard
+chalkboard
+backpack
+clock
+trashcan
+plant
+cushion
+mug
+bottle
+box
+binder
+pen
+pencil
+notebook
+paper
+envelope
+headphones
+speaker
+projector
+router
+keyboard tray
+cable
+counter
+remote
+light switch
+power strip
+plug
+folder
+screen
+bag
+umbrella
+coat
+shoes
+hat
+towel
+tissue
+mirror
+curtain
+blinds
+poster
+calendar
+picture frame
+book
+magazine
+bulletin board
+marker
+stapler
+tape
+scissors
+hole punch
+shredder
+paperclip
+eraser
+glue
+brush
+hand sanitizer
+fan
+heater
+air conditioner
+vent
+coffee machine
+microwave
+water dispenser
+refrigerator
+clock
+file
+rack
+basket
+clipboard
+key
+badge
+pen holder
+sticky note
+monitor stand
+drawer handle
+floor mat
+light fixture
+vent cover
+unknown

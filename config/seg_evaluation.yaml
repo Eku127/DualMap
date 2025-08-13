@@ -1,0 +1,45 @@
+defaults:
+  - base_config
+  - system_config
+  - _self_
+
+# output debug charts, pcds, configs, etc.
+# if running replica dataset and is_debug is True, you have to run generate_replica_class_color first
+# python -m applications.generate_replica_class_color
+is_debug: true
+
+# path to the classes and color configuration
+# generated from "applications/generate_replica_class_color.py"
+config_path: ${output_path}/${dataset_name}_${scene_id}/classes_info
+
+# output directory, including results and log
+# results will be in {dataset_name}_{scene_id}
+# log will be in {dataset_name}_{scene_id}/logfile.log
+save_dir: ${output_path}/eval
+
+# loading predicted map dir
+load_dir: ${output_path}/${dataset_name}_${scene_id}/map
+
+# ignore classes
+ignore_classes: ["wall", "floor", "ceiling", "pillar", "window", "vent", "background"]
+# filter gt points with ignore classes
+filter_gt_with_ignore: true
+
+# Use given classes (for visualization only if is_debug is True)
+use_given_classes: true
+given_classes_id_color: ./config/class_list/gpt_indoor_general_id_colors.json
+# given_classes_id_color: ./model/hm3d300_classes_id_colors.json
+# given_classes_id_color: ./model/scannet200_classes_id_colors.json  # for ConceptGraphs evaluation
+
+# Use CLIP feature to generate labels
+use_clip_for_labels: true
+top_n: 3
+
+if_calc_auc: true
+
+replica:
+  top_k_list: [1, 3, 8, 15, 30, 60]
+
+scannet:
+  use_scannet200: true  # auc calculation is not supported for scannet20
+  top_k_list: [1, 5, 15, 30, 60, 120]

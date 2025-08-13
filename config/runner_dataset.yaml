@@ -1,0 +1,77 @@
+defaults:
+  - base_config
+  - system_config
+  - support_config/mobility_config@_here_
+  - _self_
+
+# ============================================================
+# DATASET CONFIG
+# ============================================================
+# Whether to sample keyframes by stride (False = use timestamps)
+# If using self_collected dataset, set to False
+use_stride: true
+stride: 10
+
+# Frame index range to load
+start: 0
+end: -1
+
+# Resize images before processing (null = keep original size)
+image_height: null
+image_width: null
+
+
+# ============================================================
+# DUALMAP CONFIG
+# ============================================================
+## Detection Config
+# Enable object detection during mapping
+run_detection: True
+
+# Save detection results to disk
+save_detection: False
+
+# Show detection results on Rerun during runtime
+visualize_detection: False
+
+# Use FastSAM for Open-Voca supplementation
+use_fastsam: True
+
+# Display FastSAM debug outputs on Rerun
+show_fastsam_debug: false
+
+# Show overlapping 3D bounding boxes on Rerun (slower performance)
+show_3d_bbox_overlapped: false
+
+# Detection Refinement
+# skip refinement will be faster but less accurate
+skip_refinement: false
+
+## Visualization
+# Enable Rerun visualization
+use_rerun: true
+
+## Parallelization
+# Use parallel processing (False = sequential)
+use_parallel: true
+
+
+# ============================================================
+# SYSTEM MAPPING CONFIG
+# ============================================================
+# If True, run local mapping only and get local map
+# If False, run both local and global mapping and get global map
+run_local_mapping_only: true
+
+# Save the generated local map
+save_local_map: true
+
+# Save the global map (set False if run_local_mapping_only is True)
+save_global_map: false
+
+
+# ============================================================
+# PRELOADING CONFIG
+# ============================================================
+# Preload an existing global map from disk
+preload_global_map: false

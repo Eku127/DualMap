@@ -1,0 +1,300 @@
+wall
+unknown
+picture
+ceiling
+pillow
+door
+lamp
+door frame
+floor
+window
+cabinet
+ceiling lamp
+box
+book
+chair
+window frame
+decoration
+shelf
+table
+mirror
+curtain
+kitchen cabinet
+towel
+painting
+bag
+shoe
+plant
+clothes
+sink
+stairs
+bed
+toy
+tap
+cardboard box
+rug
+toilet
+beam
+basket
+armchair
+wall lamp
+drawer
+shower wall
+pipe
+wardrobe
+wall hanging decoration
+vase
+toilet paper
+cushion
+bottle
+tv
+carpet
+desk
+decorative plant
+radiator
+door knob
+ventilation
+blanket
+hanger
+blinds
+couch
+photo
+clutter
+stool
+trashcan
+container
+window curtain
+appliance
+ornament
+flowerpot
+product
+candle
+device
+storage box
+rack
+nightstand
+dining chair
+light fixture
+support beam
+basket of something
+curtain rod
+towel bar
+vent
+bathroom cabinet
+plate
+speaker
+heater
+window glass
+kitchen appliance
+bathroom accessory
+faucet
+kitchen lower cabinet
+clock
+flower vase
+board
+hanging clothes
+cabinet door
+cup
+table lamp
+dresser
+air vent
+case
+cloth
+bathtub
+bin
+flower
+refrigerator
+can
+bowl
+cosmetics
+ceiling vent
+pot
+jar
+glass
+microwave
+chest of drawers
+coffee table
+bottle of detergent
+stack of papers
+bathroom utensil
+sofa
+fire alarm
+fan
+monitor
+bucket
+kitchen counter
+tray
+ceiling fan
+shelving
+telephone
+toilet brush
+kitchen utensil
+washbasin
+shower floor
+bedside lamp
+pillar
+mat
+washing machine
+alarm
+dishwasher
+sensor
+photo mount
+oven
+frame
+plush toy
+smoke detector
+fireplace
+bench
+cosmetic
+wall electronics
+art frame
+side table
+paper
+kitchen countertop item
+coffee machine
+sink cabinet
+countertop
+wall panel
+sign
+liquid soap
+toilet paper dispenser
+paper towel
+soap dispenser
+parapet
+magazine
+bookshelf
+hat
+shower cabin
+tissue box
+stairs railing
+shower curtain
+chandelier
+bed table
+handrail
+keyboard
+printer
+doorpost
+stair step
+tool
+ceiling light
+stand
+floor lamp
+window shutter
+doormat
+window shade
+curtain rail
+ventilation hood
+bathroom towel
+decor
+stove
+bath wall
+chest
+railing
+door window
+pouffe
+wall clock
+picture frame
+shampoo
+air conditioner
+clothes hanger
+ceiling wall
+showerhead
+stuffed animal
+mirror frame
+electric box
+step
+floor mat
+banister
+wall board
+shower dial
+remote control
+display cabinet
+bathroom shelf
+laundry basket
+sofa chair
+wash cabinet
+decorative plate
+bar chair
+partition
+desk chair
+folder
+vacuum cleaner
+broom
+laptop
+trash can
+ladder
+brochure
+storage bin
+tool box
+oven and stove
+boxes
+kettle
+seat
+shelf with clutter
+sculpture
+soap
+strings
+binder
+ceiling lower
+display
+dining table
+ceiling light fixture connection
+office chair
+statue
+closet door
+staircase handrail
+cabinet /otherroom
+wall cabinet
+tv stand
+closet
+box with books
+bar
+fireplace wall
+bath towel
+washing stuff
+guitar
+magazines
+toaster
+fire extinguisher
+candle holder
+fridge
+light
+poster
+machine
+soap bottle
+calendar
+cutting board
+stack of books
+price tag
+gym equipment
+kitchen island
+shower knob
+laundry machine
+kitchen decoration
+jewelry
+artwork
+ball
+cuddly toy
+bowl of fruit
+kitchen shelf
+bathroom counter
+knife holder
+bottles
+pad
+throw blanket
+radio
+ceiling molding
+column
+shade
+pile of magazines
+document
+newspaper
+bottle of soap
+shower tap
+brush
+food
+book rack
+shower head
+computer mouse
+electrical controller
+unknown

@@ -2,4 +2,4 @@ defaults:
   - system_config
   - _self_
 
-map_dir: "<PATH TO MAP>"
+map_dir: ${output_path}/${dataset_name}_${scene_id}/map
