@@ -1,0 +1,100 @@
+chair
+desk
+whiteboard
+blackboard
+projector
+projector screen
+computer monitor
+laptop
+keyboard
+mouse
+printer
+cabinet
+bookshelf
+book
+notebook
+pen
+pencil
+marker
+eraser
+backpack
+trash can
+recycling bin
+power outlet
+light switch
+clock
+wall poster
+window
+door
+curtain
+blinds
+ceiling light
+speaker
+microphone
+podium
+table
+stool
+whiteboard marker
+projector remote
+chalk
+duster
+filing cabinet
+storage box
+hand sanitizer
+water bottle
+coffee cup
+tissue box
+stapler
+paper clips
+scissors
+glue stick
+sticky notes
+USB drive
+extension cord
+power strip
+tablet
+smartphone
+wall socket
+floor mat
+rug
+air conditioner
+heater
+fire extinguisher
+smoke detector
+ventilation grill
+wall shelf
+plant pot
+coat rack
+umbrella
+pen holder
+paper tray
+clipboard
+bulletin board
+door handle
+window handle
+wall clock
+CCTV camera
+light bulb
+WiFi router
+Ethernet port
+projector mount
+ceiling fan
+desk lamp
+electrical panel
+ladder
+toolbox
+floor sign
+VR headset
+headphones
+remote control
+plastic container
+cardboard box
+sanitizer dispenser
+wall art
+USB hub
+lab equipment
+science model
+handout paper
+measuring tape
+chalk holder
+unknown

@@ -1,0 +1,36 @@
+# low mobility examples
+lm_examples:
+  - "stool"
+  - "cabinet"
+  - "couch"
+  - "shelf"
+  - "armchair"
+  - "bathtub"
+  - "chair"
+  - "sofa"
+  - "table"
+  - "rack"
+  - "bathroom-vanity"
+  - "bed"
+
+# high mobility examples
+hm_examples:
+  - "backpack"
+  - "box"
+  - "clothes"
+  - "cup"
+  - "cushion"
+  - "lamp"
+  - "door"
+  - "pillow"
+  - "bowl"
+  - "microwave"
+  - "indoor-plant"
+  - "carpet"
+  - "rug"
+
+# Extra descriptions for low mobility examples
+lm_descriptions:
+  - "furniture that is not often moved"
+  - "furniture that is used for sitting"
+  - "furniture that is used for placing things"

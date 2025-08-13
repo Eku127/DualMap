@@ -1,0 +1,14 @@
+dataset_name: 'lab_device'
+
+ros_topics:
+  rgb: "/ros2/color/image_raw/compressed"
+  depth: "/ros2/depth/image_raw/compressedDepth"
+  odom: "/ros2/Odometry"
+  camera_info: "/ros2/color/camera_info"
+
+# We use camera to lidar as default extrinsics
+extrinsics:
+  - [-0.00860301,  0.35359592,  0.93535871,  0.07900693]
+  - [-0.99989614, -0.01385831, -0.0039577 , -0.0099747]
+  - [ 0.01156306, -0.93529561,  0.35367842, -0.04598121]
+  - [0.0, 0.0, 0.0, 1.0]

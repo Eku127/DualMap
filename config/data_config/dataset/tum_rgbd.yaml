@@ -1,0 +1,10 @@
+dataset_name: 'tum_rgbd'
+camera_params:
+  image_height: 480
+  image_width: 640
+  fx: 537.96
+  fy: 539.59
+  cx: 319.18
+  cy: 247.05
+  png_depth_scale: 5000 #for depth image in png format
+  crop_edge: 0
