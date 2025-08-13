@@ -1,7 +1,7 @@
 # DualMap
 <h3>
   <a href="https://eku127.github.io/DualMap/">Project Page</a> |
-  <a href="https://arxiv.org/abs/2506.01950">Paper</a> |
+  <a href="https://arxiv.org/abs/2506.01950">Arxiv</a> 
   <!-- <a href="https://youtu.be/ZmZDvhyXL_g">Video</a> -->
 </h3>
 
@@ -16,13 +16,14 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## Updates
 **[2025.06]** We released the Offline Query Examples — check it out [here](#offline-map-query)
+**[2025.08]** Dataset-based running application and evaluation code released  
 
 ## Release Plan
 
 - [x] Environment setup & dataset links  
-- [ ] Full system code (Mapping + Navigation)
-- [ ] Evaluation Code
-- [ ] [Apps] Running with Datasets
+- [x] Full system code (Mapping + Navigation)
+- [x] Evaluation Code
+- [x] [Apps] Running with Datasets
 - [ ] [Apps] Running with ROS 
 - [ ] [Apps] Running with iPhone
 - [x] [Apps] Offline Query
@@ -82,44 +83,55 @@ source /opt/ros/humble/setup.bash
 
 ### Replica & ScanNet
 
-Please follow [this guide](resources/doc/replica&scannet.md) to download and prepare the public Replica and ScanNet datasets for use with DualMap.
+Please follow [this guide](resources/doc/data_replica_scannet.md) to download and arrange the public Replica and ScanNet datasets for use with DualMap.
 
 
-### HM3D Dynamic Scene Data
+### HM3D Self-collected Data
 
-<p align="center">
-  <img src="resources/image/scene_configuration.jpg" width="100%">
-</p>
+We manually collected data in three HM3D scenes to support static and dynamic object navigation. Please follow [this guide](resources/doc/data_hm3d_self_collected.md) to download and arrange the self-collected HM3D data. 
 
-
-We release both static and dynamic HM3D scene data to support faithful reproduction of the results presented in the "Navigation in Simulation" section. Researchers can use this dataset to replicate both the static and dynamic environments evaluated in our experiments.
-
-> The dataset includes three HM3D scenes tested in the paper.
-
-You can download the data here:
-🔗 [OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/ErSvH_QPouBLsHE0AzZAw0oBQFqRIjdrEOxAHN7OBO0nHg?e=PvmkUo)
-
-
-#### Per-Scene Directory Structure
-Each scene folder follows the structure below:
-
+### Dataset Structure
+We recommend placing the data in the `dataset` folder within this repository.
+The final `dataset` structure should look like this:
 ```
-00829-QaLdnwvtxbs/                    # Example scene ID
-├── data.zip                          # RGB-D + pose + intrinsic offline dataset (5.08 GB)
-├── static_scene_config.json          # Static scene configuration
-├── dynamic_scene_config/             # Dynamic scene configurations
-│   ├── cross_anchor/                       
-│   │   ├── 0128-1.json
-│   │   └── ...
-│   └── in_anchor/                          
-│       ├── 0128-1.json
+dataset/
+├── Replica/
+│   ├── office0/
+│   │   ├── results/              # RGB-D frames (depth + RGB)
+│   │   └── traj.txt              # Trajectory file
+│   ├── office1/
+│   ├── ...
+│   └── room2/
+│
+├── Replica-Dataset/
+│   └── Replica_original/
+│       ├── apartment_0/
+│       ├── room_0/
+│       │   └── habitat/
+│       │       └── mesh_semantic.ply
 │       └── ...
-├── global_map/                       # Prebuilt abstract map from rosbag and dataset
-├── rosbag2_odom/                     # ROS2 bag of static scene traversal
-├── class_bbox.json                   # Object bounding boxes (for evaluation)
-├── class_num.json                    # Object class count summary (for evaluation)
+│
+├── scannet/
+│   └── exported/                  # exported ScanNet data
+│       ├── scene0010_00/
+│       │   ├── color/             # Exported color images
+│       │   ├── depth/             # Exported depth maps
+│       │   ├── intrinsic/         # Camera intrinsics
+│       │   └── pose/              # Camera poses
+│       ├── scene0050_00/
+│       └── ...
+│
+├── scannet200/
+│   ├── train/
+│   └── val/
+│       ├── scene0011_00.ply
+│       └── ...
+│
+└── HM3D_collect/
 ```
-See the **Applications** section for detailed dataset usage. The usage of **scene configuration** is documented in [Habitat Data Collector documentation](https://github.com/Eku127/habitat-data-collector/blob/main/documents/config_reference/config_reference.md#-scene-configuration).
+
+
+
 
 ## Applications
 
