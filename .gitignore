@@ -11,6 +11,7 @@ model/
 3rdparty/
 applications/
 dataset/
+utils/
 habitat-sim/
 
 
