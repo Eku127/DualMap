@@ -7,6 +7,9 @@ temp/
 
 
 data/
+model/
+3rdparty/
+applications/
 dataset/
 habitat-sim/
 
