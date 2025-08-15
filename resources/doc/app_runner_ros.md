@@ -9,6 +9,7 @@
     - [Environment Setup](#environment-setup-1)
     - [Download Rosbag Data](#download-rosbag-data-1)
     - [Run with ROS2](#run-with-ros2)
+- [ROS1 <--> ROS2 Bridge](#ros1----ros2-bridge)
 
 
 ## ROS1 (Noetic) Guide
@@ -220,4 +221,8 @@ Meanwhile, the **global (abstract) map** will be saved in your configured `outpu
 <p align="center">
     <img src="../image/app_ros/app_ros2_00829.jpg" width="70%">
 </p>
+
+## ROS1 <--> ROS2 Bridge
+
+If you need to run a **ROS1 rosbag** within a **ROS2 environment**, or a **ROS2 rosbag** within a **ROS1 environment**,   follow [this guide](./ros_communication.md) to set up a ROS bridge between ROS1 and ROS2.
 
