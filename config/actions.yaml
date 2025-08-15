@@ -1,4 +1,4 @@
 calculate_path: false
-get_goal_mode: inquiry
-inquiry_sentence: I want to sleep
+get_goal_mode: click
+inquiry_sentence: bowl
 trigger_find_next: false
