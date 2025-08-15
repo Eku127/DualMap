@@ -22,7 +22,7 @@ yolo:
 
   ## The given classes lists
   ## Indoor Classes List
-  # given_classes_path: ./config/class_list/gpt_indoor_general.txt
+  given_classes_path: ./config/class_list/gpt_indoor_general.txt
   # given_classes_path: ./config/class_list/gpt_indoor_office.txt
   # given_classes_path: ./config/class_list/gpt_indoor_apartment.txt
   # given_classes_path: ./config/class_list/gpt_indoor_classroom.txt
@@ -32,7 +32,7 @@ yolo:
 
   ## Dataset Classes List (_ycb add the classes from YCB)
   # given_classes_path: ./config/class_list/hm3d300_classes.txt
-  given_classes_path: ./config/class_list/hm3d300_classes_ycb.txt
+  # given_classes_path: ./config/class_list/hm3d300_classes_ycb.txt
   # given_classes_path: ./config/class_list/scannet200_classes.txt
 
   # Pre-set for stable filter, do not delete this
