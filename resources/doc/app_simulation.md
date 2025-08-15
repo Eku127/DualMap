@@ -6,7 +6,16 @@
 > **Note:** ROS2 is required for these features. It is recommended to complete the ROS2 usage in the [ROS Runner Guide](./app_runner_ros.md) before using the following features.
 
 
-## Table of Content
+## 📚 Table of Content
+
+- [Online Interactive Mapping](#online-interactive-mapping)
+- [Preloading Pre-built Map](#preloading-pre-built-map)
+- [Online Navigation](#online-navigation)
+    - [Prerequisites](#prerequisites)
+    - [Configurations](#configurations)
+    - [Navigation Mode - random](#navigation-mode---random)
+    - [Navigation Mode - click](#navigation-mode---click)
+    - [Navigation Mode - inquiry](#navigation-mode---inquiry)
 
 ## Online Interactive Mapping
 
