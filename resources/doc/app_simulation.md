@@ -1,7 +1,6 @@
 # Online Mapping and Navigation in Simulation
 
-> **Note:** Before continuing, make sure you have correctly set up the [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector).  
-> All of the following functionalities rely on this simulation tool.
+> **Note:** Before continuing, make sure you have correctly set up the [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector). All of the following functionalities rely on this simulation tool.
 
 > **Note:** ROS2 is required for these features. It is recommended to complete the ROS2 usage in the [ROS Runner Guide](./app_runner_ros.md) before using the following features.
 
