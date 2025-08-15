@@ -15,19 +15,21 @@
 The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams(**Record3d Mode**). We provide examples for each input type.
 
 ## Updates
-**[2025.08]** Dataset-based running application and evaluation code released
 
-**[2025.06]** We released the Offline Query Examples — check it out [here](#offline-map-query)
+**[2025.08]** Release [Run with Dataset Guide](#run-with-datasets), [Run with ROS Guide](#run-with-ros), Evaluation Code, and Full System Code.
+
+**[2025.06]** Release the Offline Query Examples — check it out [here](#offline-map-query)
 
 
 ## Release Plan
 
-- [x] Environment setup & dataset links  
-- [x] Full system code (Mapping + Navigation)
+- [x] Environment Setup
+- [x] Full System Code
 - [x] Evaluation Code
 - [x] [Apps] Running with Datasets
-- [ ] [Apps] Running with ROS 
+- [x] [Apps] Running with ROS 
 - [ ] [Apps] Running with iPhone
+- [ ] [Apps] Navigation in Simulation
 - [x] [Apps] Offline Query
 - [ ] Realworld Deployment Guidance
 
@@ -67,7 +69,7 @@ source /opt/ros/humble/setup.bash
 
 > DualMap’s navigation functionality and real-world integration are based on ROS 2. Installation is strongly recommended.
 
-> **ROS1 noetic** is also supported, you can setup the ROS 1 by follow [this guide](resources/doc/ros_communication.md).
+> **ROS1 noetic** is also supported, you can setup the ROS 1 in Ubuntu 22.04 by follow [this guide](resources/doc/ros_communication.md).
 
 ### (Optional) Setup Habitat Data Collector
 
@@ -76,7 +78,7 @@ source /opt/ros/humble/setup.bash
 </p>
 
 
-[Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS bag recording, as well as navigation through external ROS topics. DualMap subscribes to live ROS topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
+[Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS2 bag recording, as well as navigation through external ROS2 topics. DualMap subscribes to live ROS2 topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
 > For the best DualMap experience (especially navigation tests), **we strongly recommend setting up the Habitat Data Collector**. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
 
@@ -145,16 +147,18 @@ DualMap supports running with **offline datasets**. Currently supported datasets
 3. TUM RGB-D Dataset  
 4. Self-collected data using [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector)  
 
-Follow [this guide](resources/doc/app_runner_dataset.md) to run DualMap with these datasets and reproduce our offline mapping results.
+👉 Follow [Dataset usage guide](resources/doc/app_runner_dataset.md) to run DualMap with these datasets and reproduce our offline mapping results in our paper.
 
 
-### Run with ROS [TBD]
+### Run with ROS
 <p align="center">
     <img src="resources/image/app_ros.jpg" width="70%">
 </p>
 
-_Coming soon: Online mapping and navigation via live ROS topics from the Habitat Data Collector and real world robot. Both ROS1 and ROS2 are supported_
+DualMap supports input from both **ROS1** and **ROS2**.  
+You can run the system with **offline rosbags** or in **online mode** with real robots.
 
+👉 Follow the [ROS usage guide](resources/doc/app_runner_ros.md) to get started with running DualMap using ROS1/ROS2 rosbags or live ROS streams.
 <!-- #### ROS1 Bridge
 This system can also work with **ROS1 Noetic** by using the `ros1_bridge`.
 
@@ -185,9 +189,6 @@ We provide two prebuilt map examples for offline querying: one from iPhone data 
 
 _Coming soon: The system supports both Rerun and Rviz visualization_
 
-## Evaluation [TBD]
-Evaluation code and result reproduction tools will be released in future updates.
-We ensure that you can reproduce all the results in our paper.
 
 
 ## Citation
