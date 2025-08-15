@@ -40,7 +40,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 ### 1. Clone the Repository (with submodules)
 
 ```bash
-git clone --recurse-submodules git@github.com:Eku127/DualMap.git
+git clone --branch main --single-branch --recurse-submodules git@github.com:Eku127/DualMap.git
 cd DualMap
 ```
 >  Make sure to use `--recurse-submodules` to get `mobileclip`.
