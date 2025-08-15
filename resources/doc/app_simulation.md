@@ -190,6 +190,8 @@ A navigation map will appear. You can use your mouse to click on a point to star
 
 If you click on a black area, the system will automatically plan a path to the nearest navigable point to your click.
 
+https://github.com/user-attachments/assets/c3a0f533-ebb7-4bb9-978f-a160f7f4ba5b
+
 ### Navigation Mode - 'inquiry'
 1. Set `get_goal_mode` to `inquiry` in `config/actions.yaml`.  
 2. Set `inquiry_sentence` to the object you want to navigate to. It can be a descriptive sentence like `place to sit`.  
@@ -203,3 +205,5 @@ When the agent is near the target anchor object and the queried object is on the
 
 If no local path is planned, the navigation attempt is considered failed.  
 You can set `trigger_find_next` to `true` in `config/actions.yaml` to start the next navigation attempt automatically.
+
+https://github.com/user-attachments/assets/06f0b357-13c6-4d5a-a800-c4c531c8c1a8
