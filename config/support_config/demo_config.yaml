@@ -17,7 +17,7 @@ related_height: -0.1
 
 # Robot height
 # this one change the path height in rerun
-robot_height: -1.0
+robot_height: 1.5
 
 # path visualization radius in rerun
 # this one change the path width

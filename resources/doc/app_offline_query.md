@@ -1,11 +1,13 @@
 # Application: Offline Map Query
 
-## Data Download
 <p align="center">
-    <img src="../image/app_query_scenes.jpg" width="60%">
+    <img src="../image/query.jpg" width="90%">
 </p>
 
-We provide two prebuilt concrete maps for offline query experiments: 1. Replica Room 0 ; 2. Record3D (iPhone)
+
+## Data Download
+
+We provide two prebuilt concrete maps for offline query experiments: 1. Replica `room_0` ; 2. Record3D (iPhone)
 
 You can download the data here:
 🔗 [OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/Eg4WTY_fC3tBkeiv2vU7dc4BUGEVGjQu5FGhWk_ZlNJ3tQ?e=hVRkgY)

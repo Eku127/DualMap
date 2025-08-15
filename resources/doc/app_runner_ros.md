@@ -1,5 +1,9 @@
 # Running with ROS1/ROS2
 
+<p align="center">
+    <img src="../image/app_ros.jpg" width="70%">
+</p>
+
 ## 📚 Table of Contents
 - [ROS1 (Noetic) Guide](#ros1-noetic-guide)
     - [Environment Setup](#environment-setup)
@@ -140,6 +144,8 @@ Meanwhile, the **global (abstract) map** will be saved in your configured `outpu
 ### Download Rosbag Data
 
 Download simulation rosbags recorded in three HM3D scenes via [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector).
+
+> **Note:** If you have already downloaded the `HM3D_collect` dataset (see [this section](../../README.md#hm3d-self-collected-data) in the README), you do not need to download it again.
 
 [Download from OneDrive](https://hkustgz-my.sharepoint.com/:f:/g/personal/jjiang127_connect_hkust-gz_edu_cn/EqLzgeEJZZVJpttVbDWVDXYBDyiGTMoFB3qaktQONetS6A?e=RJelVv)
 
