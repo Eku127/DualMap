@@ -190,7 +190,7 @@ A navigation map will appear. You can use your mouse to click on a point to star
 
 If you click on a black area, the system will automatically plan a path to the nearest navigable point to your click.
 
-https://github.com/user-attachments/assets/c3a0f533-ebb7-4bb9-978f-a160f7f4ba5b
+https://github.com/user-attachments/assets/351619f5-191f-4236-856e-2c1687633d60
 
 ### Navigation Mode - 'inquiry'
 1. Set `get_goal_mode` to `inquiry` in `config/actions.yaml`.  
