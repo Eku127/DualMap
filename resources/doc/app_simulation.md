@@ -150,7 +150,7 @@ python -m applications.runner_ros
 cd <Path to >/habitat-data-collector
 conda activate habitat_data_collector
 
-source source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.bash
 python -m habitat_data_collector.main
 ```
 
