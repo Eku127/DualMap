@@ -14,25 +14,13 @@
 
 The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams(**Record3d Mode**). We provide examples for each input type.
 
-## Updates
-**[2025.08]** Release [Online Mapping and Navigation Guide](#online-mapping-and-navigation-in-simulation)
+## News
 
-**[2025.08]** Release [Run with Dataset Guide](#run-with-datasets), [Run with ROS Guide](#run-with-ros), Evaluation Code, and Full System Code.
+**[2025.08]** Release [Online Mapping and Navigation Guide](#online-mapping-and-navigation-in-simulation) and [Run with iPhone Guide](#run-with-iphone).
 
-**[2025.06]** Release the Offline Query Examples — check it out [here](#offline-map-query)
+**[2025.08]** Release [Run with Dataset Guide](#run-with-datasets) and [Run with ROS Guide](#run-with-ros).
 
-
-## Release Plan
-
-- [x] Environment Setup
-- [x] Full System Code
-- [x] Evaluation Code
-- [x] [Apps] Running with Datasets
-- [x] [Apps] Running with ROS 
-- [ ] [Apps] Running with iPhone
-- [x] [Apps] Online Mapping and Navigation in Simulation
-- [x] [Apps] Offline Query
-- [ ] Realworld Deployment Guidance
+**[2025.06]** Release [Offline Query Guide](resources/doc/app_offline_query.md) and examples.
 
 ## Installation
 
@@ -162,15 +150,13 @@ DualMap supports **online** interactive mapping and object navigation in simulat
 
 👉 Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results in **Table III** in our paper.
 
-### Run with iPhone [TBD]
-<p align="center">
-    <img src="resources/image/app_iphone.jpg" width="90%">
-</p>
+### Run with iPhone
 
-_Coming soon: Real-time data streaming from Record3D to DualMap with open vocabulary semantic mapping._
+DualMap supports **real-time data streaming** from the **Record3D** app on iPhone.
+
+👉 Follow the [iPhone Runner Guide](resources/doc/app_runner_record_3d.md) to get started with setting up Record3D, streaming data to DualMap, and mapping with your own iPhone!
 
 ### Offline Map Query
-
 
 We provide two prebuilt map examples for offline querying: one from iPhone data and one from Replica Room 0.
 

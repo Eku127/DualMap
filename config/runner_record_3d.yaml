@@ -1,0 +1,51 @@
+defaults:
+  - base_config
+  - system_config
+  - support_config/mobility_config@_here_
+  - _self_
+
+# ============================================================
+# DUALMAP CONFIG
+# ============================================================
+## Detection Config
+# Enable object detection during mapping
+run_detection: True
+
+# Show detection results on Rerun during runtime
+visualize_detection: True
+
+# Use FastSAM for Open-Voca supplementation
+use_fastsam: False
+
+# Detection Refinement
+# skip refinement will be faster but less accurate
+skip_refinement: false
+
+## Visualization
+# Enable Rerun visualization
+use_rerun: true
+# Enable Rviz visualization
+use_rviz: false
+
+## Parallelization
+# Use parallel processing (False = sequential)
+use_parallel: true
+
+### END PROCESS CONFIG
+# if True, the system save the map objects, calculate the time cost, and end the process safely
+# In ROS mode, this will trigger the end of the system if no new data input for a while
+use_end_process: False
+
+
+# ============================================================
+# SYSTEM MAPPING CONFIG
+# ============================================================
+# If True, run local mapping only and get local map
+# If False, run both local and global mapping and get global map
+run_local_mapping_only: true
+
+# Save the generated local map
+save_local_map: true
+
+# Save the global map (set False if run_local_mapping_only is True)
+save_global_map: false
