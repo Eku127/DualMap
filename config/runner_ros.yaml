@@ -68,15 +68,16 @@ save_global_map: true
 # PRELOADING CONFIG
 # ============================================================
 # Preload an existing global map from disk
-preload_global_map: true
+preload_global_map: false
 
 # Preload an existing layout pcd and wall pcd from disk
 # If preload the layout, the layout pcd thread will be disabled
-preload_layout: true
+preload_layout: false
 
 # Path to preload map data.
 # If empty, the system will use the default preload path
-preload_path: "/home/eku/workspace/dataset/HM3D_collect/00829-QaLdnwvtxbs/global_map/hm3d"
+preload_path: ""
+# preload_path: "dataset/HM3D_collect/00829-QaLdnwvtxbs/global_map/hm3d"
 # preload_path: "output/map_results/replica_room_0/map"
 
 # Preload action paths for visualization
