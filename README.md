@@ -127,9 +127,6 @@ If you find our work helpful, please consider starring this repo 🌟 and cite:
 ## Contact
 For technical questions, please create an issue. For other questions, please contact the first author: jjiang127 [at] connect.hkust-gz.edu.cn
 
-## License
-This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
-
 ## Acknowledgment
 
 We are grateful to the authors of [HOVSG](https://github.com/hovsg/HOV-SG) and [ConceptGraphs](https://github.com/concept-graphs/concept-graphs) for their contributions and inspiration.
