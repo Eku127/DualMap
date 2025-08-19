@@ -62,68 +62,9 @@ source /opt/ros/humble/setup.bash
 
 ### (Optional) Setup Habitat Data Collector
 
-<!-- <p align="center">
-  <img src="resources/image/collector.jpg" width="70%">
-</p> -->
-
-
 [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS2 bag recording, as well as navigation through external ROS2 topics. DualMap subscribes to live ROS2 topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
-> For the best DualMap experience (especially navigation tests), **we strongly recommend setting up the Habitat Data Collector**. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
-
-
-## Dataset
-
-### Replica & ScanNet
-
-Please follow [this guide](resources/doc/data_replica_scannet.md) to download and arrange the public Replica and ScanNet datasets for use with DualMap.
-
-
-### HM3D Self-collected Data
-
-We manually collected data in three HM3D scenes to support static and dynamic object navigation. Please follow [this guide](resources/doc/data_hm3d_self_collected.md) to download and arrange the self-collected HM3D data. 
-
-### Dataset Structure
-We recommend placing the data in the `dataset` folder within this repository.
-The final `dataset` structure should look like this:
-```
-dataset/
-├── Replica/
-│   ├── office0/
-│   │   ├── results/              # RGB-D frames (depth + RGB)
-│   │   └── traj.txt              # Trajectory file
-│   ├── office1/
-│   ├── ...
-│   └── room2/
-│
-├── Replica-Dataset/
-│   └── Replica_original/
-│       ├── apartment_0/
-│       ├── room_0/
-│       │   └── habitat/
-│       │       └── mesh_semantic.ply
-│       └── ...
-│
-├── scannet/
-│   └── exported/                  # exported ScanNet data
-│       ├── scene0010_00/
-│       │   ├── color/             # Exported color images
-│       │   ├── depth/             # Exported depth maps
-│       │   ├── intrinsic/         # Camera intrinsics
-│       │   └── pose/              # Camera poses
-│       ├── scene0050_00/
-│       └── ...
-│
-├── scannet200/
-│   ├── train/
-│   └── val/
-│       ├── scene0011_00.ply
-│       └── ...
-│
-└── HM3D_collect/
-```
-
-
+> For the best DualMap experience (especially interactive mapping and navigation), **we strongly recommend setting up the Habitat Data Collector**. See [the repo](https://github.com/Eku127/habitat-data-collector) for installation and usage details.
 
 
 ## Applications
@@ -135,7 +76,7 @@ DualMap supports running with **offline datasets**. Currently supported datasets
 3. TUM RGB-D Dataset  
 4. Self-collected data using [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector)  
 
-👉 Follow [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to run DualMap with these datasets and reproduce our offline mapping results in **Table II** in our paper.
+👉 Follow [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to arrange datasets, run DualMap with these datasets and reproduce our offline mapping results in **Table II** in our paper.
 
 ### Run with ROS
 
@@ -170,7 +111,6 @@ We provide two prebuilt map examples for offline querying: one from iPhone data 
 The system supports both [Rerun](https://rerun.io) and [Rviz](http://wiki.ros.org/rviz) visualization. When running with ROS, you can switch the visualizaiton via `use_rerun` and `use_rviz` option in `config/runner_ros.yaml`
 
 
-
 ## Citation
 
 If you find our work helpful, please consider starring this repo 🌟 and cite:
@@ -183,6 +123,12 @@ If you find our work helpful, please consider starring this repo 🌟 and cite:
   year={2025}
 }
 ```
+
+## Contact
+For technical questions, please create an issue. For other questions, please contact the first author: jjiang127 [at] connect.hkust-gz.edu.cn
+
+## License
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgment
 
