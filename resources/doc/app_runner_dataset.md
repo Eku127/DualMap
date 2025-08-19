@@ -3,6 +3,10 @@
 > **Note:** Before running DualMap with a dataset, please ensure the dataset is arranged in the correct directory structure.
 
 ## 📚 Table of Contents
+- [Preparing Datasets](#preparing-datasets)
+  - [Replica & ScanNet](#replica--scannet)
+  - [HM3D Self-collected Data](#hm3d-self-collected-data)
+  - [Dataset Structure](#dataset-structure)
 - [Run](#run)
 - [Key Configurations](#key-configurations)
 - [Evaluation](#evaluation)
@@ -10,6 +14,57 @@
   - [Evaluate the Whole Dataset](#evaluate-the-whole-dataset)
 - [Offline Query](#offline-query)
 - [Troubleshooting](#troubleshooting)
+
+## Preparing Datasets
+
+### Replica & ScanNet
+
+Please follow [this guide](./data_replica_scannet.md) to download and arrange the public Replica and ScanNet datasets for use with DualMap.
+
+
+### HM3D Self-collected Data
+
+We manually collected data in three HM3D scenes to support static and dynamic object navigation. Please follow [this guide](./data_hm3d_self_collected.md) to download and arrange the self-collected HM3D data. 
+
+### Dataset Structure
+We recommend placing the data in the `dataset` folder within this repository.
+The final `dataset` structure should look like this:
+```
+dataset/
+├── Replica/
+│   ├── office0/
+│   │   ├── results/              # RGB-D frames (depth + RGB)
+│   │   └── traj.txt              # Trajectory file
+│   ├── office1/
+│   ├── ...
+│   └── room2/
+│
+├── Replica-Dataset/
+│   └── Replica_original/
+│       ├── apartment_0/
+│       ├── room_0/
+│       │   └── habitat/
+│       │       └── mesh_semantic.ply
+│       └── ...
+│
+├── scannet/
+│   └── exported/                  # exported ScanNet data
+│       ├── scene0010_00/
+│       │   ├── color/             # Exported color images
+│       │   ├── depth/             # Exported depth maps
+│       │   ├── intrinsic/         # Camera intrinsics
+│       │   └── pose/              # Camera poses
+│       ├── scene0050_00/
+│       └── ...
+│
+├── scannet200/
+│   ├── train/
+│   └── val/
+│       ├── scene0011_00.ply
+│       └── ...
+│
+└── HM3D_collect/
+```
 
 ## Run
 First activate the conda environment
