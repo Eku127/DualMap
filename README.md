@@ -6,7 +6,7 @@
 </h3>
 
 <p align="center">
-  <img src="resources/image/teaser.gif" width="80%">
+  <img src="resources/image/optimized-gif.gif" width="70%">
 </p>
 
 
