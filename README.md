@@ -44,7 +44,8 @@ cd 3rdparty/mobileclip
 pip install -e . --no-deps
 cd ../..
 ```
-> The system currently defaults to `MobileCLIP-v1`, and all reported results are based on `v1`. Since August 2025, `MobileCLIP-v2` has been released, and the system also supports `v2`. You can set up the `v2` environment by following the instructions in [Apple’s MobileCLIP repository](https://github.com/apple/ml-mobileclip).
+> The system currently defaults to `MobileCLIP-v1`, and all reported results are based on `v1`.
+> Since August 2025, `MobileCLIP-v2` has been released, and the system also supports `v2`. You can set up the `v2` environment by following the instructions in [Apple’s MobileCLIP repository](https://github.com/apple/ml-mobileclip).
 
 ### 4. (Optional) Setup ROS 2 Environment
 Setting up ROS2 environment for ROS support and applications.
