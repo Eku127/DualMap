@@ -46,7 +46,7 @@ cd ../..
 ```
 > The system currently defaults to `MobileCLIP-v1`, and all reported results are based on `v1`. Since August 2025, `MobileCLIP-v2` has been released, and the system also supports `v2`. You can set up the `v2` environment by following the instructions in [Apple’s MobileCLIP repository](https://github.com/apple/ml-mobileclip).
 
-### (Optional) Setup ROS 2 Environment
+### 4. (Optional) Setup ROS 2 Environment
 Setting up ROS2 environment for ROS support and applications.
 We recommend [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html).
 Once installed, activate the environment:
@@ -59,7 +59,7 @@ source /opt/ros/humble/setup.bash
 
 > **ROS1 noetic** is also supported, you can setup the ROS 1 in Ubuntu 22.04 by follow [this guide](resources/doc/ros_communication.md).
 
-### (Optional) Setup Habitat Data Collector
+### 5. (Optional) Setup Habitat Data Collector
 
 [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector) is a tool built on top of the [Habitat-sim](https://github.com/facebookresearch/habitat-sim). It supports agent control, object manipulation, dataset and ROS2 bag recording, as well as navigation through external ROS2 topics. DualMap subscribes to live ROS2 topics from the collector for real-time mapping and language-guided querying, and publishes navigation trajectories for the agent to follow.
 
@@ -101,7 +101,7 @@ Follow the [iPhone Runner Guide](resources/doc/app_runner_record_3d.md) to get s
 
 We provide two prebuilt map examples for offline querying: one from iPhone data and one from Replica Room 0.
 
-Follow [Offline Query Guide](resources/doc/app_offline_query.md) to run the query application.
+Follow the [Offline Query Guide](resources/doc/app_offline_query.md) to run the query application.
 
 ### 🖼️ Visualization
 <p align="center">
