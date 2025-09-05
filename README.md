@@ -81,28 +81,27 @@ Follow the [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to arrang
 
 ### 🤖 Run with ROS
 
-DualMap supports input from both **ROS1** and **ROS2**.  
-You can run the system with **offline rosbags** or in **online mode** with real robots.
+DualMap supports input from both **ROS1** and **ROS2**. You can run the system with **offline rosbags** or in **online mode** with real robots.
 
-👉 Follow the [ROS Runner Guide](resources/doc/app_runner_ros.md) to get started with running DualMap using ROS1/ROS2 rosbags or live ROS streams.
+Follow the [ROS Runner Guide](resources/doc/app_runner_ros.md) to get started with running DualMap using ROS1/ROS2 rosbags or live ROS streams.
 
 ### 🕹️ Online Mapping and Navigation in Simulation
 
 DualMap supports **online** interactive mapping and object navigation in simulation via the [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector).
 
-👉 Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results in **Table III** in our paper.
+Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results in **Table III** in our paper.
 
 ### 📱 Run with iPhone
 
 DualMap supports **real-time data streaming** from the **Record3D** app on iPhone.
 
-👉 Follow the [iPhone Runner Guide](resources/doc/app_runner_record_3d.md) to get started with setting up Record3D, streaming data to DualMap, and mapping with your own iPhone!
+Follow the [iPhone Runner Guide](resources/doc/app_runner_record_3d.md) to get started with setting up Record3D, streaming data to DualMap, and mapping with your own iPhone!
 
 ### 🔍 Offline Map Query
 
 We provide two prebuilt map examples for offline querying: one from iPhone data and one from Replica Room 0.
 
-👉 Follow [Offline Query Guide](resources/doc/app_offline_query.md) to run the query application.
+Follow [Offline Query Guide](resources/doc/app_offline_query.md) to run the query application.
 
 ### 🖼️ Visualization
 <p align="center">
