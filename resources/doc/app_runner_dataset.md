@@ -102,6 +102,8 @@ The terminal screenshot of finishing the running will be like this:
     <img src="../image/app_dataset/runner_dataset_ok.png" width="80%">
 </p>
 
+Please checkout the `.log` file for all the running details. The **time decomposition** results are also included in the log file.
+
 ## Key Configurations
 
 📁 `config/base_config.yaml`
