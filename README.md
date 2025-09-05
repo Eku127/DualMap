@@ -16,11 +16,9 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## News
 
-**[2025.08]** Release [Online Mapping and Navigation Guide](#online-mapping-and-navigation-in-simulation) and [Run with iPhone Guide](#run-with-iphone).
+**[2025.08]** Paper accepted at the IROS 2025 Workshop on *Open World Navigation in Human-centric Environments*.
 
-**[2025.08]** Release [Run with Dataset Guide](#run-with-datasets) and [Run with ROS Guide](#run-with-ros).
-
-**[2025.06]** Release [Offline Query Guide](resources/doc/app_offline_query.md) and examples.
+**[2025.08]**  Full code released! 🎉 Welcome to use, share feedback, and contribute.
 
 ## Installation
 
@@ -46,6 +44,7 @@ cd 3rdparty/mobileclip
 pip install -e . --no-deps
 cd ../..
 ```
+> The system currently defaults to `MobileCLIP-v1`, and all reported results are based on `v1`. Since August 2025, `MobileCLIP-v2` has been released, and the system also supports `v2`. You can set up the `v2` environment by following the instructions in [Apple’s MobileCLIP repository](https://github.com/apple/ml-mobileclip).
 
 ### (Optional) Setup ROS 2 Environment
 Setting up ROS2 environment for ROS support and applications.
@@ -56,7 +55,7 @@ Once installed, activate the environment:
 source /opt/ros/humble/setup.bash
 ```
 
-> DualMap’s navigation functionality and real-world integration are based on ROS 2. Installation is strongly recommended.
+> DualMap’s navigation functionality and real-world integration are based on ROS 2. **Installation is strongly recommended**.
 
 > **ROS1 noetic** is also supported, you can setup the ROS 1 in Ubuntu 22.04 by follow [this guide](resources/doc/ros_communication.md).
 
@@ -68,7 +67,7 @@ source /opt/ros/humble/setup.bash
 
 
 ## Applications
-### Run with Datasets
+### 💾 Run with Datasets
 
 DualMap supports running with **offline datasets**. Currently supported datasets include:
 1. Replica Dataset  
@@ -78,32 +77,32 @@ DualMap supports running with **offline datasets**. Currently supported datasets
 
 👉 Follow [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to arrange datasets, run DualMap with these datasets and reproduce our offline mapping results in **Table II** in our paper.
 
-### Run with ROS
+### 🤖 Run with ROS
 
 DualMap supports input from both **ROS1** and **ROS2**.  
 You can run the system with **offline rosbags** or in **online mode** with real robots.
 
 👉 Follow the [ROS Runner Guide](resources/doc/app_runner_ros.md) to get started with running DualMap using ROS1/ROS2 rosbags or live ROS streams.
 
-### Online Mapping and Navigation in Simulation
+### 🕹️ Online Mapping and Navigation in Simulation
 
 DualMap supports **online** interactive mapping and object navigation in simulation via the [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector).
 
 👉 Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results in **Table III** in our paper.
 
-### Run with iPhone
+### 📱 Run with iPhone
 
 DualMap supports **real-time data streaming** from the **Record3D** app on iPhone.
 
 👉 Follow the [iPhone Runner Guide](resources/doc/app_runner_record_3d.md) to get started with setting up Record3D, streaming data to DualMap, and mapping with your own iPhone!
 
-### Offline Map Query
+### 🔍 Offline Map Query
 
 We provide two prebuilt map examples for offline querying: one from iPhone data and one from Replica Room 0.
 
 👉 Follow [Offline Query Guide](resources/doc/app_offline_query.md) to run the query application.
 
-### Visualization
+### 🖼️ Visualization
 <p align="center">
     <img src="resources/image/app_visual.jpg" width="100%">
 </p>
