@@ -16,7 +16,7 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## News
 
-**[2025.08]** Paper accepted at the IROS 2025 Workshop on *Open World Navigation in Human-centric Environments*.
+**[2025.08]** Paper accepted at the IROS 2025 Workshop on [*Open World Navigation in Human-centric Environments*](https://adacompnus.github.io/open-world-navigation-25/).
 
 **[2025.08]**  Full code released! 🎉 Welcome to use, share feedback, and contribute.
 
