@@ -75,7 +75,9 @@ DualMap supports running with **offline datasets**. Currently supported datasets
 3. TUM RGB-D Dataset  
 4. Self-collected data using [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector)  
 
-👉 Follow [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to arrange datasets, run DualMap with these datasets and reproduce our offline mapping results in **Table II** in our paper.
+For data collected from your own platform, you can organize it in a similar format to run the system.  
+
+Follow the [Dataset Runner Guide](resources/doc/app_runner_dataset.md) to arrange datasets, run DualMap with these datasets and reproduce our offline mapping results in **Table II** in our paper.
 
 ### 🤖 Run with ROS
 
