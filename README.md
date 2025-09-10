@@ -73,7 +73,7 @@ Here's a quick overview of the requirements for each application type:
 
 | Application | Conda Env | ROS1 | ROS2 | Habitat Data Collector |
 | :--- | :---: | :---: | :---: | :---: |
-| **Datasets / Query / iPhone** | ✓ | | | |
+| Datasets / Query / iPhone | ✓ | | | |
 | **ROS (Offline/Online)** | ✓ | ✓ | ✓ | |
 | **Online Sim (Mapping+Nav)** | ✓ | | ✓ | ✓ |
 * **ROS**: Please install either ROS1 or ROS2 based on your needs.
