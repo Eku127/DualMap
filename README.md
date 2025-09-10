@@ -68,6 +68,17 @@ source /opt/ros/humble/setup.bash
 
 
 ## Applications
+
+Here's a quick overview of the requirements for each application type:
+
+| Application | Conda Env | ROS1 | ROS2 | Habitat Data Collector |
+| :--- | :---: | :---: | :---: | :---: |
+| **Datasets / Query / iPhone** | ✓ | | | |
+| **ROS (Offline/Online)** | ✓ | ✓ | ✓ | |
+| **Online Sim (Mapping+Nav)** | ✓ | | ✓ | ✓ |
+* **ROS**: Please install either ROS1 or ROS2 based on your needs.
+* **Habitat Data Collector**: Currently, it only supports ROS2.
+
 ### 💾 Run with Datasets
 
 DualMap supports running with **offline datasets**. Currently supported datasets include:
@@ -90,7 +101,7 @@ Follow the [ROS Runner Guide](resources/doc/app_runner_ros.md) to get started wi
 
 DualMap supports **online** interactive mapping and object navigation in simulation via the [Habitat Data Collector](https://github.com/Eku127/habitat-data-collector).
 
-Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results in **Table III** in our paper.
+Follow the [Online Mapping and Navigation Guide](resources/doc/app_simulation.md) to get started with running DualMap in interactive simulation scenes and to reproduce the navigation results (both static and dynamic) in **Table III** in our paper.
 
 ### 📱 Run with iPhone
 
