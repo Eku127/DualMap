@@ -1,20 +1,20 @@
 # runner_record_3d.py
 
-import time
 import threading
-import cv2
-import numpy as np
-import hydra
-
+import time
 from collections import deque
 from threading import Event
+
+import cv2
+import hydra
+import numpy as np
 from omegaconf import DictConfig
+from record3d import Record3DStream
 from scipy.spatial.transform import Rotation as R
 
-from record3d import Record3DStream
 from dualmap.core import Dualmap
-from utils.types import DataInput
 from utils.time_utils import timing_context
+from utils.types import DataInput
 
 
 class DemoApp:
@@ -45,7 +45,9 @@ class DemoApp:
             print(f"\tID: {dev.product_id}\n\tUDID: {dev.udid}\n")
 
         if len(devs) <= dev_idx:
-            raise RuntimeError(f"Cannot connect to device #{dev_idx}, try a different index.")
+            raise RuntimeError(
+                f"Cannot connect to device #{dev_idx}, try a different index."
+            )
 
         self.session = Record3DStream()
         self.session.on_new_frame = self.on_new_frame
@@ -53,7 +55,9 @@ class DemoApp:
         self.session.connect(devs[dev_idx])
 
     def get_intrinsic_matrix(self, coeffs):
-        return np.array([[coeffs.fx, 0, coeffs.tx], [0, coeffs.fy, coeffs.ty], [0, 0, 1]])
+        return np.array(
+            [[coeffs.fx, 0, coeffs.tx], [0, coeffs.fy, coeffs.ty], [0, 0, 1]]
+        )
 
     def start_processing_stream(self):
         while True:
@@ -78,14 +82,16 @@ class DemoApp:
 
             # Rotate world frame: +90 deg around X
             T_fix = np.eye(4)
-            T_fix[:3, :3] = R.from_euler('x', 90, degrees=True).as_matrix()
+            T_fix[:3, :3] = R.from_euler("x", 90, degrees=True).as_matrix()
             transformation_matrix = T_fix @ T
 
             if self.session.get_device_type() == self.DEVICE_TYPE__TRUEDEPTH:
                 depth = cv2.flip(depth, 1)
                 rgb = cv2.flip(rgb, 1)
 
-            depth_resized = cv2.resize(depth, (rgb.shape[1], rgb.shape[0]), interpolation=cv2.INTER_NEAREST)
+            depth_resized = cv2.resize(
+                depth, (rgb.shape[1], rgb.shape[0]), interpolation=cv2.INTER_NEAREST
+            )
             timestamp = time.time()
 
             data_input = DataInput(
@@ -95,7 +101,7 @@ class DemoApp:
                 depth=depth_resized,
                 color_name=str(timestamp),
                 intrinsics=intrinsics,
-                pose=transformation_matrix
+                pose=transformation_matrix,
             )
 
             self.synced_data_queue.append(data_input)
@@ -104,7 +110,9 @@ class DemoApp:
 
     def start_processing_in_thread(self):
         if self.processing_thread is None or not self.processing_thread.is_alive():
-            self.processing_thread = threading.Thread(target=self.start_processing_stream, daemon=True)
+            self.processing_thread = threading.Thread(
+                target=self.start_processing_stream, daemon=True
+            )
             self.processing_thread.start()
             print("Stream processing thread started")
         else:

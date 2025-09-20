@@ -1,13 +1,13 @@
-import numpy as np
 import struct
 import time
-from geometry_msgs.msg import PoseStamped
-from nav_msgs.msg import Odometry
-from nav_msgs.msg import Path
-from sensor_msgs.msg import PointCloud2, PointField
-from std_msgs.msg import Header
-from sensor_msgs.msg import Image
+
+import numpy as np
 from cv_bridge import CvBridge
+from geometry_msgs.msg import PoseStamped
+from nav_msgs.msg import Odometry, Path
+from sensor_msgs.msg import Image, PointCloud2, PointField
+from std_msgs.msg import Header
+
 
 class ROSPublisher:
     def __init__(self, node, cfg):
@@ -16,37 +16,49 @@ class ROSPublisher:
         self.bridge = CvBridge()
 
         # Create all required publishers
-        self.global_path_publisher = node.create_publisher(Path, '/global_path', 10)
-        self.local_path_publisher = node.create_publisher(Path, '/local_path', 10)
-        self.action_path_publisher = node.create_publisher(Path, '/action_path', 10)
+        self.global_path_publisher = node.create_publisher(Path, "/global_path", 10)
+        self.local_path_publisher = node.create_publisher(Path, "/local_path", 10)
+        self.action_path_publisher = node.create_publisher(Path, "/action_path", 10)
 
-        self.image_publisher = node.create_publisher(Image, '/annotated_image', 10)
-        self.fs_image_publisher = node.create_publisher(Image, '/fastsam_image', 10)
-        self.fs_image_after_publisher = node.create_publisher(Image, '/fastsam_image_after', 10)
+        self.image_publisher = node.create_publisher(Image, "/annotated_image", 10)
+        self.fs_image_publisher = node.create_publisher(Image, "/fastsam_image", 10)
+        self.fs_image_after_publisher = node.create_publisher(
+            Image, "/fastsam_image_after", 10
+        )
 
-        self.pose_publisher = node.create_publisher(Odometry, '/odom', 10)
+        self.pose_publisher = node.create_publisher(Odometry, "/odom", 10)
 
-        self.local_rgb_publisher = node.create_publisher(PointCloud2, '/local_map/rgb', 10)
-        self.local_sem_publisher = node.create_publisher(PointCloud2, '/local_map/semantic', 10)
+        self.local_rgb_publisher = node.create_publisher(
+            PointCloud2, "/local_map/rgb", 10
+        )
+        self.local_sem_publisher = node.create_publisher(
+            PointCloud2, "/local_map/semantic", 10
+        )
 
-        self.global_rgb_publisher = node.create_publisher(PointCloud2, '/global_map/rgb', 10)
-        self.global_sem_publisher = node.create_publisher(PointCloud2, '/global_map/semantic', 10)
+        self.global_rgb_publisher = node.create_publisher(
+            PointCloud2, "/global_map/rgb", 10
+        )
+        self.global_sem_publisher = node.create_publisher(
+            PointCloud2, "/global_map/semantic", 10
+        )
 
     def publish_all(self, dualmap):
         """
         Publish all messages: paths, images, poses, and point clouds.
         """
         # 1. Publish paths
-        self._publish_path(dualmap.curr_global_path, 'global')
-        self._publish_path(dualmap.curr_local_path, 'local')
-        self._publish_path(dualmap.action_path, 'action')
+        self._publish_path(dualmap.curr_global_path, "global")
+        self._publish_path(dualmap.curr_local_path, "local")
+        self._publish_path(dualmap.action_path, "action")
 
         if self.cfg.use_rviz:
 
             # 2. Publish images
-            self._publish_image(dualmap.detector.annotated_image, 'annotated')
-            self._publish_image(dualmap.detector.annotated_image_fs, 'fastsam')
-            self._publish_image(dualmap.detector.annotated_image_fs_after, 'fastsam_after')
+            self._publish_image(dualmap.detector.annotated_image, "annotated")
+            self._publish_image(dualmap.detector.annotated_image_fs, "fastsam")
+            self._publish_image(
+                dualmap.detector.annotated_image_fs_after, "fastsam_after"
+            )
 
             # 3. Publish pose
             self._publish_pose(dualmap.curr_pose)
@@ -54,11 +66,17 @@ class ROSPublisher:
             # 4. Publish local map (RGB point cloud + semantic point cloud)
             if len(dualmap.local_map_manager.local_map):
                 start_time = time.time()
-                self._publish_local_map(dualmap.local_map_manager, dualmap.visualizer, publish_rgb=False)
-                print(f"Publishing local map took {time.time() - start_time:.2f} seconds.")
+                self._publish_local_map(
+                    dualmap.local_map_manager, dualmap.visualizer, publish_rgb=False
+                )
+                print(
+                    f"Publishing local map took {time.time() - start_time:.2f} seconds."
+                )
 
             if len(dualmap.global_map_manager.global_map):
-                self._publish_global_map(dualmap.global_map_manager, dualmap.visualizer, publish_rgb=False)
+                self._publish_global_map(
+                    dualmap.global_map_manager, dualmap.visualizer, publish_rgb=False
+                )
 
     def _publish_path(self, path, path_type):
         if path is None:
@@ -66,7 +84,7 @@ class ROSPublisher:
 
         path_msg = Path()
         path_msg.header.stamp = self.node.get_clock().now().to_msg()
-        path_msg.header.frame_id = 'map'
+        path_msg.header.frame_id = "map"
 
         for pos in path:
             pose_stamped = PoseStamped()
@@ -78,9 +96,9 @@ class ROSPublisher:
             path_msg.poses.append(pose_stamped)
 
         publisher = {
-            'global': self.global_path_publisher,
-            'local': self.local_path_publisher,
-            'action': self.action_path_publisher
+            "global": self.global_path_publisher,
+            "local": self.local_path_publisher,
+            "action": self.action_path_publisher,
         }.get(path_type, None)
 
         if publisher:
@@ -93,9 +111,9 @@ class ROSPublisher:
 
         ros_image = self.bridge.cv2_to_imgmsg(image, encoding="bgr8")
         publisher = {
-            'annotated': self.image_publisher,
-            'fastsam': self.fs_image_publisher,
-            'fastsam_after': self.fs_image_after_publisher
+            "annotated": self.image_publisher,
+            "fastsam": self.fs_image_publisher,
+            "fastsam_after": self.fs_image_after_publisher,
         }.get(image_type, None)
 
         if publisher:
@@ -144,7 +162,9 @@ class ROSPublisher:
             obj_name = visualizer.obj_classes.get_classes_arr()[local_obj.class_id]
             positions = np.asarray(local_obj.pcd.points)
             colors = (np.asarray(local_obj.pcd.colors) * 255).astype(np.uint8)
-            curr_obj_color = np.array(visualizer.obj_classes.get_class_color(obj_name)) * 255
+            curr_obj_color = (
+                np.array(visualizer.obj_classes.get_class_color(obj_name)) * 255
+            )
             curr_obj_color = curr_obj_color.astype(np.uint8)
             semantic_colors = np.tile(curr_obj_color, (positions.shape[0], 1))
 
@@ -160,9 +180,13 @@ class ROSPublisher:
         all_semantic_colors = np.vstack(all_semantic_colors)
 
         if publish_rgb:
-            self.publish_pointcloud(all_positions, all_rgb_colors, self.local_rgb_publisher, "map")
+            self.publish_pointcloud(
+                all_positions, all_rgb_colors, self.local_rgb_publisher, "map"
+            )
 
-        self.publish_pointcloud(all_positions, all_semantic_colors, self.local_sem_publisher, "map")
+        self.publish_pointcloud(
+            all_positions, all_semantic_colors, self.local_sem_publisher, "map"
+        )
 
     def _publish_global_map(self, global_map_manager, visualizer, publish_rgb=True):
         all_positions = []
@@ -173,7 +197,9 @@ class ROSPublisher:
             obj_name = visualizer.obj_classes.get_classes_arr()[global_obj.class_id]
             positions = np.asarray(global_obj.pcd_2d.points)
             colors = (np.asarray(global_obj.pcd_2d.colors) * 255).astype(np.uint8)
-            curr_obj_color = np.array(visualizer.obj_classes.get_class_color(obj_name)) * 255
+            curr_obj_color = (
+                np.array(visualizer.obj_classes.get_class_color(obj_name)) * 255
+            )
             curr_obj_color = curr_obj_color.astype(np.uint8)
             semantic_colors = np.tile(curr_obj_color, (positions.shape[0], 1))
 
@@ -189,9 +215,13 @@ class ROSPublisher:
         all_semantic_colors = np.vstack(all_semantic_colors)
 
         if publish_rgb:
-            self.publish_pointcloud(all_positions, all_rgb_colors, self.global_rgb_publisher, "map")
+            self.publish_pointcloud(
+                all_positions, all_rgb_colors, self.global_rgb_publisher, "map"
+            )
 
-        self.publish_pointcloud(all_positions, all_semantic_colors, self.global_sem_publisher, "map")
+        self.publish_pointcloud(
+            all_positions, all_semantic_colors, self.global_sem_publisher, "map"
+        )
 
     def publish_pointcloud(self, points, colors, publisher, frame_id):
         """
@@ -212,10 +242,10 @@ class ROSPublisher:
 
         # PointCloud2 field definition
         fields = [
-            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
-            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
-            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
-            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1)
+            PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name="rgb", offset=12, datatype=PointField.UINT32, count=1),
         ]
 
         # Message header

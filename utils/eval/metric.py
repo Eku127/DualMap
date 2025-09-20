@@ -7,8 +7,7 @@ def compute_per_class_IoU(eval_segm, gt_segm, ignore=[]):
 
     union_cl, num_union_cl = union_classes(eval_segm, gt_segm)
 
-    eval_mask, gt_mask = extract_both_masks(
-        eval_segm, gt_segm, union_cl, num_union_cl)
+    eval_mask, gt_mask = extract_both_masks(eval_segm, gt_segm, union_cl, num_union_cl)
 
     IoU = list([0]) * num_union_cl
 
@@ -109,8 +108,7 @@ def compute_mAcc(eval_segm, gt_segm, ignore=[]):
     :param ignore: List of classes to ignore
     :return: Mean Accuracy
     """
-    per_class_accuracies, _ = compute_per_class_accuracy(
-        eval_segm, gt_segm, ignore)
+    per_class_accuracies, _ = compute_per_class_accuracy(eval_segm, gt_segm, ignore)
 
     # Filter out classes to ignore
     valid_accuracies = [acc for acc in per_class_accuracies if acc is not None]
@@ -124,7 +122,7 @@ def compute_mAcc(eval_segm, gt_segm, ignore=[]):
 
 
 def extract_both_masks(eval_segm, gt_segm, cl, n_cl):
-    """"
+    """ "
     Extracts the masks of the segmentation
     :param eval_segm: 2D array, predicted segmentation
     :param gt_segm: 2D array, ground truth segmentation

@@ -33,9 +33,14 @@ class RunnerROSBase:
 
     def load_intrinsics(self, dataset_cfg):
         """Load camera intrinsics from config file."""
-        intrinsic_cfg = dataset_cfg.get('intrinsic', None)
+        intrinsic_cfg = dataset_cfg.get("intrinsic", None)
         if intrinsic_cfg:
-            fx, fy, cx, cy = intrinsic_cfg['fx'], intrinsic_cfg['fy'], intrinsic_cfg['cx'], intrinsic_cfg['cy']
+            fx, fy, cx, cy = (
+                intrinsic_cfg["fx"],
+                intrinsic_cfg["fy"],
+                intrinsic_cfg["cx"],
+                intrinsic_cfg["cy"],
+            )
             self.logger.warning("[Main] Loaded intrinsics from config.")
             return np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
         self.logger.warning("[Main] No intrinsics provided.")
@@ -43,13 +48,15 @@ class RunnerROSBase:
 
     def load_extrinsics(self, dataset_cfg):
         """Load camera extrinsics from config file."""
-        extrinsic_cfg = dataset_cfg.get('extrinsics', None)
+        extrinsic_cfg = dataset_cfg.get("extrinsics", None)
         if extrinsic_cfg:
             matrix = np.array(extrinsic_cfg)
             if matrix.shape == (4, 4):
                 self.logger.warning("[Main] Loaded extrinsics from config.")
                 return matrix
-        self.logger.warning("[Main] No valid extrinsics provided. Using identity matrix.")
+        self.logger.warning(
+            "[Main] No valid extrinsics provided. Using identity matrix."
+        )
         return np.eye(4)
 
     def create_world_transform(self):
@@ -58,9 +65,23 @@ class RunnerROSBase:
         pitch = np.radians(self.cfg.world_pitch)
         yaw = np.radians(self.cfg.world_yaw)
 
-        Rx = np.array([[1, 0, 0], [0, np.cos(roll), -np.sin(roll)], [0, np.sin(roll), np.cos(roll)]])
-        Ry = np.array([[np.cos(pitch), 0, np.sin(pitch)], [0, 1, 0], [-np.sin(pitch), 0, np.cos(pitch)]])
-        Rz = np.array([[np.cos(yaw), -np.sin(yaw), 0], [np.sin(yaw), np.cos(yaw), 0], [0, 0, 1]])
+        Rx = np.array(
+            [
+                [1, 0, 0],
+                [0, np.cos(roll), -np.sin(roll)],
+                [0, np.sin(roll), np.cos(roll)],
+            ]
+        )
+        Ry = np.array(
+            [
+                [np.cos(pitch), 0, np.sin(pitch)],
+                [0, 1, 0],
+                [-np.sin(pitch), 0, np.cos(pitch)],
+            ]
+        )
+        Rz = np.array(
+            [[np.cos(yaw), -np.sin(yaw), 0], [np.sin(yaw), np.cos(yaw), 0], [0, 0, 1]]
+        )
 
         R_combined = Rz @ Ry @ Rx
         T = np.eye(4)
@@ -98,7 +119,7 @@ class RunnerROSBase:
             depth=depth_img,
             color_name=str(timestamp),
             intrinsics=self.intrinsics,
-            pose=transformed_pose
+            pose=transformed_pose,
         )
         self.synced_data_queue.append(data_input)
         return data_input
@@ -115,7 +136,9 @@ class RunnerROSBase:
             last_time = self.last_message_time
             if self.cfg.use_end_process and last_time is not None:
                 if current_time - last_time > 20.0:
-                    self.logger.warning("[Main] No new data received. Entering end process.")
+                    self.logger.warning(
+                        "[Main] No new data received. Entering end process."
+                    )
                     self.dualmap.end_process()
                     self.shutdown_requested = True
                     return
@@ -125,11 +148,15 @@ class RunnerROSBase:
 
         data_input.idx = self.dualmap.get_keyframe_idx()
 
-        self.logger.info("[Main] ============================================================")
+        self.logger.info(
+            "[Main] ============================================================"
+        )
         with timing_context("Time Per Frame", self.dualmap):
             if self.cfg.use_parallel:
                 self.dualmap.parallel_process(data_input)
             else:
                 self.dualmap.sequential_process(data_input)
 
-        self.logger.info(f"[Main] Processing keyframe {data_input.idx} took {time.time() - data_input.time_stamp:.2f} seconds.")
+        self.logger.info(
+            f"[Main] Processing keyframe {data_input.idx} took {time.time() - data_input.time_stamp:.2f} seconds."
+        )

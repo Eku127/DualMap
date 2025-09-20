@@ -8,16 +8,16 @@ import cv2
 import numpy as np
 import rclpy
 from cv_bridge import CvBridge
-from message_filters import Subscriber, ApproximateTimeSynchronizer
+from message_filters import ApproximateTimeSynchronizer, Subscriber
 from nav_msgs.msg import Odometry
 from omegaconf import OmegaConf
 from rclpy.node import Node
-from sensor_msgs.msg import Image, CameraInfo, CompressedImage
+from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 
-from dualmap.core import Dualmap
-from utils.logging_helper import setup_logging
 from applications.utils.ros_publisher import ROSPublisher
 from applications.utils.runner_ros_base import RunnerROSBase
+from dualmap.core import Dualmap
+from utils.logging_helper import setup_logging
 
 
 class RunnerROS2(Node, RunnerROSBase):
@@ -25,8 +25,9 @@ class RunnerROS2(Node, RunnerROSBase):
     ROS2-specific runner. Uses rclpy and ROS2 message_filters for synchronization,
     subscription, and publishing.
     """
+
     def __init__(self, cfg):
-        Node.__init__(self, 'runner_ros')
+        Node.__init__(self, "runner_ros")
         setup_logging(output_path=cfg.output_path, config_path=cfg.logging_config)
         self.logger = logging.getLogger(__name__)
         self.logger.info("[Runner ROS2]")
@@ -44,8 +45,12 @@ class RunnerROS2(Node, RunnerROSBase):
         # Topic Subscribers
         if self.cfg.use_compressed_topic:
             self.logger.warning("[Main] Using compressed topics.")
-            self.rgb_sub = Subscriber(self, CompressedImage, self.dataset_cfg.ros_topics.rgb)
-            self.depth_sub = Subscriber(self, CompressedImage, self.dataset_cfg.ros_topics.depth)
+            self.rgb_sub = Subscriber(
+                self, CompressedImage, self.dataset_cfg.ros_topics.rgb
+            )
+            self.depth_sub = Subscriber(
+                self, CompressedImage, self.dataset_cfg.ros_topics.depth
+            )
         else:
             self.logger.warning("[Main] Using uncompressed topics.")
             self.rgb_sub = Subscriber(self, Image, self.dataset_cfg.ros_topics.rgb)
@@ -57,12 +62,17 @@ class RunnerROS2(Node, RunnerROSBase):
         self.sync = ApproximateTimeSynchronizer(
             [self.rgb_sub, self.depth_sub, self.odom_sub],
             queue_size=10,
-            slop=self.cfg.sync_threshold
+            slop=self.cfg.sync_threshold,
         )
         self.sync.registerCallback(self.synced_callback)
 
         # CameraInfo fallback
-        self.create_subscription(CameraInfo, self.dataset_cfg.ros_topics.camera_info, self.camera_info_callback, 10)
+        self.create_subscription(
+            CameraInfo,
+            self.dataset_cfg.ros_topics.camera_info,
+            self.camera_info_callback,
+            10,
+        )
 
         # Publisher and timer
         self.publisher = ROSPublisher(self, cfg)
@@ -79,23 +89,27 @@ class RunnerROS2(Node, RunnerROSBase):
             rgb_img = self.decompress_image(rgb_msg.data, is_depth=False)
             depth_img = self.decompress_image(depth_msg.data, is_depth=True)
         else:
-            rgb_img = self.bridge.imgmsg_to_cv2(rgb_msg, desired_encoding='rgb8')
-            depth_img = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding='16UC1')
+            rgb_img = self.bridge.imgmsg_to_cv2(rgb_msg, desired_encoding="rgb8")
+            depth_img = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding="16UC1")
 
         depth_img = depth_img.astype(np.float32) / 1000.0
         depth_img = np.expand_dims(depth_img, axis=-1)
 
-        translation = np.array([
-            odom_msg.pose.pose.position.x,
-            odom_msg.pose.pose.position.y,
-            odom_msg.pose.pose.position.z
-        ])
-        quaternion = np.array([
-            odom_msg.pose.pose.orientation.x,
-            odom_msg.pose.pose.orientation.y,
-            odom_msg.pose.pose.orientation.z,
-            odom_msg.pose.pose.orientation.w
-        ])
+        translation = np.array(
+            [
+                odom_msg.pose.pose.position.x,
+                odom_msg.pose.pose.position.y,
+                odom_msg.pose.pose.position.z,
+            ]
+        )
+        quaternion = np.array(
+            [
+                odom_msg.pose.pose.orientation.x,
+                odom_msg.pose.pose.orientation.y,
+                odom_msg.pose.pose.orientation.z,
+                odom_msg.pose.pose.orientation.w,
+            ]
+        )
 
         pose_matrix = self.build_pose_matrix(translation, quaternion)
         self.push_data(rgb_img, depth_img, pose_matrix, timestamp)

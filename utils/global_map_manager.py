@@ -1,8 +1,8 @@
-import os
-import shutil
 import json
-import pdb
 import logging
+import os
+import pdb
+import shutil
 from pathlib import Path
 from typing import List
 
@@ -10,13 +10,14 @@ import numpy as np
 import open3d as o3d
 from omegaconf import DictConfig
 
-from utils.object import GlobalObject
-from utils.types import Observation, GoalMode
 from utils.base_map_manager import BaseMapManager
-from utils.navigation_helper import NavigationGraph, LayoutMap
+from utils.navigation_helper import LayoutMap, NavigationGraph
+from utils.object import GlobalObject
+from utils.types import GoalMode, Observation
 
 # Set up the module-level logger
 logger = logging.getLogger(__name__)
+
 
 class GlobalMapManager(BaseMapManager):
     def __init__(
@@ -35,13 +36,15 @@ class GlobalMapManager(BaseMapManager):
 
         # For navigation --> NavigationGraph
         self.nav_graph = None
-        self.inquiry = ''
+        self.inquiry = ""
         self.action_path = None
         self.has_action_path = False
         self.lost_and_found = False
         # layout information --> LayoutMap
         layout_resolution = self.cfg.layout_voxel_size * 2
-        self.layout_map = LayoutMap(cfg, resolution=layout_resolution, percentile=90, min_area=5, kernel_size=3)
+        self.layout_map = LayoutMap(
+            cfg, resolution=layout_resolution, percentile=90, min_area=5, kernel_size=3
+        )
 
         # pass to the local map manager for inquiry
         self.global_candidate_bbox = None
@@ -51,7 +54,7 @@ class GlobalMapManager(BaseMapManager):
         self.ignore_global_obj_list = []
 
         self.best_candidate_name = None
-        
+
         self.preload_path_ok = False
         self.vis_preload_wall_ok = False
 
@@ -62,12 +65,11 @@ class GlobalMapManager(BaseMapManager):
         self.layout_map.set_layout_pcd(layout_pcd)
 
         if self.layout_map.wall_pcd is None:
-            self.layout_map.extract_wall_pcd(num_samples_per_grid=10, z_value=self.cfg.floor_height)
+            self.layout_map.extract_wall_pcd(
+                num_samples_per_grid=10, z_value=self.cfg.floor_height
+            )
 
-    def process_observations(
-        self,
-        curr_observations: List[Observation]
-    ) -> None:
+    def process_observations(self, curr_observations: List[Observation]) -> None:
 
         # for debug, show the preload global map
         if len(self.global_map) > 0 and self.cfg.use_rerun:
@@ -92,7 +94,7 @@ class GlobalMapManager(BaseMapManager):
 
             if self.cfg.use_rerun:
                 self.visualize_global_map()
-            
+
             return
 
         # if not the first, then do the global matching
@@ -110,13 +112,11 @@ class GlobalMapManager(BaseMapManager):
         self.update_global_map(curr_observations)
         # visualize the global map
 
-
         if self.cfg.use_rerun:
             self.visualize_global_map()
 
     def init_from_observation(
-        self,
-        curr_observations: List[Observation]
+        self, curr_observations: List[Observation]
     ) -> List[GlobalObject]:
 
         # global_map = []
@@ -132,10 +132,7 @@ class GlobalMapManager(BaseMapManager):
 
         return self.global_map
 
-    def update_global_map(
-        self,
-        curr_observations: List[Observation]
-    ) -> None:
+    def update_global_map(self, curr_observations: List[Observation]) -> None:
         # update the local map with the lateset observation
         for obs in curr_observations:
             if obs.matched_obj_idx == -1:
@@ -153,9 +150,7 @@ class GlobalMapManager(BaseMapManager):
 
         pass
 
-    def save_map(
-        self
-    ) -> None:
+    def save_map(self) -> None:
         # get the directory
         save_dir = self.cfg.map_save_path
 
@@ -183,11 +178,15 @@ class GlobalMapManager(BaseMapManager):
             logger.info(f"[GlobalMap] Using preload global map path: {load_dir}")
         else:
             load_dir = self.cfg.map_save_path
-            logger.info(f"[GlobalMap] Preload path not found. Using default map save path: {load_dir}")
+            logger.info(
+                f"[GlobalMap] Preload path not found. Using default map save path: {load_dir}"
+            )
 
         # Check if directory exists
         if not os.path.exists(load_dir):
-            logger.warning(f"[GlobalMap] Directory {load_dir} does not exist. Skipping map loading.")
+            logger.warning(
+                f"[GlobalMap] Directory {load_dir} does not exist. Skipping map loading."
+            )
             return
 
         # Get .pkl files in directory
@@ -195,7 +194,9 @@ class GlobalMapManager(BaseMapManager):
 
         # Skip loading if no .pkl files
         if not pkl_files:
-            logger.warning(f"[GlobalMap] No .pkl files found in {load_dir}. Skipping map loading.")
+            logger.warning(
+                f"[GlobalMap] No .pkl files found in {load_dir}. Skipping map loading."
+            )
             return
 
         # Load .pkl files into global map
@@ -218,7 +219,9 @@ class GlobalMapManager(BaseMapManager):
 
             self.global_map.append(loaded_obj)
 
-        logger.info(f"[GlobalMap] Successfully preloaded {len(self.global_map)} objects")
+        logger.info(
+            f"[GlobalMap] Successfully preloaded {len(self.global_map)} objects"
+        )
         self.is_initialized = True
 
     def load_wall(self) -> None:
@@ -227,7 +230,9 @@ class GlobalMapManager(BaseMapManager):
             logger.info(f"[GlobalMap] Using preload wall path: {load_dir}")
         else:
             load_dir = self.cfg.map_save_path
-            logger.info(f"[GlobalMap] Preload wall path not found. Using default map save path: {load_dir}")
+            logger.info(
+                f"[GlobalMap] Preload wall path not found. Using default map save path: {load_dir}"
+            )
 
         wall_pcd_path = os.path.join(load_dir, "wall.pcd")
 
@@ -249,28 +254,26 @@ class GlobalMapManager(BaseMapManager):
 
         # Save to class attribute
         self.layout_map.wall_pcd = wall_pcd
-    
+
     def read_json_files(self, directory):
         data_records = {}
 
         # Get all JSON files in directory
-        json_files = [f for f in os.listdir(directory) if f.endswith('.json')]
+        json_files = [f for f in os.listdir(directory) if f.endswith(".json")]
 
         for json_file in json_files:
             file_path = os.path.join(directory, json_file)
-            
+
             # Read JSON file
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            
+
             # Store data
             data_records[json_file] = data
 
         return data_records
 
-    def visualize_global_map(
-        self
-    ) -> None:
+    def visualize_global_map(self) -> None:
         new_logged_entities = set()
 
         path_radii = self.cfg.path_radii
@@ -283,17 +286,16 @@ class GlobalMapManager(BaseMapManager):
                     self.visualizer.Points3D(
                         np.asarray(self.layout_map.wall_pcd.points),
                         colors=[(169, 169, 169)],
-                        radii = [0.01]
-                    )
+                        radii=[0.01],
+                    ),
                 )
                 self.vis_preload_wall_ok = True
-
 
         if self.preload_path_ok is False and self.cfg.use_given_path:
             json_data = self.read_json_files(self.cfg.given_path_dir)
             # traverse all the json data
             for key, value in json_data.items():
-                idx = key.split('.')[0]
+                idx = key.split(".")[0]
                 path_points = np.array(value)
 
                 path_color = self.cfg.global_path_color
@@ -311,19 +313,23 @@ class GlobalMapManager(BaseMapManager):
                 self.visualizer.log(
                     preload_path_entity,
                     self.visualizer.LineStrips3D(
-                        [path_points.tolist()],  # Convert the list of points to the required format
+                        [
+                            path_points.tolist()
+                        ],  # Convert the list of points to the required format
                         colors=[path_color],  # Green color for the path
-                        radii=[path_radii]
-                    )
+                        radii=[path_radii],
+                    ),
                 )
                 # new_logged_entities.add(global_path_entity)
-            
+
             self.preload_path_ok = True
 
         for global_obj in self.global_map:
             base_entity_path = "global/objects"
 
-            obj_name = self.visualizer.obj_classes.get_classes_arr()[global_obj.class_id]
+            obj_name = self.visualizer.obj_classes.get_classes_arr()[
+                global_obj.class_id
+            ]
             positions = np.asarray(global_obj.pcd_2d.points)
             colors = np.asarray(global_obj.pcd_2d.colors) * 255
             colors = colors.astype(np.uint8)
@@ -355,7 +361,7 @@ class GlobalMapManager(BaseMapManager):
                 ),
                 self.visualizer.AnyValues(
                     uuid=str(global_obj.uid),
-                )
+                ),
             )
 
             bbox_2d = global_obj.bbox_2d
@@ -376,7 +382,7 @@ class GlobalMapManager(BaseMapManager):
                 self.visualizer.AnyValues(
                     uuid=str(global_obj.uid),
                     related_num=related_num,
-                )
+                ),
             )
 
             # log related bbox
@@ -397,7 +403,9 @@ class GlobalMapManager(BaseMapManager):
                 obj_name = self.visualizer.obj_classes.get_classes_arr()[class_id]
                 obj_color = self.visualizer.obj_classes.get_class_color(obj_name)
 
-                related_bbox_entity = base_entity_path + "/related_bbox" + f"/{global_obj.uid}_{i}"
+                related_bbox_entity = (
+                    base_entity_path + "/related_bbox" + f"/{global_obj.uid}_{i}"
+                )
                 self.visualizer.log(
                     related_bbox_entity,
                     # entity_path + "/bbox",
@@ -407,16 +415,20 @@ class GlobalMapManager(BaseMapManager):
                         colors=[obj_color],
                         fill_mode="solid",
                     ),
-                    self.visualizer.AnyValues(
-                        uuid=str(global_obj.uid)
-                    )
+                    self.visualizer.AnyValues(uuid=str(global_obj.uid)),
                 )
 
-                center_tilted = [center[0], center[1], self.cfg.related_height + 0.1]  # Increase Z axis value
+                center_tilted = [
+                    center[0],
+                    center[1],
+                    self.cfg.related_height + 0.1,
+                ]  # Increase Z axis value
                 s = 0.01
                 title_half_size = np.array([s, s, s])
 
-                related_title_entity = base_entity_path + "/related_title" + f"/{global_obj.uid}_{i}"
+                related_title_entity = (
+                    base_entity_path + "/related_title" + f"/{global_obj.uid}_{i}"
+                )
                 self.visualizer.log(
                     related_title_entity,
                     # entity_path + "/bbox",
@@ -427,12 +439,12 @@ class GlobalMapManager(BaseMapManager):
                         labels=[f"{obj_name}"],
                         fill_mode="solid",
                     ),
-                    self.visualizer.AnyValues(
-                        uuid=str(global_obj.uid)
-                    )
+                    self.visualizer.AnyValues(uuid=str(global_obj.uid)),
                 )
 
-                related_line_entity = base_entity_path + "/related_line" + f"/{global_obj.uid}_{i}"
+                related_line_entity = (
+                    base_entity_path + "/related_line" + f"/{global_obj.uid}_{i}"
+                )
 
                 self.visualizer.log(
                     related_line_entity,
@@ -446,7 +458,7 @@ class GlobalMapManager(BaseMapManager):
                         ],
                         colors=[obj_color],
                         radii=[0.01],
-                    )
+                    ),
                 )
 
                 new_logged_entities.add(related_bbox_entity)
@@ -468,9 +480,7 @@ class GlobalMapManager(BaseMapManager):
                         half_sizes=half_sizes,
                         colors=[curr_obj_color],
                     ),
-                    self.visualizer.AnyValues(
-                        uuid=str(global_obj.uid)
-                    )
+                    self.visualizer.AnyValues(uuid=str(global_obj.uid)),
                 )
                 new_logged_entities.add(bbox_3d_entity)
 
@@ -493,10 +503,12 @@ class GlobalMapManager(BaseMapManager):
             self.visualizer.log(
                 global_path_entity,
                 self.visualizer.LineStrips3D(
-                    [path_points.tolist()],  # Convert the list of points to the required format
+                    [
+                        path_points.tolist()
+                    ],  # Convert the list of points to the required format
                     colors=[path_color],  # Green color for the path
-                    radii=[path_radii]
-                )
+                    radii=[path_radii],
+                ),
             )
             new_logged_entities.add(global_path_entity)
 
@@ -509,10 +521,12 @@ class GlobalMapManager(BaseMapManager):
             self.visualizer.log(
                 action_path_entity,
                 self.visualizer.LineStrips3D(
-                    [path_points.tolist()],  # Convert the list of points to the required format
+                    [
+                        path_points.tolist()
+                    ],  # Convert the list of points to the required format
                     colors=[self.cfg.action_path_color],
-                    radii=[path_radii]
-                )
+                    radii=[path_radii],
+                ),
             )
             new_logged_entities.add(action_path_entity)
 
@@ -521,8 +535,7 @@ class GlobalMapManager(BaseMapManager):
                 if entity_path not in new_logged_entities:
                     # logger.info(f"Clearing {entity_path}")
                     self.visualizer.log(
-                        entity_path,
-                        self.visualizer.Clear(recursive=True)
+                        entity_path, self.visualizer.Clear(recursive=True)
                     )
         self.prev_entities = new_logged_entities
 
@@ -619,11 +632,15 @@ class GlobalMapManager(BaseMapManager):
             goal_2d = nav_graph.calculate_pos_2d(goal_3d)
             # check if is in free space, actually the goal is not
             if not nav_graph.free_space_check(goal_2d) is False:
-                snapped_goal = nav_graph.snap_to_free_space_directional(goal_2d, start_position, nav_graph.free_space)
+                snapped_goal = nav_graph.snap_to_free_space_directional(
+                    goal_2d, start_position, nav_graph.free_space
+                )
                 # nearest_node = nav_graph.find_nearest_node(goal_2d)
 
                 if self.cfg.use_directional_path:
-                    nearest_node = nav_graph.find_nearest_node(snapped_goal, start_position)
+                    nearest_node = nav_graph.find_nearest_node(
+                        snapped_goal, start_position
+                    )
                 else:
                     nearest_node = nav_graph.find_nearest_node(goal_2d)
 
@@ -649,7 +666,7 @@ class GlobalMapManager(BaseMapManager):
 
         cos_sim = []
 
-        obj_list = []   
+        obj_list = []
 
         # Loop through each object in the global map to calculate cosine similarity
         for obj in self.global_map:
@@ -660,7 +677,9 @@ class GlobalMapManager(BaseMapManager):
 
             obj.nav_goal = False
             obj_feat = torch.from_numpy(obj.clip_ft).to("cuda")
-            max_sim = F.cosine_similarity(text_query_ft.unsqueeze(0), obj_feat.unsqueeze(0), dim=-1).item()
+            max_sim = F.cosine_similarity(
+                text_query_ft.unsqueeze(0), obj_feat.unsqueeze(0), dim=-1
+            ).item()
             obj_name = self.visualizer.obj_classes.get_classes_arr()[obj.class_id]
             logger.info(f"[GlobalMap][Inquiry] =========={obj_name}==============")
             logger.info(f"[GlobalMap][Inquiry] Itself: \t{max_sim:.3f}")
@@ -670,7 +689,11 @@ class GlobalMapManager(BaseMapManager):
                 related_sims = []
                 for related_obj_ft in obj.related_objs:
                     related_obj_ft_tensor = torch.from_numpy(related_obj_ft).to("cuda")
-                    sim = F.cosine_similarity(text_query_ft.unsqueeze(0), related_obj_ft_tensor.unsqueeze(0), dim=-1).item()
+                    sim = F.cosine_similarity(
+                        text_query_ft.unsqueeze(0),
+                        related_obj_ft_tensor.unsqueeze(0),
+                        dim=-1,
+                    ).item()
                     related_sims.append(sim)
                     logger.info(f"[GlobalMap][Inquiry] Related: \t{sim:.3f}")
 
@@ -699,21 +722,31 @@ class GlobalMapManager(BaseMapManager):
                 obj_name = self.visualizer.obj_classes.get_classes_arr()[obj.class_id]
                 if obj_name == self.best_candidate_name:
                     obj_list.append(obj)
-        
+
         if len(obj_list) != 0:
             best_candidate = obj_list[0]
 
         # Output the best candidate and its similarity
-        best_candidate_name = self.visualizer.obj_classes.get_classes_arr()[best_candidate.class_id]
+        best_candidate_name = self.visualizer.obj_classes.get_classes_arr()[
+            best_candidate.class_id
+        ]
 
-        logger.info(f"[GlobalMap][Inquiry] We ignore {len(self.ignore_global_obj_list)} objects in this global query.")
-        logger.info(f"[GlobalMap][Inquiry] Best Candidate: '{best_candidate_name}' with similarity: {best_similarity:.3f}")
+        logger.info(
+            f"[GlobalMap][Inquiry] We ignore {len(self.ignore_global_obj_list)} objects in this global query."
+        )
+        logger.info(
+            f"[GlobalMap][Inquiry] Best Candidate: '{best_candidate_name}' with similarity: {best_similarity:.3f}"
+        )
 
         if self.best_candidate_name is None:
             self.best_candidate_name = best_candidate_name
 
-        logger.info(f"[GlobalMap][Inquiry] Memory Best Candidate '{self.best_candidate_name}'")
-        print(f"[GlobalMap][Inquiry] Memory Best Candidate '{self.best_candidate_name}'")
+        logger.info(
+            f"[GlobalMap][Inquiry] Memory Best Candidate '{self.best_candidate_name}'"
+        )
+        print(
+            f"[GlobalMap][Inquiry] Memory Best Candidate '{self.best_candidate_name}'"
+        )
 
         # Set flag to the best candidate for visualization
         best_candidate.nav_goal = True

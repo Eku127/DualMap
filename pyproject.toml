@@ -1,0 +1,28 @@
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["utils", "evaluation", "applications", "dualmap"]
+known_third_party = ["numpy", "torch", "open3d", "hydra", "omegaconf", "sklearn", "scipy", "open_clip"]
+
+[tool.autopep8]
+max_line_length = 88
+aggressive = 1
