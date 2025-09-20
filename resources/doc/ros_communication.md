@@ -1,5 +1,5 @@
 # ROS2 <-> ROS1 Communication on Ubuntu 22.04
-This guide provides a concise walkthrough for enabling communication between ROS2 (Humble) and ROS1 (Noetic) under Ubuntu 22.04. It includes environment setup, building the `ros1_bridge`, and customizing topic bridging behavior. [中文教程](https://www.yuque.com/u21262689/fxzc7g/xk5h3kfphnw5sf6x?singleDoc#)
+This guide provides a concise walkthrough for enabling communication between ROS2 (Humble) and ROS1 (Noetic) under Ubuntu 22.04. It includes environment setup, building the `ros1_bridge`, and customizing topic bridging behavior. [Chinese Tutorial](https://www.yuque.com/u21262689/fxzc7g/xk5h3kfphnw5sf6x?singleDoc#)
 
 ## Environment Setup
 ### Install ROS2 (Humble)

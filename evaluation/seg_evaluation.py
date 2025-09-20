@@ -32,12 +32,12 @@ def setup_logging(log_file_path: str) -> None:
     Returns:
     None
     """
-    # 加载 YAML 配置
+    # Load YAML configuration
     with open('config/support_config/logging_config.yaml', 'r') as f:
         config = yaml.safe_load(f.read())
-        # 设置文件处理器的日志文件路径
+        # Set the log file path for the file handler
         config['handlers']['file']['filename'] = log_file_path
-        # 应用配置
+        # Apply configuration
         logging.config.dictConfig(config)
 
 

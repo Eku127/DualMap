@@ -657,7 +657,7 @@ class LocalObject(BaseObject):
             return True
 
         # 2. Entropy check
-        entropy = -np.sum(self.class_probs * np.log(self.class_probs + 1e-10))  # 防止 log(0)
+        entropy = -np.sum(self.class_probs * np.log(self.class_probs + 1e-10))  # prevent log(0)
         self.entropy = entropy
         if entropy < entropy_threshold:
             return True
