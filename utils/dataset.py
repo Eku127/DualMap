@@ -3,7 +3,6 @@ import logging
 import os
 from pathlib import Path
 from typing import Optional
-from scipy.spatial.transform import Rotation as R
 
 import cv2
 import imageio
@@ -13,9 +12,11 @@ import yaml
 from kornia.geometry.linalg import compose_transformations, inverse_transformation
 from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
+from scipy.spatial.transform import Rotation as R
 
 # Set up the module-level logger
 logger = logging.getLogger(__name__)
+
 
 def as_intrinsics_matrix(intrinsics):
     """
@@ -28,6 +29,7 @@ def as_intrinsics_matrix(intrinsics):
     K[0, 2] = intrinsics[2]
     K[1, 2] = intrinsics[3]
     return K
+
 
 class BaseDataset(torch.utils.data.Dataset):
     def __init__(
@@ -64,10 +66,8 @@ class BaseDataset(torch.utils.data.Dataset):
         self.desired_width = desired_width
         self.dtype = dtype
 
-        self.h_downsample_ratio = float(
-            self.desired_height) / float(self.orig_height)
-        self.w_downsample_ratio = float(
-            self.desired_width) / float(self.orig_width)
+        self.h_downsample_ratio = float(self.desired_height) / float(self.orig_height)
+        self.w_downsample_ratio = float(self.desired_width) / float(self.orig_width)
         self.channels_first = channels_first
         self.normalize_color = normalize_color
 
@@ -78,8 +78,9 @@ class BaseDataset(torch.utils.data.Dataset):
         self.relative_pose = relative_pose
 
         self.distortion = (
-            np.array(config_dict["camera_params"]["distortion"]
-                     ) if "distortion" in config_dict else None
+            np.array(config_dict["camera_params"]["distortion"])
+            if "distortion" in config_dict
+            else None
         )
 
         # file paths
@@ -101,9 +102,9 @@ class BaseDataset(torch.utils.data.Dataset):
 
         if use_stride:
             logger.info("[Dataset] Use stride")
-            self.color_paths = self.color_paths[self.start:self.end:self.stride]
-            self.depth_paths = self.depth_paths[self.start:self.end:self.stride]
-            self.poses = self.poses[self.start:self.end:self.stride]
+            self.color_paths = self.color_paths[self.start : self.end : self.stride]
+            self.depth_paths = self.depth_paths[self.start : self.end : self.stride]
+            self.poses = self.poses[self.start : self.end : self.stride]
 
         # update number of images
         self.num_imgs = len(self.color_paths)
@@ -137,8 +138,11 @@ class BaseDataset(torch.utils.data.Dataset):
         Returns:
         numpy.ndarray: The preprocessed image.
         """
-        color = cv2.resize(image, (self.desired_width,
-                           self.desired_height), interpolation=cv2.INTER_LINEAR)
+        color = cv2.resize(
+            image,
+            (self.desired_width, self.desired_height),
+            interpolation=cv2.INTER_LINEAR,
+        )
         if self.normalize_color:
             color = color / 255.0
         if self.channels_first:
@@ -162,12 +166,15 @@ class BaseDataset(torch.utils.data.Dataset):
             # augment the first element as the anchor pose
             poses[0].unsqueeze(0).repeat(poses.shape[0], 1, 1),
             poses,
-            orthogonal=True
+            orthogonal=True,
         )
 
     def _preprocess_depth(self, depth):
-        depth = cv2.resize(depth, (self.desired_width,
-                           self.desired_height), interpolation=cv2.INTER_NEAREST)
+        depth = cv2.resize(
+            depth,
+            (self.desired_width, self.desired_height),
+            interpolation=cv2.INTER_NEAREST,
+        )
         depth = np.expand_dims(depth, -1)
         # TODO: test the shape
         if self.channels_first:
@@ -218,7 +225,7 @@ class BaseDataset(torch.utils.data.Dataset):
             color.to(self.device).type(self.dtype),
             depth.to(self.device).type(self.dtype),
             intrinsics.to(self.device).type(self.dtype),
-            pose.to(self.device).type(self.dtype)
+            pose.to(self.device).type(self.dtype),
         )
 
     def get_color(self, idx):
@@ -234,10 +241,7 @@ class BaseDataset(torch.utils.data.Dataset):
 
         color_name = os.path.splitext(os.path.basename(color_path))[0]
 
-        return (
-            color,
-            color_name
-        )
+        return (color, color_name)
 
     def get_depth(self, idx):
 
@@ -250,9 +254,7 @@ class BaseDataset(torch.utils.data.Dataset):
         # preprocess color and depth images
         depth = self._preprocess_depth(depth)
 
-        return (
-            depth
-        )
+        return depth
 
     def get_intrinsics(self, idx):
         K = as_intrinsics_matrix([self.fx, self.fy, self.cx, self.cy])
@@ -300,12 +302,12 @@ class ReplicaDataset(BaseDataset):
     ):
         # remove "_" in scene id
         scene_id = scene_id.replace("_", "")
-        
+
         self.input_path = os.path.join(based_dir, scene_id)
         self.pose_path = os.path.join(self.input_path, "traj.txt")
         super().__init__(
             config_dict,
-            use_stride = use_stride,
+            use_stride=use_stride,
             stride=stride,
             start=start,
             end=end,
@@ -315,14 +317,12 @@ class ReplicaDataset(BaseDataset):
         )
 
     def get_filepaths(self):
-        color_paths = natsorted(
-            glob.glob(f"{self.input_path}/results/frame*.jpg"))
-        depth_paths = natsorted(
-            glob.glob(f"{self.input_path}/results/depth*.png"))
-        
+        color_paths = natsorted(glob.glob(f"{self.input_path}/results/frame*.jpg"))
+        depth_paths = natsorted(glob.glob(f"{self.input_path}/results/depth*.png"))
+
         logger.info(f"[Dataset] Number of color images: {len(color_paths)}")
         logger.info(f"[Dataset] Number of depth images: {len(depth_paths)}")
-        
+
         return color_paths, depth_paths
 
     def get_poses(self):
@@ -344,8 +344,9 @@ class ReplicaDataset(BaseDataset):
 
         # Set self.time_stamps to zeros
         self.time_stamps = [0.0] * self.num_imgs
-        
+
         return poses
+
 
 class ScanNetDataset(BaseDataset):
     def __init__(
@@ -362,7 +363,7 @@ class ScanNetDataset(BaseDataset):
         **kwargs,
     ):
         # remove "_" in scene id
-        
+
         self.input_path = os.path.join(based_dir, "exported", scene_id)
         self.pose_dir = os.path.join(self.input_path, "pose")
         super().__init__(
@@ -375,7 +376,9 @@ class ScanNetDataset(BaseDataset):
             desired_width=desired_width,
             **kwargs,
         )
-        intrinsics_path = os.path.join(self.input_path, "intrinsic", "intrinsic_depth.txt")
+        intrinsics_path = os.path.join(
+            self.input_path, "intrinsic", "intrinsic_depth.txt"
+        )
         intrinsics = np.loadtxt(intrinsics_path)
         self.fx = intrinsics[0, 0]
         self.fy = intrinsics[1, 1]
@@ -383,14 +386,12 @@ class ScanNetDataset(BaseDataset):
         self.cy = intrinsics[1, 2]
 
     def get_filepaths(self):
-        color_paths = natsorted(
-            glob.glob(f"{self.input_path}/color/*.jpg"))
-        depth_paths = natsorted(
-            glob.glob(f"{self.input_path}/depth/*.png"))
-        
+        color_paths = natsorted(glob.glob(f"{self.input_path}/color/*.jpg"))
+        depth_paths = natsorted(glob.glob(f"{self.input_path}/depth/*.png"))
+
         logger.info(f"[Dataset] Number of color images: {len(color_paths)}")
         logger.info(f"[Dataset] Number of depth images: {len(depth_paths)}")
-        
+
         return color_paths, depth_paths
 
     def get_poses(self):
@@ -401,13 +402,14 @@ class ScanNetDataset(BaseDataset):
             pose = np.loadtxt(pose_path).reshape(4, 4)
             c2w = torch.from_numpy(pose).float()
             poses.append(c2w)
-        
+
         logger.info(f"[Dataset] Number of pose: {len(poses)}")
 
         # Set self.time_stamps to zeros
         self.time_stamps = [0.0] * self.num_imgs
-        
+
         return poses
+
 
 class SelfCollectedDataset(BaseDataset):
     def __init__(
@@ -425,7 +427,7 @@ class SelfCollectedDataset(BaseDataset):
     ):
         # remove "_" in scene id
         # scene_id = scene_id.replace("_", "")
-        
+
         self.input_path = os.path.join(based_dir, scene_id)
         self.pose_path = os.path.join(self.input_path, "pose.txt")
 
@@ -437,7 +439,7 @@ class SelfCollectedDataset(BaseDataset):
 
         super().__init__(
             config_dict,
-            use_stride = use_stride,
+            use_stride=use_stride,
             stride=stride,
             start=start,
             end=end,
@@ -447,18 +449,16 @@ class SelfCollectedDataset(BaseDataset):
         )
 
     def get_filepaths(self):
-        color_paths = natsorted(
-            glob.glob(f"{self.input_path}/rgb/*.png"))
-        depth_paths = natsorted(
-            glob.glob(f"{self.input_path}/depth/*.png"))
-        
+        color_paths = natsorted(glob.glob(f"{self.input_path}/rgb/*.png"))
+        depth_paths = natsorted(glob.glob(f"{self.input_path}/depth/*.png"))
+
         logger.info(f"[Dataset] Number of color images: {len(color_paths)}")
         logger.info(f"[Dataset] Number of depth images: {len(depth_paths)}")
         logger.info(color_paths[0])
         logger.info(depth_paths[0])
-        
+
         return color_paths, depth_paths
-    
+
     def get_poses(self):
         poses = []
         time_stamps = []
@@ -486,8 +486,9 @@ class SelfCollectedDataset(BaseDataset):
         self.time_stamps = time_stamps
 
         logger.info(f"[Dataset] Number of pose: {len(poses)}")
-        
+
         return poses
+
 
 class TUMRGBDDataset(BaseDataset):
     def __init__(
@@ -505,7 +506,7 @@ class TUMRGBDDataset(BaseDataset):
     ):
         # remove "_" in scene id
         # scene_id = scene_id.replace("_", "")
-        
+
         self.input_path = os.path.join(based_dir, scene_id)
         self.pose_path = os.path.join(self.input_path, "groundtruth.txt")
 
@@ -517,7 +518,7 @@ class TUMRGBDDataset(BaseDataset):
 
         super().__init__(
             config_dict,
-            use_stride = use_stride,
+            use_stride=use_stride,
             stride=stride,
             start=start,
             end=end,
@@ -531,7 +532,6 @@ class TUMRGBDDataset(BaseDataset):
         timestamp_str = os.path.splitext(basename)[0]
         return float(timestamp_str)
 
-    
     def get_filepaths(self):
         color_paths = natsorted(glob.glob(f"{self.input_path}/rgb/*.png"))
         depth_paths = natsorted(glob.glob(f"{self.input_path}/depth/*.png"))
@@ -560,6 +560,7 @@ class TUMRGBDDataset(BaseDataset):
         matched_target_paths = []
 
         import bisect
+
         for i, ts in enumerate(base_ts):
             pos = bisect.bisect_left(sorted_ts, ts)
 
@@ -570,7 +571,7 @@ class TUMRGBDDataset(BaseDataset):
                 candidates.append(pos - 1)
 
             best = None
-            min_diff = float('inf')
+            min_diff = float("inf")
 
             for c in candidates:
                 idx = sorted_idx[c]
@@ -600,7 +601,7 @@ class TUMRGBDDataset(BaseDataset):
         self.target_timestamps = [self.extract_timestamp(p) for p in final_depth_paths]
 
         return final_color_paths, final_depth_paths
-    
+
     def get_poses(self):
         poses_all = []
         time_stamps_all = []
@@ -622,8 +623,6 @@ class TUMRGBDDataset(BaseDataset):
             T[:3, :3] = rot
             T[:3, 3] = [tx, ty, tz]
 
-
-
             c2w = torch.from_numpy(T).float()
             poses_all.append(c2w)
             time_stamps_all.append(timestamp)
@@ -639,6 +638,7 @@ class TUMRGBDDataset(BaseDataset):
         not_found_ts = []
 
         import bisect
+
         for target in target_ts:
             pos = bisect.bisect_left(sorted_ts, target)
 
@@ -649,7 +649,7 @@ class TUMRGBDDataset(BaseDataset):
                 candidates.append(pos - 1)
 
             best = None
-            min_diff = float('inf')
+            min_diff = float("inf")
             for c in candidates:
                 idx = sorted_idx[c]
                 if idx in used_pose_idx:
@@ -668,14 +668,20 @@ class TUMRGBDDataset(BaseDataset):
 
         # ---------- ----------
         if not_found_ts:
-            logger.warning(f"Removing {len(not_found_ts)} unmatched timestamps from color/depth/target lists.")
+            logger.warning(
+                f"Removing {len(not_found_ts)} unmatched timestamps from color/depth/target lists."
+            )
 
-            bad_indices = [i for i, t in enumerate(self.target_timestamps) if t in not_found_ts]
+            bad_indices = [
+                i for i, t in enumerate(self.target_timestamps) if t in not_found_ts
+            ]
 
             def remove_indices_from_list(lst, indices):
                 return [item for i, item in enumerate(lst) if i not in indices]
 
-            self.target_timestamps = remove_indices_from_list(self.target_timestamps, bad_indices)
+            self.target_timestamps = remove_indices_from_list(
+                self.target_timestamps, bad_indices
+            )
             self.color_paths = remove_indices_from_list(self.color_paths, bad_indices)
             self.depth_paths = remove_indices_from_list(self.depth_paths, bad_indices)
 
@@ -736,6 +742,7 @@ def update_recursive(dict1, dict2):
         else:
             dict1[k] = v
 
+
 def get_dataset(dataconfig, basedir, scene_id, **kwargs):
     config_dict = load_dataset_config(dataconfig)
     if config_dict["dataset_name"].lower() in ["replica"]:
@@ -749,26 +756,25 @@ def get_dataset(dataconfig, basedir, scene_id, **kwargs):
     else:
         raise ValueError(f"Unknown dataset name {config_dict['dataset_name']}")
 
-def dataset_initialization(
-    cfg: DictConfig
-) -> torch.utils.data.Dataset:
-    
+
+def dataset_initialization(cfg: DictConfig) -> torch.utils.data.Dataset:
+
     cfg.dataset_path = Path(cfg.dataset_path)
     cfg.dataset_conf_path = Path(cfg.dataset_conf_path)
     dataset_cfg = OmegaConf.load(cfg.dataset_conf_path)
     cfg.image_height = dataset_cfg.camera_params.image_height
     cfg.image_width = dataset_cfg.camera_params.image_width
-    
+
     dataset = get_dataset(
         dataconfig=cfg.dataset_conf_path,
         basedir=cfg.dataset_path,
         scene_id=cfg.scene_id,
         desired_height=cfg.image_height,
         desired_width=cfg.image_width,
-        use_stride = cfg.use_stride,
+        use_stride=cfg.use_stride,
         stride=cfg.stride,
         start=cfg.start,
         end=cfg.end,
     )
-    
+
     return dataset

@@ -1,33 +1,33 @@
-import time
-import os
-import logging
 import gzip
+import logging
+import os
+import pdb
 import pickle
 import threading
+import time
 from pathlib import Path
 
-import torch
-import numpy as np
-import supervision as sv
 import cv2
-import open_clip
+import numpy as np
 import open3d as o3d
-from scipy.spatial.transform import Rotation as R, Slerp
-from ultralytics import YOLO, SAM, FastSAM
-from PIL import Image
+import open_clip
+import supervision as sv
+import torch
 from omegaconf import DictConfig
+from PIL import Image
+from scipy.spatial.transform import Rotation as R
+from scipy.spatial.transform import Slerp
 from sklearn.metrics.pairwise import cosine_similarity
+from ultralytics import SAM, YOLO, FastSAM
 
-from utils.types import DataInput, ObjectClasses, LocalObservation
 from utils.pcd_utils import (
     mask_depth_to_points,
     refine_points_with_clustering,
     safe_create_bbox,
 )
-from utils.visualizer import ReRunVisualizer, visualize_result_rgb
 from utils.time_utils import timing_context
-
-import pdb
+from utils.types import DataInput, LocalObservation, ObjectClasses
+from utils.visualizer import ReRunVisualizer, visualize_result_rgb
 
 # Set up the module-level logger
 logger = logging.getLogger(__name__)

@@ -8,10 +8,10 @@ from omegaconf import DictConfig, OmegaConf
 from tqdm import trange
 
 from dualmap.core import Dualmap
-from utils.types import DataInput
-from utils.time_utils import timing_context
-from utils.logging_helper import setup_logging
 from utils.dataset import dataset_initialization
+from utils.logging_helper import setup_logging
+from utils.time_utils import timing_context
+from utils.types import DataInput
 
 
 @hydra.main(version_base=None, config_path="../config/", config_name="runner_dataset")
@@ -44,8 +44,12 @@ def main(cfg: DictConfig):
         if not is_keyframe:
             continue
 
-        logger.info("[Main] ============================================================")
-        logger.info(f"[Main] Keyframe idx: {kf_idx}, image idx: {image_idx}, Time: {time_stamp}")
+        logger.info(
+            "[Main] ============================================================"
+        )
+        logger.info(
+            f"[Main] Keyframe idx: {kf_idx}, image idx: {image_idx}, Time: {time_stamp}"
+        )
 
         color, color_name = dataset.get_color(image_idx)
         depth = dataset.get_depth(image_idx)
@@ -57,7 +61,7 @@ def main(cfg: DictConfig):
             depth=depth,
             color_name=color_name,
             intrinsics=intrinsics,
-            pose=curr_pose
+            pose=curr_pose,
         )
 
         # Process data using Dualmap instance

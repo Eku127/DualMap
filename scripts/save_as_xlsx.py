@@ -1,12 +1,21 @@
-import os
-import json
-import xlsxwriter
 import argparse
+import json
+import os
+
+import xlsxwriter
 
 # ========== Argument Parser ==========
 parser = argparse.ArgumentParser(description="Generate XLSX from evaluation results.")
-parser.add_argument("--dataset", type=str, required=True, choices=["replica", "scannet"], help="Dataset name")
-parser.add_argument("--eval_path", type=str, required=True, help="Path to the evaluation output folder")
+parser.add_argument(
+    "--dataset",
+    type=str,
+    required=True,
+    choices=["replica", "scannet"],
+    help="Dataset name",
+)
+parser.add_argument(
+    "--eval_path", type=str, required=True, help="Path to the evaluation output folder"
+)
 
 args = parser.parse_args()
 dataset_name = args.dataset
@@ -14,9 +23,24 @@ eval_path = args.eval_path
 
 # ========== Scene IDs ==========
 if dataset_name == "replica":
-    scene_ids = ["office_0", "office_1", "office_2", "office_3", "office_4", "room_0", "room_1", "room_2"]
+    scene_ids = [
+        "office_0",
+        "office_1",
+        "office_2",
+        "office_3",
+        "office_4",
+        "room_0",
+        "room_1",
+        "room_2",
+    ]
 elif dataset_name == "scannet":
-    scene_ids = ["scene0011_00", "scene0050_00", "scene0231_00", "scene0378_00", "scene0518_00"]
+    scene_ids = [
+        "scene0011_00",
+        "scene0050_00",
+        "scene0231_00",
+        "scene0378_00",
+        "scene0518_00",
+    ]
 
 # ========== Output File Name ==========
 folder_name = os.path.basename(os.path.dirname(eval_path.rstrip("/")))
@@ -54,8 +78,8 @@ obj_num = [round(v, 0) for v in obj_num]
 workbook = xlsxwriter.Workbook(save_path)
 worksheet = workbook.add_worksheet()
 
-headers = ['Scene ID', 'AUC', 'FmIoU', 'mAcc', 'mIoU', 'obj']
-worksheet.write_row('A1', headers)
+headers = ["Scene ID", "AUC", "FmIoU", "mAcc", "mIoU", "obj"]
+worksheet.write_row("A1", headers)
 
 for row_num, scene_id in enumerate(scene_ids, start=1):
     worksheet.write(row_num, 0, scene_id)

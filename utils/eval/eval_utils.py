@@ -1,12 +1,12 @@
 import json
-import plyfile
-import torch
 
 import matplotlib.pyplot as plt
-import open3d as o3d
 import numpy as np
-
+import open3d as o3d
+import plyfile
+import torch
 from sklearn.neighbors import BallTree
+
 from utils.eval.scannet200_constants import *
 
 
@@ -19,16 +19,18 @@ def load_replica_ply(ply_path: str, semantic_info_path: str):
     with open(semantic_info_path) as f:
         semantic_info = json.load(f)
     # Extract a mapping from object id to class id
-    object_class_mapping = {obj["id"]: obj["class_id"]
-                            for obj in semantic_info["objects"]}
+    object_class_mapping = {
+        obj["id"]: obj["class_id"] for obj in semantic_info["objects"]
+    }
     unique_class_ids = np.unique(list(object_class_mapping.values()))
 
     # Extract vertex data
     vertices = np.vstack(
-        [plydata["vertex"]["x"], plydata["vertex"]["y"], plydata["vertex"]["z"]]).T
+        [plydata["vertex"]["x"], plydata["vertex"]["y"], plydata["vertex"]["z"]]
+    ).T
     # Extract vertex index tuple and object id for each face
     face_vertices = plydata["face"]["vertex_indices"]  # (num_faces, 4)
-    object_ids = plydata["face"]["object_id"] # (num_faces,)
+    object_ids = plydata["face"]["object_id"]  # (num_faces,)
 
     # Store every face related 4 points xyz --> 4 x 3 shape
     vertices_per_face = []
@@ -50,7 +52,7 @@ def load_replica_ply(ply_path: str, semantic_info_path: str):
 
     # Traverse through all the object ids
     unique_object_ids = np.unique(object_ids)
-    
+
     # Object level GT
     for obj_id in unique_object_ids:
         if obj_id in object_class_mapping.keys():
@@ -104,11 +106,17 @@ def load_scannet_ply(ply_path: str, use_scannet200: bool = False):
     plydata = plyfile.PlyData.read(ply_path)
     # Extract vertex xyz
     vertices = np.vstack(
-        [plydata["vertex"]["x"], plydata["vertex"]["y"], plydata["vertex"]["z"]]).T
+        [plydata["vertex"]["x"], plydata["vertex"]["y"], plydata["vertex"]["z"]]
+    ).T
     # print(vertices.shape)
     # Extract vertex colors
     vertex_colors = np.vstack(
-        [plydata["vertex"]["red"], plydata["vertex"]["green"], plydata["vertex"]["blue"]]).T
+        [
+            plydata["vertex"]["red"],
+            plydata["vertex"]["green"],
+            plydata["vertex"]["blue"],
+        ]
+    ).T
     labels = plydata["vertex"]["label"]
     instance_ids = plydata["vertex"]["instance_id"]
 
@@ -116,7 +124,7 @@ def load_scannet_ply(ply_path: str, use_scannet200: bool = False):
     valid_class_ids = list(VALID_CLASS_IDS_20)
     if use_scannet200:
         valid_class_ids = list(VALID_CLASS_IDS_200)
-    
+
     valid_mask = np.isin(labels, valid_class_ids)
     valid_vertices = vertices[valid_mask, :]
     valid_instance_ids = instance_ids[valid_mask]
@@ -127,7 +135,7 @@ def load_scannet_ply(ply_path: str, use_scannet200: bool = False):
         for class_id in valid_class_ids:
             color = SCANNET_COLOR_MAP_200[class_id]
             valid_colors[gt_pt_ids == class_id] = color
-    
+
     full_pcd = o3d.geometry.PointCloud()
     full_pcd.points = o3d.utility.Vector3dVector(valid_vertices)
     full_pcd.colors = o3d.utility.Vector3dVector(valid_colors / 255.0)
@@ -161,8 +169,8 @@ def load_scannet_ply(ply_path: str, use_scannet200: bool = False):
 
 
 def pairwise_iou_calculate(
-    bbox1: o3d.geometry.AxisAlignedBoundingBox, 
-    bbox2: o3d.geometry.AxisAlignedBoundingBox
+    bbox1: o3d.geometry.AxisAlignedBoundingBox,
+    bbox2: o3d.geometry.AxisAlignedBoundingBox,
 ) -> float:
 
     v1 = bbox1.volume()
@@ -201,10 +209,12 @@ def calculate_avg_prec(iou_matrix: np.array, obj_idx, gt_idx):
     # print('Precision: ', prec_values)
     avg_prec = np.trapz(prec_values, rec_values)
     return avg_prec
-    
 
-def compute_auc(top_k: list, labels: np.array, sim_mat: np.ndarray, class_ids: np.array):
-    success_k = {k : 0 for k in top_k}
+
+def compute_auc(
+    top_k: list, labels: np.array, sim_mat: np.ndarray, class_ids: np.array
+):
+    success_k = {k: 0 for k in top_k}
     num_gt_classes = sim_mat.shape[1]
 
     for idx, sim_row in enumerate(sim_mat):
@@ -214,8 +224,8 @@ def compute_auc(top_k: list, labels: np.array, sim_mat: np.ndarray, class_ids: n
             top_k_ids = class_ids[sim_top_k]
             if labels[idx] in top_k_ids:
                 success_k[k] += 1
-    top_k_acc = {k : v / len(labels) for k, v in success_k.items()}
-    
+    top_k_acc = {k: v / len(labels) for k, v in success_k.items()}
+
     y = np.array(list(top_k_acc.values()))
     x = np.array(list(top_k_acc.keys())) / num_gt_classes
     y = np.hstack([0, y, 1])
@@ -223,6 +233,7 @@ def compute_auc(top_k: list, labels: np.array, sim_mat: np.ndarray, class_ids: n
     auc = np.trapz(y, x)
 
     return top_k_acc, auc
+
 
 def draw_auc(auc_path, top_k_acc, class_names):
     num_gt_classes = len(class_names)
@@ -233,16 +244,17 @@ def draw_auc(auc_path, top_k_acc, class_names):
     x = np.hstack([0, x, 1])
 
     plt.figure()
-    plt.plot(x, y, marker='o')
-    plt.xlabel('% of ranked categories considered')
-    plt.ylabel('Accuracy')
-    plt.title('AUC_top_k')
+    plt.plot(x, y, marker="o")
+    plt.xlabel("% of ranked categories considered")
+    plt.ylabel("Accuracy")
+    plt.title("AUC_top_k")
     plt.grid(True)
 
     plt.savefig(auc_path, dpi=300)
     print(f"AUC chart saved to {auc_path}")
 
     # plt.show()
+
 
 def knn_interpolation(cumulated_pc: np.ndarray, full_sized_data: np.ndarray, k):
     """
@@ -258,8 +270,9 @@ def knn_interpolation(cumulated_pc: np.ndarray, full_sized_data: np.ndarray, k):
 
     ball_tree = BallTree(labeled[:, :3], metric="minkowski")
 
-    knn_classes = labeled[ball_tree.query(to_be_predicted[:, :3], k=k)[
-        1]][:, :, -1].astype(int)
+    knn_classes = labeled[ball_tree.query(to_be_predicted[:, :3], k=k)[1]][
+        :, :, -1
+    ].astype(int)
 
     interpolated = np.zeros(knn_classes.shape[0])
 
@@ -286,15 +299,14 @@ def draw_bar_chart(data_dict, save_path):
         save_path: Path to save the bar chart.
     """
     # Sort the dictionary by values in descending order
-    sorted_items = sorted(
-        data_dict.items(), key=lambda item: item[1], reverse=True)
+    sorted_items = sorted(data_dict.items(), key=lambda item: item[1], reverse=True)
 
     # Unpack keys and values
     labels, values = zip(*sorted_items)
 
     # Create the bar chart
     plt.figure(figsize=(12, 8))
-    bars = plt.bar(labels, values, color='skyblue')
+    bars = plt.bar(labels, values, color="skyblue")
 
     # Add title and labels
     plt.title("Class IOU from High to Low")
@@ -304,8 +316,14 @@ def draw_bar_chart(data_dict, save_path):
     # Add value labels on top of each bar, rounded to two decimal places
     for bar, value in zip(bars, values):
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval, f'{value:.2f}',
-                 ha='center', va='bottom', fontsize=10)
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            yval,
+            f"{value:.2f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+        )
 
     # Rotate x-axis labels to prevent overlap
     plt.xticks(rotation=45, ha="right")
@@ -321,11 +339,7 @@ def draw_bar_chart(data_dict, save_path):
 
 
 def draw_detailed_bar_chart(
-    data_dict,
-    class_id_names,
-    unique_to_class_gt,
-    unique_to_class_pred,
-    save_path
+    data_dict, class_id_names, unique_to_class_gt, unique_to_class_pred, save_path
 ):
     """
     Generate and save a detailed bar chart with color-coded bars based on class membership.
@@ -337,14 +351,13 @@ def draw_detailed_bar_chart(
         unique_to_class_pred: List of class IDs unique to predictions.
         save_path: Path to save the bar chart.
     """
-    unique_to_class_gt = [class_id_names[class_id]
-                          for class_id in unique_to_class_gt]
-    unique_to_class_pred = [class_id_names[class_id]
-                            for class_id in unique_to_class_pred]
+    unique_to_class_gt = [class_id_names[class_id] for class_id in unique_to_class_gt]
+    unique_to_class_pred = [
+        class_id_names[class_id] for class_id in unique_to_class_pred
+    ]
 
     # Sort the dictionary by values in descending order
-    sorted_items = sorted(
-        data_dict.items(), key=lambda item: item[1], reverse=True)
+    sorted_items = sorted(data_dict.items(), key=lambda item: item[1], reverse=True)
 
     # Unpack keys and values
     labels, values = zip(*sorted_items)
@@ -353,15 +366,15 @@ def draw_detailed_bar_chart(
     colors = []
     for class_id in labels:
         if np.isin(class_id, unique_to_class_gt):
-            colors.append('blue')
+            colors.append("blue")
         elif np.isin(class_id, unique_to_class_pred):
-            colors.append('red')
+            colors.append("red")
         else:
-            colors.append('gray')  # Default color
+            colors.append("gray")  # Default color
 
     # Create the bar chart
     plt.figure(figsize=(12, 8))
-    bars = plt.bar(labels, values, color='skyblue')
+    bars = plt.bar(labels, values, color="skyblue")
 
     # Add title and labels
     plt.title("Class IOU from High to Low")
@@ -371,8 +384,14 @@ def draw_detailed_bar_chart(
     # Add value labels on top of each bar, rounded to two decimal places
     for bar, value in zip(bars, values):
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval, f'{value:.2f}',
-                 ha='center', va='bottom', fontsize=10)
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            yval,
+            f"{value:.2f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+        )
 
     # Get current x-axis labels
     ax = plt.gca()
@@ -381,11 +400,11 @@ def draw_detailed_bar_chart(
     # Set x-axis label colors based on class membership
     for xtick, label in zip(xticks, labels):
         if np.isin(label, unique_to_class_gt):
-            xtick.set_color('blue')
+            xtick.set_color("blue")
         elif np.isin(label, unique_to_class_pred):
-            xtick.set_color('red')
+            xtick.set_color("red")
         else:
-            xtick.set_color('black')  # Default color
+            xtick.set_color("black")  # Default color
 
     # Rotate x-axis labels to prevent overlap
     plt.xticks(rotation=45, ha="right")
@@ -401,23 +420,21 @@ def draw_detailed_bar_chart(
 
 
 def get_text_features(
-    clip_length: int,
-    class_names: list,
-    clip_model,
-    clip_tokenizer,
-    batch_size=64
+    clip_length: int, class_names: list, clip_model, clip_tokenizer, batch_size=64
 ) -> np.ndarray:
-    
+
     multiple_templates = [
         "{}",
         "There is the {} in the scene.",
     ]
-    
+
     # Get all the prompted sequences
-    class_name_prompts = [x.format(lm) for lm in class_names for x in multiple_templates]
-    
+    class_name_prompts = [
+        x.format(lm) for lm in class_names for x in multiple_templates
+    ]
+
     # Get tokens
-    text_tokens = clip_tokenizer(class_name_prompts).to('cuda')
+    text_tokens = clip_tokenizer(class_name_prompts).to("cuda")
     # Get Output features
     text_feats = np.zeros((len(class_name_prompts), clip_length), dtype=np.float32)
     # Get the text feature batch by batch
@@ -429,20 +446,20 @@ def get_text_features(
         text_batch = text_tokens[text_id : text_id + batch_size]
         with torch.no_grad():
             batch_feats = clip_model.encode_text(text_batch).float()
-        
+
         batch_feats /= batch_feats.norm(dim=-1, keepdim=True)
         batch_feats = np.float32(batch_feats.cpu())
         # move the calculated batch into the Ouput features
         text_feats[text_id : text_id + batch_size, :] = batch_feats
         # Move on and Move on
         text_id += batch_size
-    
+
     # shrink the output text features into classes names size
     text_feats = text_feats.reshape((-1, len(multiple_templates), text_feats.shape[-1]))
     text_feats = np.mean(text_feats, axis=1)
-    
+
     # Normalize the text features
     norms = np.linalg.norm(text_feats, axis=1, keepdims=True)
     text_feats /= norms
-    
+
     return text_feats

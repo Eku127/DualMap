@@ -1,13 +1,13 @@
 # Standard library imports
 import copy
+import logging
 import os
-import pickle
 import pdb
+import pickle
 import uuid
 from collections import Counter, deque
 from enum import Enum
 from typing import List, Optional
-import logging
 
 # Third-party imports
 import numpy as np
@@ -20,6 +20,7 @@ from utils.types import Observation
 # Set up the module-level logger
 logger = logging.getLogger(__name__)
 
+
 class LocalObjStatus(Enum):
     UPDATING = "updating"
     PENDING = "pending for updating"
@@ -28,29 +29,32 @@ class LocalObjStatus(Enum):
     HM_ELIMINATION = "elimination for high mpbility"
     WAITING = "waiting for stable obj process"
 
+
 class BaseObject:
-    
+
     # Global variable for config
     _cfg = None
-    
+
     def __init__(self):
         # id
         self.uid = uuid.uuid4()
-        
+
         # obs info
         self.observed_num = 0
         self.observations: List[str] = []
-        
+
         # Spatial primitives
         self.pcd: Optional[o3d.geometry.PointCloud] = o3d.geometry.PointCloud()
-        self.bbox: Optional[o3d.geometry.AxisAlignedBoundingBox] = o3d.geometry.AxisAlignedBoundingBox()
-        
+        self.bbox: Optional[o3d.geometry.AxisAlignedBoundingBox] = (
+            o3d.geometry.AxisAlignedBoundingBox()
+        )
+
         # high level feats
         self.clip_ft: Optional[np.ndarray] = np.empty(0, dtype=np.float32)
-        
-        # class id 
+
+        # class id
         self.class_id: Optional[int] = None
-        
+
         # Initialize save_path
         self.save_path = self._initialize_save_path()
 
@@ -60,36 +64,36 @@ class BaseObject:
     def __getstate__(self):
         # Prepare the state dictionary for serialization
         state = {
-            'uid': self.uid,
-            'pcd_points': np.asarray(self.pcd.points).tolist(),  # Convert to list
-            'pcd_colors': np.asarray(self.pcd.colors).tolist(),  # Convert to list
-            'clip_ft': self.clip_ft.tolist(),
-            'class_id': self.class_id,
-            'nav_goal': self.nav_goal
+            "uid": self.uid,
+            "pcd_points": np.asarray(self.pcd.points).tolist(),  # Convert to list
+            "pcd_colors": np.asarray(self.pcd.colors).tolist(),  # Convert to list
+            "clip_ft": self.clip_ft.tolist(),
+            "class_id": self.class_id,
+            "nav_goal": self.nav_goal,
         }
         return state
-    
+
     def __setstate__(self, state):
-        self.uid = state.get('uid')
-        
+        self.uid = state.get("uid")
+
         # Restore PointCloud from points & colors
-        points = np.array(state.get('pcd_points'))
-        colors = np.array(state.get('pcd_colors'))
+        points = np.array(state.get("pcd_points"))
+        colors = np.array(state.get("pcd_colors"))
 
         if (len(points) != 0) or (len(colors) != 0):
             self.pcd = o3d.geometry.PointCloud()
             self.pcd.points = o3d.utility.Vector3dVector(points)
             self.pcd.colors = o3d.utility.Vector3dVector(colors)
-        
-        self.clip_ft = np.array(state.get('clip_ft'))
-        self.class_id = state.get('class_id')
-        self.nav_goal = state.get('nav_goal')
+
+        self.clip_ft = np.array(state.get("clip_ft"))
+        self.class_id = state.get("class_id")
+        self.nav_goal = state.get("nav_goal")
 
         self.observed_num = 0
         self.observations: List[str] = []
 
         self.save_path = self._initialize_save_path()
-    
+
     @classmethod
     def initialize_config(cls, config: DictConfig):
         cls._cfg = config
@@ -98,13 +102,13 @@ class BaseObject:
         if config.yolo.use_given_classes:
             classes_path = config.yolo.given_classes_path
             logger.info(f"[BaseObject] Using given classes, path:{classes_path}")
-        
-        with open(classes_path, 'r') as file:
+
+        with open(classes_path, "r") as file:
             lines = file.readlines()
             num_classes = len(lines)
         # set num_classes for bayesian class filter
         cls._cfg.yolo.num_classes = num_classes
-    
+
     def _initialize_save_path(self):
         if self._cfg:
             # save dir construction
@@ -112,17 +116,17 @@ class BaseObject:
             # If not exist, then create
             os.makedirs(save_dir, exist_ok=True)
             return os.path.join(save_dir, f"{self.uid}.pkl")
-        
+
         return None
-    
+
     def copy(self):
         return copy.deepcopy(self)
-    
+
     def save_to_disk(self):
         """Save the object to disk using pickle."""
-        with open(self.save_path, 'wb') as f:
+        with open(self.save_path, "wb") as f:
             pickle.dump(self, f)
-        
+
         if self._cfg.save_cropped:
             # save the cropped image in the observation
             save_dir = self._cfg.map_save_path
@@ -139,16 +143,17 @@ class BaseObject:
                 masked_image_dir = os.path.join(masked_save_dir, f"{obs_idx}.png")
                 # both cropped and masked images are np.ndarray, so save as png
                 import imageio
+
                 imageio.imwrite(cropped_image_dir, cropped_image)
                 imageio.imwrite(masked_image_dir, masked_image)
 
     @staticmethod
     def load_from_disk(filename: str):
         """Load the object from disk using pickle."""
-        with open(filename, 'rb') as f:
+        with open(filename, "rb") as f:
             obj = pickle.load(f)
             return obj
-    
+
     def voxel_downsample_2d(
         self,
         pcd: o3d.geometry.PointCloud,
@@ -167,7 +172,9 @@ class BaseObject:
 
         # 2D voxel downsample based on voxel size
         grid_indices = np.floor(points_2d / voxel_size).astype(np.int32)
-        unique_indices, inverse_indices = np.unique(grid_indices, axis=0, return_inverse=True)
+        unique_indices, inverse_indices = np.unique(
+            grid_indices, axis=0, return_inverse=True
+        )
 
         # Calculate average points for each voxel
         downsampled_points_2d = np.zeros_like(unique_indices, dtype=np.float64)
@@ -175,7 +182,7 @@ class BaseObject:
 
         # calculate the mean of points in each voxel
         for i in range(len(unique_indices)):
-            mask = (inverse_indices == i)
+            mask = inverse_indices == i
             downsampled_points_2d[i] = points_2d[mask].mean(axis=0)
             downsampled_colors[i] = colors_arr[mask].mean(axis=0)
 
@@ -191,6 +198,7 @@ class BaseObject:
 
         return downsampled_pcd
 
+
 class LocalObject(BaseObject):
 
     # Global variable for overall idx
@@ -203,7 +211,7 @@ class LocalObject(BaseObject):
         self.is_low_mobility: Optional[bool] = False
         # major plane info, the z value of the major plane
         self.major_plane_info = None
-        
+
         # Split Check info dict
         self.split_info: Optional[dict] = {}
         self.max_common: int = 0
@@ -242,18 +250,13 @@ class LocalObject(BaseObject):
     def set_curr_idx(cls, idx: int):
         cls._curr_idx = idx
 
-    def add_observation(
-        self,
-        observation: Observation
-    ) -> None:
+    def add_observation(self, observation: Observation) -> None:
         self.observations.append(observation)
         self.observed_num += 1
 
-    def get_latest_observation(
-        self
-    ) -> Observation:
+    def get_latest_observation(self) -> Observation:
         return self.observations[-1] if self.observations else None
-    
+
     def clear_info(
         self,
     ) -> None:
@@ -268,13 +271,13 @@ class LocalObject(BaseObject):
         self.split_class_id_one = None
         self.split_class_id_two = None
         self.spatial_stable_info = None
-    
+
     # Baye: Update posterior probability
     def update_class_probs(
         self,
-        alpha = 0.6,
+        alpha=0.6,
     ) -> None:
-        
+
         latest_obs = self.get_latest_observation()
 
         distance = latest_obs.distance
@@ -291,29 +294,33 @@ class LocalObject(BaseObject):
 
         # Find top 10 classes with highest scores excluding current class
         all_indices = np.arange(self.num_classes)
-        other_indices = all_indices[all_indices != class_id]  # Indices excluding current class
-        top_10_indices = np.argsort(self.class_probs[other_indices])[-10:]  # Get top 10 classes with highest scores
+        other_indices = all_indices[
+            all_indices != class_id
+        ]  # Indices excluding current class
+        top_10_indices = np.argsort(self.class_probs[other_indices])[
+            -10:
+        ]  # Get top 10 classes with highest scores
         top_10_real_indices = other_indices[top_10_indices]  # Get real class indices
 
         # Distribute remaining confidence evenly among these 3 classes
         for idx in top_10_real_indices:
             observation_probs[idx] = remaining_conf / 10
-        
+
         # Confidence of the current observation class
         observation_probs[class_id] = conf
         observation_probs /= np.sum(observation_probs)
-        
+
         # Sliding window smoothing
         window_size = 5
 
         self.class_probs_history.append(observation_probs)
         if len(self.class_probs_history) > window_size:
             self.class_probs_history.pop(0)
-        
+
         smoothed_probs = np.mean(self.class_probs_history, axis=0)
 
         # calculate alpha
-        max_distance=10.0
+        max_distance = 10.0
         k = 1.0
         alpha = np.exp(-k * distance / max_distance)
 
@@ -323,9 +330,7 @@ class LocalObject(BaseObject):
         # Normalize
         self.class_probs /= np.sum(self.class_probs)
 
-    def update_info(
-        self
-    ) -> None:
+    def update_info(self) -> None:
         # Local Obj
         # Integrate information from observation into external
         # This is the update part in the filter
@@ -358,9 +363,13 @@ class LocalObject(BaseObject):
         # Get new bbox
         # self.bbox = self.pcd.get_oriented_bounding_box(robust=True)
         self.bbox = self.pcd.get_axis_aligned_bounding_box()
-        
+
         # Merge clip_ft
-        self.clip_ft = (self.clip_ft * (self.observed_num - 1) + latest_obs.clip_ft) * 1.0 / (self.observed_num)
+        self.clip_ft = (
+            (self.clip_ft * (self.observed_num - 1) + latest_obs.clip_ft)
+            * 1.0
+            / (self.observed_num)
+        )
         # Normalize the new clip_ft
         norm = np.linalg.norm(self.clip_ft)
         self.clip_ft = self.clip_ft / norm
@@ -390,7 +399,9 @@ class LocalObject(BaseObject):
         # Periodically downsample the pcd
         if self.observed_num % self._cfg.downsample_interval == 0:
             self.downsample_num += 1
-            self.pcd = self.pcd.voxel_down_sample(voxel_size=self._cfg.downsample_voxel_size)
+            self.pcd = self.pcd.voxel_down_sample(
+                voxel_size=self._cfg.downsample_voxel_size
+            )
 
             # only after downsample, we calculate the major plane info
             # If the object is low mobility, do major plane info calculation
@@ -402,16 +413,12 @@ class LocalObject(BaseObject):
             else:
                 self.major_plane_info = None
 
-    
-    def update_split_info(
-        self,
-        latest_obs: Observation
-    ) -> None:
+    def update_split_info(self, latest_obs: Observation) -> None:
         # https://www.yuque.com/u21262689/fxzc7g/fmfk1gkv6fbemlus?singleDoc#
         # Boundary condition check
         if latest_obs is None:
             raise ValueError("latest_obs cannot be None")
-        if not hasattr(latest_obs, 'class_id') or not hasattr(latest_obs, 'idx'):
+        if not hasattr(latest_obs, "class_id") or not hasattr(latest_obs, "idx"):
             raise ValueError("latest_obs must have class_id and idx attributes")
 
         # Split dict update
@@ -422,7 +429,10 @@ class LocalObject(BaseObject):
         # Make sure the idx in the active window
         # Current window size is 10
         for class_id, idx_deque in self.split_info.items():
-            while idx_deque and idx_deque[0] <= latest_obs.idx - self._cfg.active_window_size:
+            while (
+                idx_deque
+                and idx_deque[0] <= latest_obs.idx - self._cfg.active_window_size
+            ):
                 idx_deque.popleft()
             # # if empty, delete
             # if len(idx_deque) == 0:
@@ -449,12 +459,12 @@ class LocalObject(BaseObject):
         if self.max_common > self._cfg.max_common_th:
             self.should_split = True
 
-    def print_split_info(
-        self
-    ) -> None:
+    def print_split_info(self) -> None:
         # logger.info split info into a string
         for class_id, idx_deque in self.split_info.items():
-            logger.info(f"[LocalObject] Class ID: {class_id}, Observations: {list(idx_deque)}")
+            logger.info(
+                f"[LocalObject] Class ID: {class_id}, Observations: {list(idx_deque)}"
+            )
 
     def print_split_info(
         self,
@@ -518,11 +528,15 @@ class LocalObject(BaseObject):
             self.clip_ft += obs.clip_ft
 
         # downsample pcd
-        self.pcd = self.pcd.voxel_down_sample(voxel_size=self._cfg.downsample_voxel_size)
+        self.pcd = self.pcd.voxel_down_sample(
+            voxel_size=self._cfg.downsample_voxel_size
+        )
         # Group to majority
         from utils.pcd_utils import init_pcd_denoise_dbscan
+
         self.pcd = init_pcd_denoise_dbscan(
-            self.pcd, self._cfg.dbscan_eps, self._cfg.dbscan_min_points)
+            self.pcd, self._cfg.dbscan_eps, self._cfg.dbscan_min_points
+        )
 
         # self.bbox = self.pcd.get_oriented_bounding_box(robust=True)
         self.bbox = self.pcd.get_axis_aligned_bounding_box()
@@ -553,10 +567,7 @@ class LocalObject(BaseObject):
         if self.is_low_mobility:
             self.major_plane_info = self.find_major_plane_info()
 
-    def update_spatial_stable_info(
-        self,
-        latest_obs: Observation
-    ) -> None:
+    def update_spatial_stable_info(self, latest_obs: Observation) -> None:
         # Including two parts of the spatial check
         # 1. latest obs bbox( or other primitives ) compare with the overall bbox or pcd
         # 2. latest obs bbox with prev obs bbox
@@ -573,7 +584,9 @@ class LocalObject(BaseObject):
 
         # 1. if the object is in inside the sliding window, status will be UPDATING
         # No matter what previous status is, the object will always be UPDATING if in the window
-        if last_obs.idx <= self._curr_idx and last_obs.idx >= max(self._curr_idx - self._cfg.active_window_size, 0):
+        if last_obs.idx <= self._curr_idx and last_obs.idx >= max(
+            self._curr_idx - self._cfg.active_window_size, 0
+        ):
             self.status = LocalObjStatus.UPDATING
             self.pending_count = 0
             self.waiting_count = 0
@@ -604,7 +617,7 @@ class LocalObject(BaseObject):
         if self.waiting_count < self._cfg.max_pending_count:
             # still in the waiting status, just return
             return
-            
+
         # if waiting enough, then judge next step by lm status
         if self.is_low_mobility:
             self.status = LocalObjStatus.LM_ELIMINATION
@@ -634,14 +647,14 @@ class LocalObject(BaseObject):
         if most_common_count > self.observed_num / 3:
             self.is_stable = True
             return
-        
+
         # 3. if the object is stable by the filter, then set as stable
         if self.is_class_converged():
             self.is_stable = True
             return
 
         self.is_stable = False
-    
+
     def is_class_converged(
         self,
         entropy_threshold=0.2,
@@ -649,7 +662,7 @@ class LocalObject(BaseObject):
         change_rate_threshold=0.2,
         window_size=3,
     ) -> bool:
-        
+
         # 1. Major class probability check
         max_prob = np.max(self.class_probs)
         self.max_prob = max_prob
@@ -657,7 +670,9 @@ class LocalObject(BaseObject):
             return True
 
         # 2. Entropy check
-        entropy = -np.sum(self.class_probs * np.log(self.class_probs + 1e-10))  # 防止 log(0)
+        entropy = -np.sum(
+            self.class_probs * np.log(self.class_probs + 1e-10)
+        )  # prevent log(0)
         self.entropy = entropy
         if entropy < entropy_threshold:
             return True
@@ -674,7 +689,7 @@ class LocalObject(BaseObject):
 
     def find_major_plane_info(
         self,
-        bin_size = 0.02,
+        bin_size=0.02,
     ) -> float:
         # This function will find the major plane of the object
         # return the major plane z value
@@ -698,14 +713,17 @@ class LocalObject(BaseObject):
 
         return major_plane_z
 
+
 class GlobalObject(BaseObject):
     def __init__(self, observation=None):
         super().__init__()
 
         # Spatial primitives
         self.pcd_2d: Optional[o3d.geometry.PointCloud] = o3d.geometry.PointCloud()
-        self.bbox_2d: Optional[o3d.geometry.AxisAlignedBoundingBox] = o3d.geometry.AxisAlignedBoundingBox()
-        
+        self.bbox_2d: Optional[o3d.geometry.AxisAlignedBoundingBox] = (
+            o3d.geometry.AxisAlignedBoundingBox()
+        )
+
         # Related objs
         # Current we "only save clip feats" <-- PAY Attention!
         self.related_objs: List[np.ndarray] = []
@@ -717,30 +735,29 @@ class GlobalObject(BaseObject):
         # If provide the LocalObject, then initialize the GlobalObject from it
         if observation is not None:
             self.init_from_global_obs(observation)
-    
+
     def __getstate__(self):
         # Base Object getstate
         state = super().__getstate__()
-        
-        # serialize List[np.ndarray] 
-        state['related_objs'] = [arr.tolist() for arr in self.related_objs]
+
+        # serialize List[np.ndarray]
+        state["related_objs"] = [arr.tolist() for arr in self.related_objs]
 
         # serialize pcd_2d
-        state['pcd_2d_points'] = np.asarray(self.pcd_2d.points).tolist()
-        state['pcd_2d_colors'] = np.asarray(self.pcd_2d.colors).tolist()
-
+        state["pcd_2d_points"] = np.asarray(self.pcd_2d.points).tolist()
+        state["pcd_2d_colors"] = np.asarray(self.pcd_2d.colors).tolist()
 
         # Serialize related_bbox (convert AxisAlignedBoundingBox to dict)
-        state['related_bbox'] = [
+        state["related_bbox"] = [
             {
-                'min_bound': bbox.get_min_bound().tolist(),
-                'max_bound': bbox.get_max_bound().tolist()
+                "min_bound": bbox.get_min_bound().tolist(),
+                "max_bound": bbox.get_max_bound().tolist(),
             }
             for bbox in self.related_bbox
         ]
 
         # Serialize related_color (class IDs list)
-        state['related_color'] = self.related_color  # assuming it's a list of class IDs
+        state["related_color"] = self.related_color  # assuming it's a list of class IDs
 
         return state
 
@@ -749,12 +766,12 @@ class GlobalObject(BaseObject):
         super().__setstate__(state)
 
         # Restore related_objs as np.ndarray
-        self.related_objs = [np.array(arr) for arr in state.get('related_objs', [])]
+        self.related_objs = [np.array(arr) for arr in state.get("related_objs", [])]
 
         # Restore pcd_2d (points and colors)
-        points = np.array(state.get('pcd_2d_points'))
-        colors = np.array(state.get('pcd_2d_colors'))
-        
+        points = np.array(state.get("pcd_2d_points"))
+        colors = np.array(state.get("pcd_2d_colors"))
+
         self.pcd_2d = o3d.geometry.PointCloud()
         self.pcd_2d.points = o3d.utility.Vector3dVector(points)
         self.pcd_2d.colors = o3d.utility.Vector3dVector(colors)
@@ -763,66 +780,58 @@ class GlobalObject(BaseObject):
 
         self.related_bbox = [
             o3d.geometry.AxisAlignedBoundingBox(
-                min_bound=np.array(bbox_dict['min_bound']),
-                max_bound=np.array(bbox_dict['max_bound'])
+                min_bound=np.array(bbox_dict["min_bound"]),
+                max_bound=np.array(bbox_dict["max_bound"]),
             )
-            for bbox_dict in state.get('related_bbox', [])
+            for bbox_dict in state.get("related_bbox", [])
         ]
 
         # Restore related_color (assuming it's stored as a list of class IDs)
-        self.related_color = state.get('related_color', [])
+        self.related_color = state.get("related_color", [])
 
         # Set obs num to 1 to avoid global updating bug
         self.observed_num = 1
 
     def copy(self):
         return copy.deepcopy(self)
-    
+
     def init_from_global_obs(self, observation):
-        
+
         self.uid = observation.uid
-        
+
         self.pcd = observation.pcd
         self.bbox = observation.bbox
 
         self.pcd_2d = observation.pcd_2d
         self.bbox_2d = observation.bbox_2d
-                
+
         self.clip_ft = observation.clip_ft
-        
+
         # Class ID
         self.class_id = observation.class_id
 
         # Related objs
         self.related_objs = observation.related_objs
-        
-    def add_observation(
-        self,
-        observation: Observation
-    ) -> None:
+
+    def add_observation(self, observation: Observation) -> None:
         self.observations.append(observation)
         self.observed_num += 1
-    
-    def get_latest_observation(
-        self
-    ) -> Observation:
+
+    def get_latest_observation(self) -> Observation:
         return self.observations[-1] if self.observations else None
 
-
-    def update_info(
-        self
-    ) -> None:
+    def update_info(self) -> None:
         # Global Obj
-        
+
         latest_obs = self.get_latest_observation()
 
         if self.observed_num == 0:
             logger.error("[GlobalObject] No observation in this object")
             return
-        
+
         if self.observed_num == 1:
             self.uid = latest_obs.uid
-            
+
             self.pcd = latest_obs.pcd
             self.bbox = latest_obs.bbox
             self.pcd_2d = latest_obs.pcd_2d
@@ -832,19 +841,21 @@ class GlobalObject(BaseObject):
             self.class_id = latest_obs.class_id
 
             self.related_objs = latest_obs.related_objs
-            
+
             # for visualization in rerun
             self.related_bbox = latest_obs.related_bbox
             self.related_color = latest_obs.related_color
             return
-        
+
         # Update the information for outside
-        
+
         # Merge pcd
         # Simply add
         self.pcd += latest_obs.pcd
-        self.pcd = self.pcd.voxel_down_sample(voxel_size=self._cfg.downsample_voxel_size)
-        
+        self.pcd = self.pcd.voxel_down_sample(
+            voxel_size=self._cfg.downsample_voxel_size
+        )
+
         # Get new bbox
         self.bbox = self.pcd.get_axis_aligned_bounding_box()
 
@@ -852,22 +863,23 @@ class GlobalObject(BaseObject):
         # get the points num of the latest obs and current pcd_2d
         original_num = len(self.pcd_2d.points)
         incoming_num = len(latest_obs.pcd_2d.points)
-        
+
         self.pcd_2d += latest_obs.pcd_2d
-        self.pcd_2d = self.voxel_downsample_2d(pcd=self.pcd_2d, voxel_size=self._cfg.downsample_voxel_size)
+        self.pcd_2d = self.voxel_downsample_2d(
+            pcd=self.pcd_2d, voxel_size=self._cfg.downsample_voxel_size
+        )
         self.bbox_2d = self.pcd_2d.get_axis_aligned_bounding_box()
 
-        
         # TODO: Should we merge clip feat? Any judgement?
         # Answer: Weighted merge
-        
+
         # TODO: for class id, we choose the bigger one? Currently we choose the bigger one as the output
         # for class id, we choose the bigger one as the output
         # bigger or smaller depends on the pointcloud size of the pcd_2d
         if original_num < incoming_num:
             self.class_id = latest_obs.class_id
             self.clip_ft = latest_obs.clip_ft
-        
+
         # TODO: Any other matching strategy on related objs?
         # Maintain the related objs, simply add the objs from the latest observation (Current Strategy)
         self.related_objs += latest_obs.related_objs

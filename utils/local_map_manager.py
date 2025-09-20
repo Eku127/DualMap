@@ -1,27 +1,28 @@
-import os
-import shutil
-import pdb
 import logging
+import os
+import pdb
+import shutil
 from collections import Counter
 from typing import List
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from omegaconf import DictConfig
 
-from utils.types import Observation, GlobalObservation, GoalMode
-from utils.object import LocalObject, LocalObjStatus
 from utils.base_map_manager import BaseMapManager
 from utils.navigation_helper import NavigationGraph
+from utils.object import LocalObject, LocalObjStatus
+from utils.types import GlobalObservation, GoalMode, Observation
 
 # Set up the module-level logger
 logger = logging.getLogger(__name__)
+
 
 class LocalMapManager(BaseMapManager):
     def __init__(
         self,
         cfg: DictConfig,
-        ) -> None:
+    ) -> None:
         # Construct function
         super().__init__(cfg)
 
@@ -30,7 +31,6 @@ class LocalMapManager(BaseMapManager):
 
         # global observations, all are low mobility objects
         self.global_observations = []
-        
 
         # objects list
         self.local_map = []
@@ -47,7 +47,7 @@ class LocalMapManager(BaseMapManager):
 
         # For navigation
         self.nav_graph = None
-        self.inquiry = ''
+        self.inquiry = ""
         # If in Click mode, the goal by clicked
         self.click_goal = None
         # If in Inquiry mode, the goal by bbox
@@ -76,9 +76,7 @@ class LocalMapManager(BaseMapManager):
         self.curr_idx = idx
         LocalObject.set_curr_idx(idx)
 
-    def get_global_observations(
-        self
-    ) -> list:
+    def get_global_observations(self) -> list:
         return self.global_observations.copy()
 
     def clear_global_observations(
@@ -87,51 +85,35 @@ class LocalMapManager(BaseMapManager):
         self.global_observations.clear()
 
     # TODO: Using list, finding object by UID requires traversal, which is inefficient
-    def get_object(
-        self,
-        uid
-    ) -> LocalObject:
+    def get_object(self, uid) -> LocalObject:
         """Helper function to get an object by UID from the list."""
         for obj in self.local_map:
             if obj.uid == uid:
                 return obj
 
-    def set_relation(
-        self,
-        obj1_uid,
-        obj2_uid
-    ):
+    def set_relation(self, obj1_uid, obj2_uid):
         """Set a relation between two objects based on their UIDs."""
         # Check if both objects exist
         if self.get_object(obj1_uid) and self.get_object(obj2_uid):
             self.graph.add_edge(obj1_uid, obj2_uid)
 
-    def has_relation(
-        self,
-        obj1_uid,
-        obj2_uid
-    ) -> bool:
+    def has_relation(self, obj1_uid, obj2_uid) -> bool:
         """Check if two objects have a relation based on their UIDs."""
         return self.graph.has_edge(obj1_uid, obj2_uid)
 
-    def remove_relation(
-        self,
-        obj1_uid,
-        obj2_uid
-    ):
+    def remove_relation(self, obj1_uid, obj2_uid):
         """Remove a relation between two objects based on their UIDs."""
         if self.graph.has_edge(obj1_uid, obj2_uid):
-            self.graph.remove_edge(obj1_uid, obj2_uid) 
+            self.graph.remove_edge(obj1_uid, obj2_uid)
 
-    def get_related_objects(
-        self, 
-        obj_uid
-    ) -> list:
+    def get_related_objects(self, obj_uid) -> list:
         """Return a list of UIDs of objects that are related to the given object UID."""
         if obj_uid in self.graph:
             related_uids = list(self.graph.neighbors(obj_uid))
             # Convert these UIDs to LocalObject objects and return
-            related_objects = [self.get_object(uid) for uid in related_uids if self.get_object(uid)]
+            related_objects = [
+                self.get_object(uid) for uid in related_uids if self.get_object(uid)
+            ]
             return related_objects
         else:
             return []  # If the UID is not in the graph, return an empty list
@@ -189,10 +171,7 @@ class LocalMapManager(BaseMapManager):
             self.local_map.append(local_obj)
             self.graph.add_node(local_obj.uid)
 
-    def update_local_map(
-        self,
-        curr_obs: List[Observation]
-    ) -> None:
+    def update_local_map(self, curr_obs: List[Observation]) -> None:
         # update the local map with the lateset observation
         for obs in curr_obs:
             if obs.matched_obj_idx == -1:
@@ -233,7 +212,10 @@ class LocalMapManager(BaseMapManager):
         # update the graph and map for insertion and elimination
         self.update_map_and_graph()
 
-        logger.info("[LocalMap] Current we have Global Observations num: " + str(len(self.global_observations)))
+        logger.info(
+            "[LocalMap] Current we have Global Observations num: "
+            + str(len(self.global_observations))
+        )
 
         if self.cfg.use_rerun:
             self.visualize_local_map()
@@ -267,7 +249,9 @@ class LocalMapManager(BaseMapManager):
         if self.current_relations:
             for obj1_uid, obj2_uid in list(self.graph.edges):
                 if (obj1_uid, obj2_uid) not in self.current_relations and (
-                    obj2_uid, obj1_uid) not in self.current_relations:
+                    obj2_uid,
+                    obj1_uid,
+                ) not in self.current_relations:
                     self.remove_relation(obj1_uid, obj2_uid)
 
             # clear the current relations
@@ -276,7 +260,9 @@ class LocalMapManager(BaseMapManager):
         # 2. Elimination of local objects in local_map and graph
         if self.to_be_eliminated:
             # local map deletion
-            self.local_map = [obj for obj in self.local_map if obj.uid not in self.to_be_eliminated]
+            self.local_map = [
+                obj for obj in self.local_map if obj.uid not in self.to_be_eliminated
+            ]
 
             # graph deletion
             for uid in self.to_be_eliminated:
@@ -286,10 +272,7 @@ class LocalMapManager(BaseMapManager):
             # clear the to_be_eliminated
             self.to_be_eliminated.clear()
 
-    def status_actions(
-        self,
-        obj: LocalObject
-    ) -> None:
+    def status_actions(self, obj: LocalObject) -> None:
         # do actions based on the object status
 
         # Set Relations
@@ -308,7 +291,9 @@ class LocalMapManager(BaseMapManager):
                     # set the relation in the graph
                     self.set_relation(obj.uid, other_obj.uid)
                     # save the current valid relations
-                    self.current_relations.add((min(obj.uid, other_obj.uid), max(obj.uid, other_obj.uid)))
+                    self.current_relations.add(
+                        (min(obj.uid, other_obj.uid), max(obj.uid, other_obj.uid))
+                    )
                     # logger.info the relation for debug
                     # logger.info(f"Relation: {obj.uid} - {other_obj.uid}")
 
@@ -368,9 +353,10 @@ class LocalMapManager(BaseMapManager):
             is_related_obj_ready = True
             for related_obj in related_objs:
                 # if all the related object is not ready, than the LM will wait
-                if (related_obj.status == LocalObjStatus.UPDATING or
-                   related_obj.status == LocalObjStatus.PENDING
-                   ):
+                if (
+                    related_obj.status == LocalObjStatus.UPDATING
+                    or related_obj.status == LocalObjStatus.PENDING
+                ):
                     is_related_obj_ready = False
                     break
 
@@ -388,7 +374,9 @@ class LocalMapManager(BaseMapManager):
                     return
 
                 # generate global observation and insert to global obs list
-                global_obs = self.create_global_observation(obj, related_objs=related_objs)
+                global_obs = self.create_global_observation(
+                    obj, related_objs=related_objs
+                )
                 self.global_observations.append(global_obs)
 
                 self.to_be_eliminated.add(obj.uid)
@@ -399,11 +387,7 @@ class LocalMapManager(BaseMapManager):
 
             return
 
-    def on_relation_check(
-        self,
-        base_obj: LocalObject,
-        test_obj: LocalObject
-    ) -> bool:
+    def on_relation_check(self, base_obj: LocalObject, test_obj: LocalObject) -> bool:
         # test whether the test_obj is related to the base_obj (with "on" relation)
         # return True if related, False otherwise
 
@@ -416,7 +400,10 @@ class LocalMapManager(BaseMapManager):
             return False
 
         # if both objs have major plane info, also return False
-        if base_obj.major_plane_info is not None and test_obj.major_plane_info is not None:
+        if (
+            base_obj.major_plane_info is not None
+            and test_obj.major_plane_info is not None
+        ):
             return False
 
         base_center = base_obj.bbox.get_center()
@@ -477,9 +464,7 @@ class LocalMapManager(BaseMapManager):
         return True
 
     def create_global_observation(
-        self,
-        obj: LocalObject,
-        related_objs: List[LocalObject] = []
+        self, obj: LocalObject, related_objs: List[LocalObject] = []
     ) -> Observation:
         # generate observations for global mapping
 
@@ -507,7 +492,7 @@ class LocalMapManager(BaseMapManager):
             curr_obs.related_bbox = []
             curr_obs.related_color = []
 
-        return curr_obs 
+        return curr_obs
 
     def split_local_object(
         self,
@@ -521,7 +506,11 @@ class LocalMapManager(BaseMapManager):
                     new_obj.add_observation(obs)
                     # delete the obs in observation
                     # TODO: ALso we actually no need to delete
-                    obj.observations = [ob for ob in obj.observations if ob.class_id != class_id or ob.idx != obs.idx]
+                    obj.observations = [
+                        ob
+                        for ob in obj.observations
+                        if ob.class_id != class_id or ob.idx != obs.idx
+                    ]
             # new obj update
             new_obj.update_info_from_observations()
 
@@ -531,15 +520,15 @@ class LocalMapManager(BaseMapManager):
             self.graph.add_node(new_obj.uid)
 
         split_info = obj.print_split_info()
-        logger.info("[LocalMap][Split] Split Local Object, splitted info: %s" % split_info)
+        logger.info(
+            "[LocalMap][Split] Split Local Object, splitted info: %s" % split_info
+        )
 
         # find the obj in local map by using uid
         # remove the obj in the local map list
         self.to_be_eliminated.add(obj.uid)
 
-    def save_map(
-        self
-    ) -> None:
+    def save_map(self) -> None:
         # get the directory
         save_dir = self.cfg.map_save_path
 
@@ -556,9 +545,7 @@ class LocalMapManager(BaseMapManager):
                 logger.warning("[LocalMap] No save path for local object")
                 continue
 
-    def merge_local_map(
-        self
-    ) -> None:
+    def merge_local_map(self) -> None:
 
         # Use tracker for matching
         self.tracker.set_current_frame(self.local_map)
@@ -578,10 +565,14 @@ class LocalMapManager(BaseMapManager):
             if len(indices) == 1:
                 new_local_map.append(self.local_map[indices[0]])
             else:
-                new_local_map.append(self.merge_local_object([self.local_map[i] for i in indices]))
+                new_local_map.append(
+                    self.merge_local_object([self.local_map[i] for i in indices])
+                )
         # New local map is generated
 
-        logger.info(f"[LocalMap][Merge] Map size before merge: {len(self.local_map)}, after merge: {len(new_local_map)}")
+        logger.info(
+            f"[LocalMap][Merge] Map size before merge: {len(self.local_map)}, after merge: {len(new_local_map)}"
+        )
 
         self.local_map = new_local_map
 
@@ -626,7 +617,12 @@ class LocalMapManager(BaseMapManager):
             obj_name = self.visualizer.obj_classes.get_classes_arr()[local_obj.class_id]
 
             # Ignore ceiling wall
-            if obj_name == "ceiling wall" or obj_name == "carpet" or obj_name == "rug" or obj_name == "ceiling_molding":
+            if (
+                obj_name == "ceiling wall"
+                or obj_name == "carpet"
+                or obj_name == "rug"
+                or obj_name == "ceiling_molding"
+            ):
                 continue
 
             obj_label = f"{local_obj.observed_num}_{obj_name}"
@@ -658,7 +654,7 @@ class LocalMapManager(BaseMapManager):
                     ),
                     self.visualizer.AnyValues(
                         uuid=str(local_obj.uid),
-                    )
+                    ),
                 )
 
                 # Log pcd data
@@ -674,7 +670,7 @@ class LocalMapManager(BaseMapManager):
                     ),
                     self.visualizer.AnyValues(
                         uuid=str(local_obj.uid),
-                    )
+                    ),
                 )
 
                 target_bbox_entity = None
@@ -683,7 +679,9 @@ class LocalMapManager(BaseMapManager):
                     bbox = local_obj.bbox
                     centers = [bbox.get_center()]
                     half_sizes = [bbox.get_extent() / 2]
-                    target_bbox_entity = base_entity_path + "/bbox_target" + f"/{local_obj.uid}"
+                    target_bbox_entity = (
+                        base_entity_path + "/bbox_target" + f"/{local_obj.uid}"
+                    )
                     curr_obj_color = (255, 0, 0)
 
                     self.visualizer.log(
@@ -697,7 +695,7 @@ class LocalMapManager(BaseMapManager):
                         ),
                         self.visualizer.AnyValues(
                             uuid=str(local_obj.uid),
-                        )
+                        ),
                     )
 
                 bbox = local_obj.bbox
@@ -726,7 +724,7 @@ class LocalMapManager(BaseMapManager):
                     ),
                     self.visualizer.AnyValues(
                         uuid=str(local_obj.uid),
-                    )
+                    ),
                 )
 
             if self.cfg.show_debug_entities:
@@ -760,8 +758,9 @@ class LocalMapManager(BaseMapManager):
                 class_labels = ""
 
                 for idx, data in enumerate(obj_class_id_counter.most_common()):
-                    class_labels = class_labels + \
-                        str(data[0]) + "_(" + str(data[1]) + ")||"
+                    class_labels = (
+                        class_labels + str(data[0]) + "_(" + str(data[1]) + ")||"
+                    )
 
                 # Split info
                 split_info = ""
@@ -807,7 +806,9 @@ class LocalMapManager(BaseMapManager):
                 prob_class_id = np.argmax(local_obj.class_probs)
                 prob_class_conf = local_obj.class_probs[prob_class_id]
 
-                bbox_entity_debug = base_entity_path + "/bbox_debug" + f"/{local_obj.uid}"
+                bbox_entity_debug = (
+                    base_entity_path + "/bbox_debug" + f"/{local_obj.uid}"
+                )
                 self.visualizer.log(
                     bbox_entity_debug,
                     # entity_path + "/bbox",
@@ -819,29 +820,31 @@ class LocalMapManager(BaseMapManager):
                     ),
                     self.visualizer.AnyValues(
                         uuid=str(local_obj.uid),
-                        max_num = int(local_obj.max_common),
-                        max_class_one = int(local_obj.split_class_id_one),
-                        max_class_two = int(local_obj.split_class_id_two),
-                        is_stable = bool(local_obj.is_stable),
-                        is_low_mobility = bool(local_obj.is_low_mobility),
-                        status = str(local_obj.status),
-                        status_pending_count = int(local_obj.pending_count),
-                        status_waiting_count = int(local_obj.waiting_count),
-                        last_seen_idx = int(local_obj.get_latest_observation().idx),
-                        related_num = int(related_num),
-                        late_class_id = int(lateset_class_id),
-                        late_class_conf = float(lateset_class_conf),
-                        prob_class_id = int(prob_class_id),
-                        prob_class_conf = float(prob_class_conf),
-                        lateset_class_distance = float(lateset_class_distance),
-                        entropy = float(local_obj.entropy),
-                        change_rate = float(local_obj.change_rate),
-                        max_prob = float(local_obj.max_prob),
-                    )
+                        max_num=int(local_obj.max_common),
+                        max_class_one=int(local_obj.split_class_id_one),
+                        max_class_two=int(local_obj.split_class_id_two),
+                        is_stable=bool(local_obj.is_stable),
+                        is_low_mobility=bool(local_obj.is_low_mobility),
+                        status=str(local_obj.status),
+                        status_pending_count=int(local_obj.pending_count),
+                        status_waiting_count=int(local_obj.waiting_count),
+                        last_seen_idx=int(local_obj.get_latest_observation().idx),
+                        related_num=int(related_num),
+                        late_class_id=int(lateset_class_id),
+                        late_class_conf=float(lateset_class_conf),
+                        prob_class_id=int(prob_class_id),
+                        prob_class_conf=float(prob_class_conf),
+                        lateset_class_distance=float(lateset_class_distance),
+                        entropy=float(local_obj.entropy),
+                        change_rate=float(local_obj.change_rate),
+                        max_prob=float(local_obj.max_prob),
+                    ),
                 )
 
                 # Major plane visualization
-                major_plane_entity = base_entity_path + "/major_plane" + f"/{local_obj.uid}"
+                major_plane_entity = (
+                    base_entity_path + "/major_plane" + f"/{local_obj.uid}"
+                )
                 if local_obj.is_low_mobility:
                     # Change z axis of half_sizes to 0
                     plane_half_sizes = np.copy(aabb_half_sizes)
@@ -857,7 +860,7 @@ class LocalMapManager(BaseMapManager):
                             half_sizes=plane_half_sizes,
                             fill_mode="solid",
                             colors=[curr_obj_color],
-                        )
+                        ),
                     )
 
                 # On relation visualization
@@ -878,17 +881,18 @@ class LocalMapManager(BaseMapManager):
                         # Get the related object's bounding box
                         related_obj_center = related_obj.bbox.get_center()
 
-                        all_lines.append(np.vstack([local_obj_center, related_obj_center]).tolist())
+                        all_lines.append(
+                            np.vstack([local_obj_center, related_obj_center]).tolist()
+                        )
 
                     self.visualizer.log(
                         relation_entity,
                         self.visualizer.LineStrips3D(
-                            all_lines,
-                            colors=[[255, 255, 255]] * len(all_lines)
+                            all_lines, colors=[[255, 255, 255]] * len(all_lines)
                         ),
                         self.visualizer.AnyValues(
                             relate=str(related_obj_center),
-                        )
+                        ),
                     )
 
             if self.cfg.show_local_entities:
@@ -913,9 +917,11 @@ class LocalMapManager(BaseMapManager):
             self.visualizer.log(
                 local_path_entity,
                 self.visualizer.LineStrips3D(
-                    [path_points.tolist()],  # Convert the list of points to the required format
-                    colors=[[0, 128, 255]]  # Green color for the path
-                )
+                    [
+                        path_points.tolist()
+                    ],  # Convert the list of points to the required format
+                    colors=[[0, 128, 255]],  # Green color for the path
+                ),
             )
             new_logged_entities.add(local_path_entity)
 
@@ -924,8 +930,7 @@ class LocalMapManager(BaseMapManager):
                 if entity_path not in new_logged_entities:
                     # logger.info(f"Clearing {entity_path}")
                     self.visualizer.log(
-                        entity_path,
-                        self.visualizer.Clear(recursive=True)
+                        entity_path, self.visualizer.Clear(recursive=True)
                     )
         self.prev_entities = new_logged_entities
 
@@ -947,7 +952,12 @@ class LocalMapManager(BaseMapManager):
                 continue
             obj_name = self.visualizer.obj_classes.get_classes_arr()[obj.class_id]
             # Ignore ceiling wall
-            if obj_name == "ceiling wall" or obj_name == "carpet" or obj_name == "rug" or obj_name == "unknown":
+            if (
+                obj_name == "ceiling wall"
+                or obj_name == "carpet"
+                or obj_name == "rug"
+                or obj_name == "unknown"
+            ):
                 continue
             total_pcd += obj.pcd
 
@@ -1001,17 +1011,24 @@ class LocalMapManager(BaseMapManager):
             candidate_objects = self.filter_objects_in_global_bbox(expand_ratio=0.1)
 
             if len(candidate_objects) == 0:
-                logger.warning("[LocalMap][Path] No local objects found within the global best candidate!")
+                logger.warning(
+                    "[LocalMap][Path] No local objects found within the global best candidate!"
+                )
                 return None
 
             # Step 2. Within filtered objects, find the best score object
-            local_goal_candidate, candidate_score = self.find_best_candidate_with_inquiry(candidate_objects)
+            local_goal_candidate, candidate_score = (
+                self.find_best_candidate_with_inquiry(candidate_objects)
+            )
 
             # If the score is very far from the global score, return None
             # TODO: Magic number, using given threshold to judge whether the local score is okay or not
             diff_score = abs(candidate_score - self.global_score)
             if diff_score > 0.1:
-                logger.warning("[LocalMap][Path] The local score is too far from the global score: ", diff_score)
+                logger.warning(
+                    "[LocalMap][Path] The local score is too far from the global score: ",
+                    diff_score,
+                )
                 return None
 
             goal_3d = local_goal_candidate.bbox.get_center()
@@ -1020,7 +1037,9 @@ class LocalMapManager(BaseMapManager):
             # TODO: Check whether to use the global map or the local map
             if not nav_graph.free_space_check(goal_2d) is False:
 
-                snapped_goal = self.nav_graph.snap_to_free_space(goal_2d, self.nav_graph.free_space)
+                snapped_goal = self.nav_graph.snap_to_free_space(
+                    goal_2d, self.nav_graph.free_space
+                )
 
                 goal_2d = np.array(snapped_goal)
 
@@ -1043,9 +1062,13 @@ class LocalMapManager(BaseMapManager):
         global_max = np.array(self.global_bbox.max_bound)
 
         # Expand the bbox in the xy-plane
-        expand_vector = np.array([(global_max[0] - global_min[0]) * expand_ratio,  # Expand x
-                                (global_max[1] - global_min[1]) * expand_ratio,  # Expand y
-                                0])  # No expansion in z
+        expand_vector = np.array(
+            [
+                (global_max[0] - global_min[0]) * expand_ratio,  # Expand x
+                (global_max[1] - global_min[1]) * expand_ratio,  # Expand y
+                0,
+            ]
+        )  # No expansion in z
         expanded_min_xy = global_min[:2] - expand_vector[:2]
         expanded_max_xy = global_max[:2] + expand_vector[:2]
 
@@ -1061,8 +1084,12 @@ class LocalMapManager(BaseMapManager):
             obj_max_xy = np.array([obj_bbox.max_bound[0], obj_bbox.max_bound[1]])
 
             # Check if the object's bbox intersects with the expanded global bbox in the xy-plane
-            if (obj_min_xy[0] <= expanded_max_xy[0] and obj_max_xy[0] >= expanded_min_xy[0] and
-                obj_min_xy[1] <= expanded_max_xy[1] and obj_max_xy[1] >= expanded_min_xy[1]):
+            if (
+                obj_min_xy[0] <= expanded_max_xy[0]
+                and obj_max_xy[0] >= expanded_min_xy[0]
+                and obj_min_xy[1] <= expanded_max_xy[1]
+                and obj_max_xy[1] >= expanded_min_xy[1]
+            ):
                 candidate_objects.append(obj)
                 obj.nav_goal = True
 
@@ -1082,7 +1109,9 @@ class LocalMapManager(BaseMapManager):
                 continue
             obj.nav_goal = False
             obj_feat = torch.from_numpy(obj.clip_ft).to("cuda")
-            max_sim = F.cosine_similarity(text_query_ft.unsqueeze(0), obj_feat.unsqueeze(0), dim=-1).item()
+            max_sim = F.cosine_similarity(
+                text_query_ft.unsqueeze(0), obj_feat.unsqueeze(0), dim=-1
+            ).item()
             obj_name = self.visualizer.obj_classes.get_classes_arr()[obj.class_id]
             logger.info(f"[LocalMap][Inquiry] =========={obj_name}==============")
             logger.info(f"[LocalMap][Inquiry] Itself: \t{max_sim:.3f}")
@@ -1098,8 +1127,12 @@ class LocalMapManager(BaseMapManager):
         best_candidate, best_similarity = sorted_candidates[0]
 
         # Output the best candidate and its similarity
-        best_candidate_name = self.visualizer.obj_classes.get_classes_arr()[best_candidate.class_id]
-        logger.info(f"[LocalMap][Inquiry] Best Candidate: '{best_candidate_name}' with similarity: {best_similarity:.3f}")
+        best_candidate_name = self.visualizer.obj_classes.get_classes_arr()[
+            best_candidate.class_id
+        ]
+        logger.info(
+            f"[LocalMap][Inquiry] Best Candidate: '{best_candidate_name}' with similarity: {best_similarity:.3f}"
+        )
 
         # Set flag to the best candidate for visualization
         best_candidate.nav_goal = True
@@ -1132,9 +1165,15 @@ class LocalMapManager(BaseMapManager):
             prev_rot = prev_pose[:3, :3]
 
             # Calculate rotation matrix difference
-            delta_rotation_matrix = curr_rot @ prev_rot.T  # Current rotation matrix multiplied by previous frame rotation matrix transpose
-            angle = np.arccos(np.clip((np.trace(delta_rotation_matrix) - 1) / 2, -1.0, 1.0))  # Rotation angle (radians)
-            delta_rotation = np.degrees(angle)  # Convert to degrees for easier observation
+            delta_rotation_matrix = (
+                curr_rot @ prev_rot.T
+            )  # Current rotation matrix multiplied by previous frame rotation matrix transpose
+            angle = np.arccos(
+                np.clip((np.trace(delta_rotation_matrix) - 1) / 2, -1.0, 1.0)
+            )  # Rotation angle (radians)
+            delta_rotation = np.degrees(
+                angle
+            )  # Convert to degrees for easier observation
 
             return delta_translation, delta_rotation
         else:

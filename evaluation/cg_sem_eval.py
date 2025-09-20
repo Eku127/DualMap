@@ -1,21 +1,19 @@
+import copy
+import logging
 import os
+import pickle
 import sys
 
-import pickle
 import hydra
-import logging
-import copy
-
 import numpy as np
 import open3d as o3d
-
 from omegaconf import DictConfig
 
+from evaluation.sem_seg_eval import Evaluator
 from utils.eval.eval_utils import *
 from utils.eval.metric import *
 from utils.eval.scannet200_constants import *
 from utils.time_utils import measure_time_block
-from evaluation.sem_seg_eval import Evaluator
 
 
 class LoadedObject:
@@ -29,7 +27,7 @@ class CGEvaluator(Evaluator):
     def __init__(self, cfg):
         super(CGEvaluator, self).__init__(cfg)
         self.cg_result_path = cfg.cg_result_path
-    
+
     def load_map(self):
         # Read map built by ConceptGraphs
         # check whether load_dir exists
@@ -41,28 +39,28 @@ class CGEvaluator(Evaluator):
 
         pkl_path = self.cg_result_path
 
-        with open(pkl_path, 'rb') as f:
+        with open(pkl_path, "rb") as f:
             data = pickle.load(f)
 
-        objects = data['objects']
+        objects = data["objects"]
         # print(data['class_names'])
         obj_map = []
 
         for obj in objects:
-            pts = obj['pcd_np']
-            colors = obj['pcd_color_np']
+            pts = obj["pcd_np"]
+            colors = obj["pcd_color_np"]
             # print("color shape:", colors.shape)
-            class_id_list = obj['class_id']
+            class_id_list = obj["class_id"]
             class_id = max(class_id_list, key=class_id_list.count)
             # print("class_id:", class_id)
-            clip_feat = obj['clip_ft'].reshape(1, -1)
+            clip_feat = obj["clip_ft"].reshape(1, -1)
 
             pcd = o3d.geometry.PointCloud()
             pcd.points = o3d.utility.Vector3dVector(pts)
             pcd.colors = o3d.utility.Vector3dVector(colors)
-            
+
             obj_map.append(LoadedObject(pcd, clip_feat, class_id))
-        
+
         logging.info(f"Successfully loaded {len(obj_map)} objects")
         self.obj_map = copy.deepcopy(obj_map)
 
@@ -70,7 +68,7 @@ class CGEvaluator(Evaluator):
             # Get the constructed objects map
             rgb_full_pcd = o3d.geometry.PointCloud()
             seg_full_pcd = o3d.geometry.PointCloud()
-    
+
             for obj in obj_map:
                 # raw rgb full pcd
                 rgb_full_pcd += obj.pcd
@@ -84,10 +82,12 @@ class CGEvaluator(Evaluator):
                         color = np.array(color) / 255.0
                 seg_full_pcd += obj.pcd.paint_uniform_color(color)
 
-            o3d.io.write_point_cloud(os.path.join(
-                self.output_dir, "pred_rgb_pcd_full.pcd"), rgb_full_pcd)
-            o3d.io.write_point_cloud(os.path.join(
-                self.output_dir, "pred_seg_pcd_full.pcd"), seg_full_pcd)
+            o3d.io.write_point_cloud(
+                os.path.join(self.output_dir, "pred_rgb_pcd_full.pcd"), rgb_full_pcd
+            )
+            o3d.io.write_point_cloud(
+                os.path.join(self.output_dir, "pred_seg_pcd_full.pcd"), seg_full_pcd
+            )
 
 
 @measure_time_block("Evaluation Time")

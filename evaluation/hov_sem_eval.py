@@ -1,24 +1,22 @@
+import copy
+import logging
 import os
 import sys
 
 import hydra
-import logging
-import torch
-import copy
-
 import numpy as np
 import open3d as o3d
-
+import torch
 from natsort import natsorted
 from omegaconf import DictConfig
-from sklearn.metrics.pairwise import cosine_similarity
 from plyfile import PlyData
+from sklearn.metrics.pairwise import cosine_similarity
 
+from evaluation.sem_seg_eval import Evaluator
 from utils.eval.eval_utils import *
 from utils.eval.metric import *
 from utils.eval.scannet200_constants import *
 from utils.time_utils import measure_time_block
-from evaluation.sem_seg_eval import Evaluator
 
 
 class LoadedObject:
@@ -32,7 +30,7 @@ class HOVEvaluator(Evaluator):
     def __init__(self, cfg):
         super(HOVEvaluator, self).__init__(cfg)
         self.hov_result_path = cfg.hov_result_path
-    
+
     def load_map(self):
         # Read map built by HOV-SG
         # check whether load_dir exists
@@ -46,7 +44,7 @@ class HOVEvaluator(Evaluator):
         logging.info("Loading saved obj results from: {}".format(ply_dir))
         ply_path_list = os.listdir(ply_dir)
         ply_path_list = natsorted(ply_path_list)
-        
+
         feat_path = os.path.join(self.hov_result_path, "mask_feats.pt")
         feat_tensor = torch.load(feat_path)
         feats = feat_tensor.numpy()
@@ -57,17 +55,24 @@ class HOVEvaluator(Evaluator):
         class_ids = [id for id in self.class_id_names]
         # prompt the class names into a sequence
         # Then generate the clip feat for each GT class name
-        class_names_feats = get_text_features(self.clip_length, class_names, self.clip_model, self.clip_tokenizer)
+        class_names_feats = get_text_features(
+            self.clip_length, class_names, self.clip_model, self.clip_tokenizer
+        )
 
         obj_map = []
         for ply_path in ply_path_list:
             plydata = PlyData.read(os.path.join(ply_dir, ply_path))
-            points = np.vstack([plydata['vertex'][dim] for dim in ('x', 'y', 'z')]).T
-            colors = np.vstack([plydata['vertex'][dim] for dim in ('red', 'green', 'blue')]).T / 255.0
+            points = np.vstack([plydata["vertex"][dim] for dim in ("x", "y", "z")]).T
+            colors = (
+                np.vstack(
+                    [plydata["vertex"][dim] for dim in ("red", "green", "blue")]
+                ).T
+                / 255.0
+            )
             pcd = o3d.geometry.PointCloud()
             pcd.points = o3d.utility.Vector3dVector(points)
             pcd.colors = o3d.utility.Vector3dVector(colors)
-            clip_feat = feats[int(ply_path.split('_')[1].split('.')[0]), :]
+            clip_feat = feats[int(ply_path.split("_")[1].split(".")[0]), :]
             # clip_feat = clip_feat / np.linalg.norm(clip_feat)
             clip_feat = clip_feat.reshape(1, -1)
             # calculate the cosine similarity between obj_feats and class_names_feats
@@ -79,7 +84,7 @@ class HOVEvaluator(Evaluator):
                 continue
             # print(self.class_id_names[class_id])
             obj_map.append(LoadedObject(pcd, clip_feat, class_id))
-        
+
         logging.info(f"Successfully loaded {len(obj_map)} objects")
         self.obj_map = copy.deepcopy(obj_map)
 
@@ -87,7 +92,7 @@ class HOVEvaluator(Evaluator):
             # Get the constructed objects map
             rgb_full_pcd = o3d.geometry.PointCloud()
             seg_full_pcd = o3d.geometry.PointCloud()
-    
+
             for obj in obj_map:
                 # raw rgb full pcd
                 rgb_full_pcd += obj.pcd
@@ -101,10 +106,12 @@ class HOVEvaluator(Evaluator):
                         color = np.array(color) / 255.0
                 seg_full_pcd += obj.pcd.paint_uniform_color(color)
 
-            o3d.io.write_point_cloud(os.path.join(
-                self.output_dir, "pred_rgb_pcd_full.pcd"), rgb_full_pcd)
-            o3d.io.write_point_cloud(os.path.join(
-                self.output_dir, "pred_seg_pcd_full.pcd"), seg_full_pcd)
+            o3d.io.write_point_cloud(
+                os.path.join(self.output_dir, "pred_rgb_pcd_full.pcd"), rgb_full_pcd
+            )
+            o3d.io.write_point_cloud(
+                os.path.join(self.output_dir, "pred_seg_pcd_full.pcd"), seg_full_pcd
+            )
 
 
 @measure_time_block("Evaluation Time")

@@ -1,15 +1,14 @@
-import cv2
 import random
 
+import cv2
+import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 import open3d as o3d
-import networkx as nx
-import matplotlib.pyplot as plt
-
-from scipy.spatial import Voronoi, KDTree
-from scipy.ndimage import binary_erosion
-from scipy.spatial import KDTree
 from omegaconf import DictConfig
+from scipy.ndimage import binary_erosion
+from scipy.spatial import KDTree, Voronoi
+
 
 class LayoutMap:
     def __init__(self, cfg, resolution=0.1, percentile=90, min_area=5, kernel_size=3):
@@ -57,7 +56,10 @@ class LayoutMap:
         occ_map, x_edges, y_edges = np.histogram2d(
             xy_points[:, 0],
             xy_points[:, 1],
-            bins=(int((x_max - x_min) / self.resolution), int((y_max - y_min) / self.resolution))
+            bins=(
+                int((x_max - x_min) / self.resolution),
+                int((y_max - y_min) / self.resolution),
+            ),
         )
         return occ_map, x_edges, y_edges
 
@@ -101,7 +103,7 @@ class LayoutMap:
         edited_map = processed_map.copy()
         cell_size = 3  # Adjust the size of each cell for better visualization
         drawing = False
-        
+
         # Function to handle mouse events
         def mouse_callback(event, x, y, flags, param):
             nonlocal drawing
@@ -121,9 +123,13 @@ class LayoutMap:
 
         # Function to update display after modification
         def update_display():
-            display_map = cv2.resize(edited_map * 255, (edited_map.shape[1] * cell_size, edited_map.shape[0] * cell_size), interpolation=cv2.INTER_NEAREST)
+            display_map = cv2.resize(
+                edited_map * 255,
+                (edited_map.shape[1] * cell_size, edited_map.shape[0] * cell_size),
+                interpolation=cv2.INTER_NEAREST,
+            )
             cv2.imshow("Editable Map", display_map)
-        
+
         # Create window and set mouse callback
         cv2.namedWindow("Editable Map")
         cv2.setMouseCallback("Editable Map", mouse_callback)
@@ -131,7 +137,7 @@ class LayoutMap:
 
         while True:
             key = cv2.waitKey(1)
-            if key == ord('q'):  # Press 'q' to finish
+            if key == ord("q"):  # Press 'q' to finish
                 break
 
         cv2.destroyAllWindows()
@@ -142,7 +148,9 @@ class LayoutMap:
         Remove small connected components.
         """
         cleaned_map = np.zeros_like(binary_map, dtype=np.uint8)
-        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary_map, connectivity=8)
+        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(
+            binary_map, connectivity=8
+        )
 
         for label in range(1, num_labels):
             area = stats[label, cv2.CC_STAT_AREA]
@@ -155,10 +163,14 @@ class LayoutMap:
         """
         Apply morphological operations to the binary image.
         """
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (self.kernel_size, self.kernel_size))
+        kernel = cv2.getStructuringElement(
+            cv2.MORPH_RECT, (self.kernel_size, self.kernel_size)
+        )
         return cv2.morphologyEx(binary_map, cv2.MORPH_CLOSE, kernel)
 
-    def convert_binary_map_to_3d_points(self, binary_map, num_samples_per_grid=10, z_value=0.0):
+    def convert_binary_map_to_3d_points(
+        self, binary_map, num_samples_per_grid=10, z_value=0.0
+    ):
         """
         Convert wall grid cells in the binary map to 3D point cloud.
         """
@@ -192,7 +204,9 @@ class LayoutMap:
         """
         binary_map = self.process_binary_map()
         wall_points = self.convert_binary_map_to_3d_points(
-            binary_map, num_samples_per_grid=num_samples_per_grid, z_value=self.cfg.floor_height
+            binary_map,
+            num_samples_per_grid=num_samples_per_grid,
+            z_value=self.cfg.floor_height,
         )
         self.wall_pcd = o3d.geometry.PointCloud()
         self.wall_pcd.points = o3d.utility.Vector3dVector(wall_points)
@@ -202,7 +216,7 @@ class LayoutMap:
         self.save_wall_pcd(layout_pcd_path)
 
         print(f"Extracted wall point cloud with {len(self.wall_pcd.points)} points.")
-    
+
     def save_wall_pcd(self, output_path="wall_points.pcd"):
         """
         Save wall point cloud to disk.
@@ -222,8 +236,16 @@ class LayoutMap:
             return
         o3d.visualization.draw_geometries([self.wall_pcd])
 
+
 class RRT:
-    def __init__(self, algorithm="rrt", max_iter=1000, steer_length=5, search_radius=10, goal_sample_rate=0.1):
+    def __init__(
+        self,
+        algorithm="rrt",
+        max_iter=1000,
+        steer_length=5,
+        search_radius=10,
+        goal_sample_rate=0.1,
+    ):
         """
         Initialize the RRT planner with different algorithm choices.
 
@@ -246,7 +268,7 @@ class RRT:
     def set_occ_map(self, occupancy_grid_map):
         """Set the occupancy grid map."""
         self.occupancy_grid_map = occupancy_grid_map
-    
+
     def set_start_goal(self, start, goal):
         """Set the start point."""
         self.start = start
@@ -255,13 +277,18 @@ class RRT:
         self.tree_nodes = [start]
         self.tree_parents = {tuple(start): None}
         self.tree_costs = {tuple(start): 0}
-        self.tree_heuristics = {tuple(start): np.linalg.norm(np.array(start) - np.array(goal))}
+        self.tree_heuristics = {
+            tuple(start): np.linalg.norm(np.array(start) - np.array(goal))
+        }
         self.kdtree = KDTree(self.tree_nodes)
-
 
     def is_free(self, x, y):
         """Check if the given point is free (not occupied)."""
-        return 0 <= x < self.occupancy_grid_map.shape[1] and 0 <= y < self.occupancy_grid_map.shape[0] and self.occupancy_grid_map[int(y), int(x)] == 1
+        return (
+            0 <= x < self.occupancy_grid_map.shape[1]
+            and 0 <= y < self.occupancy_grid_map.shape[0]
+            and self.occupancy_grid_map[int(y), int(x)] == 1
+        )
 
     def steer(self, p1, p2):
         """Steer from point p1 to point p2 with a defined step length."""
@@ -282,17 +309,19 @@ class RRT:
         """
         # Query nearby nodes using KDTree
         indices = self.kdtree.query_ball_point(new_node, search_radius)
-        
+
         # For each nearby node, check if the path cost can be improved by connecting to new_node
         for idx in indices:
             node = self.tree_nodes[idx]
-            
+
             # Check if the node is already in the tree_costs (this should always be the case)
             if node not in self.tree_costs:
-                self.tree_costs[node] = float('inf')  # Initialize with a very high cost
-            
-            potential_cost = self.tree_costs[new_node] + np.linalg.norm(np.array(new_node) - np.array(node))
-            
+                self.tree_costs[node] = float("inf")  # Initialize with a very high cost
+
+            potential_cost = self.tree_costs[new_node] + np.linalg.norm(
+                np.array(new_node) - np.array(node)
+            )
+
             # If the potential cost is lower than the current cost, update the parent and cost
             if potential_cost < self.tree_costs[node]:
                 self.tree_parents[node] = new_node
@@ -304,7 +333,10 @@ class RRT:
             offset = np.random.normal(scale=5, size=2)
             return tuple(np.array(self.goal) + offset)
         else:
-            return (random.uniform(0, self.occupancy_grid_map.shape[1]), random.uniform(0, self.occupancy_grid_map.shape[0]))
+            return (
+                random.uniform(0, self.occupancy_grid_map.shape[1]),
+                random.uniform(0, self.occupancy_grid_map.shape[0]),
+            )
 
     def plan(self):
         """Execute the chosen RRT algorithm."""
@@ -315,7 +347,9 @@ class RRT:
         elif self.algorithm == "rrt_star":
             return self.rrt_star_plan()
         else:
-            raise ValueError(f"Unknown algorithm {self.algorithm}. Choose 'rrt', 'rrt_sharp', or 'rrt_star'.")
+            raise ValueError(
+                f"Unknown algorithm {self.algorithm}. Choose 'rrt', 'rrt_sharp', or 'rrt_star'."
+            )
 
     def rrt_plan(self):
         """Standard RRT path planning."""
@@ -331,7 +365,10 @@ class RRT:
                 self.kdtree = KDTree(self.tree_nodes)
 
                 # Check if the goal is reached
-                if np.linalg.norm(np.array(new_node) - np.array(self.goal)) <= self.steer_length:
+                if (
+                    np.linalg.norm(np.array(new_node) - np.array(self.goal))
+                    <= self.steer_length
+                ):
                     self.tree_nodes.append(self.goal)
                     self.tree_parents[self.goal] = new_node
                     break
@@ -347,7 +384,9 @@ class RRT:
 
             new_node = self.steer(nearest_node, rand_point)
             if self.is_free(*new_node):
-                cost = self.tree_costs[nearest_node] + np.linalg.norm(np.array(nearest_node) - np.array(new_node))
+                cost = self.tree_costs[nearest_node] + np.linalg.norm(
+                    np.array(nearest_node) - np.array(new_node)
+                )
                 self.tree_nodes.append(new_node)
                 self.tree_parents[new_node] = nearest_node
                 self.tree_costs[new_node] = cost
@@ -357,7 +396,10 @@ class RRT:
                 self.rewire(new_node)
 
                 # Check if the goal is reached
-                if np.linalg.norm(np.array(new_node) - np.array(self.goal)) <= self.steer_length:
+                if (
+                    np.linalg.norm(np.array(new_node) - np.array(self.goal))
+                    <= self.steer_length
+                ):
                     self.tree_nodes.append(self.goal)
                     self.tree_parents[self.goal] = new_node
                     break
@@ -381,7 +423,10 @@ class RRT:
                 self.rewire(new_node)
 
                 # Check if the goal is reached
-                if np.linalg.norm(np.array(new_node) - np.array(self.goal)) <= self.steer_length:
+                if (
+                    np.linalg.norm(np.array(new_node) - np.array(self.goal))
+                    <= self.steer_length
+                ):
                     self.tree_nodes.append(self.goal)
                     self.tree_parents[self.goal] = new_node
                     break
@@ -414,13 +459,14 @@ class RRT:
         # Draw the path if provided
         if path:
             path = np.array(path)
-            plt.plot(path[:, 0], path[:, 1], color='blue', linewidth=2, marker='o')
+            plt.plot(path[:, 0], path[:, 1], color="blue", linewidth=2, marker="o")
 
         plt.title("Occupancy Grid Map and Path")
         plt.xlabel("X Cells")
         plt.ylabel("Y Cells")
         plt.grid(True)
         plt.show()
+
 
 class NavigationGraph:
     def __init__(self, cfg: DictConfig, pcd: o3d.geometry.PointCloud, cell_size: int):
@@ -442,7 +488,7 @@ class NavigationGraph:
         self.cell_size = cell_size
         self.pcd = pcd
 
-        self.pos_path=None
+        self.pos_path = None
 
         self.snapped_goal = None
 
@@ -469,7 +515,9 @@ class NavigationGraph:
         occupancy_grid_map = np.zeros(self.grid_size[::-1], dtype=int)
 
         # Handle point cloud with negative values
-        point_cloud = np.asarray(self.pcd.points)  # Get the point cloud as a numpy array
+        point_cloud = np.asarray(
+            self.pcd.points
+        )  # Get the point cloud as a numpy array
 
         # Adjust only x and y coordinates to positive values
         point_cloud[:, 0] -= self.pcd_min[0]  # Adjust x-coordinate
@@ -528,20 +576,26 @@ class NavigationGraph:
 
     def is_in_bounds(self, point):
         x, y = point
-        return (0 <= x < self.free_space.shape[0]) and (0 <= y < self.free_space.shape[1])
+        return (0 <= x < self.free_space.shape[0]) and (
+            0 <= y < self.free_space.shape[1]
+        )
 
     def visualize_occupancy_map(self, occupancy_grid_map):
         """Visualize the occupancy grid map using matplotlib."""
         plt.figure(figsize=(8, 8))
         # Use cmap='gray' instead of 'gray_r'
-        plt.imshow(occupancy_grid_map, cmap="gray", origin="lower", interpolation="nearest")
+        plt.imshow(
+            occupancy_grid_map, cmap="gray", origin="lower", interpolation="nearest"
+        )
         plt.colorbar(label="Occupancy")
         plt.title("Occupancy Grid Map")
         plt.xlabel("X Cells")
         plt.ylabel("Y Cells")
         plt.show()
 
-    def visualize_occupancy_map_with_point(self, occupancy_grid_map, start=None, end=None):
+    def visualize_occupancy_map_with_point(
+        self, occupancy_grid_map, start=None, end=None
+    ):
         """
         Visualize the occupancy grid map using matplotlib and optionally visualize the start and end points.
 
@@ -553,19 +607,27 @@ class NavigationGraph:
         plt.figure(figsize=(8, 8))
 
         # Display the occupancy grid map
-        plt.imshow(occupancy_grid_map, cmap="gray", origin="lower", interpolation="nearest")
+        plt.imshow(
+            occupancy_grid_map, cmap="gray", origin="lower", interpolation="nearest"
+        )
 
         # Add the start point if provided
         if start is not None:
             # Check if the start point is within the grid bounds
-            if (0 <= start[0] < occupancy_grid_map.shape[1]) and (0 <= start[1] < occupancy_grid_map.shape[0]):
-                plt.scatter(start[0], start[1], color='blue', label="Start", s=50, marker='o')
+            if (0 <= start[0] < occupancy_grid_map.shape[1]) and (
+                0 <= start[1] < occupancy_grid_map.shape[0]
+            ):
+                plt.scatter(
+                    start[0], start[1], color="blue", label="Start", s=50, marker="o"
+                )
 
         # Add the end point if provided and if it is within the grid bounds
         if end is not None:
             # Check if the end point is within the grid bounds
-            if (0 <= end[0] < occupancy_grid_map.shape[1]) and (0 <= end[1] < occupancy_grid_map.shape[0]):
-                plt.scatter(end[0], end[1], color='red', label="End", s=50, marker='x')
+            if (0 <= end[0] < occupancy_grid_map.shape[1]) and (
+                0 <= end[1] < occupancy_grid_map.shape[0]
+            ):
+                plt.scatter(end[0], end[1], color="red", label="End", s=50, marker="x")
 
         # Add a colorbar, title, and labels
         plt.colorbar(label="Occupancy")
@@ -613,8 +675,10 @@ class NavigationGraph:
         nearest_point = free_space_indices[nearest_idx]
 
         return tuple(nearest_point)  # Return the nearest free space point (row, col)
-    
-    def snap_to_free_space_directional(self, point, start_point, free_space_map, search_radius=50):
+
+    def snap_to_free_space_directional(
+        self, point, start_point, free_space_map, search_radius=50
+    ):
         """
         Snap from the target point to the nearest free space along the direction towards the start point.
 
@@ -652,7 +716,10 @@ class NavigationGraph:
             new_y, new_x = y + offset[0], x + offset[1]
 
             # Boundary check
-            if 0 <= new_y < free_space_map.shape[0] and 0 <= new_x < free_space_map.shape[1]:
+            if (
+                0 <= new_y < free_space_map.shape[0]
+                and 0 <= new_x < free_space_map.shape[1]
+            ):
                 if free_space_map[new_y, new_x] == 1:
                     return (new_y, new_x)
 
@@ -671,7 +738,7 @@ class NavigationGraph:
         return (
             col * self.cell_size + self.pcd_min[0],
             row * self.cell_size + self.pcd_min[1],
-            z
+            z,
         )
 
     def calculate_pos_2d(self, point_3d):
@@ -745,7 +812,7 @@ class NavigationGraph:
                     pos=(
                         src[1] * self.cell_size + self.pcd_min[0],
                         src[0] * self.cell_size + self.pcd_min[1],
-                    )
+                    ),
                 )
             if (tar[0], tar[1]) not in voronoi_graph.nodes:
                 voronoi_graph.add_node(
@@ -753,7 +820,7 @@ class NavigationGraph:
                     pos=(
                         tar[1] * self.cell_size + self.pcd_min[0],
                         tar[0] * self.cell_size + self.pcd_min[1],
-                    )
+                    ),
                 )
             # check if the edge already exists
             if not voronoi_graph.has_edge((src[0], src[1]), (tar[0], tar[1])):
@@ -771,11 +838,13 @@ class NavigationGraph:
         # self.visualize_graph(voronoi_graph,"remove_degree_2_nodes_and_reconnect", show_nodes=True)
 
         return voronoi_graph
-    
-    def visualize_graph(self, graph, title="Voronoi Graph", show_nodes=True, show_edges=True):
+
+    def visualize_graph(
+        self, graph, title="Voronoi Graph", show_nodes=True, show_edges=True
+    ):
         """
         Function to visualize a graph over the free space map.
-        
+
         Parameters:
             graph (networkx.Graph): The graph to visualize.
             title (str): The title of the plot.
@@ -808,9 +877,8 @@ class NavigationGraph:
         plt.figure(figsize=(10, 10))
         plt.imshow(fig_free)  # Show image
         plt.title(title)  # Add title
-        plt.axis('off')  # Disable axis
+        plt.axis("off")  # Disable axis
         plt.show()
-
 
     def remove_degree_2_nodes_and_reconnect(self, graph):
         # Find nodes with degree 2
@@ -824,7 +892,9 @@ class NavigationGraph:
             if len(neighbors) == 2:
                 n1, n2 = neighbors
                 # Add a new edge to connect the two neighbors
-                dist = np.linalg.norm(np.array(graph.nodes[n1]['pos']) - np.array(graph.nodes[n2]['pos']))
+                dist = np.linalg.norm(
+                    np.array(graph.nodes[n1]["pos"]) - np.array(graph.nodes[n2]["pos"])
+                )
                 graph.add_edge(n1, n2, dist=dist)
 
                 # Remove the original edges connected to the degree-2 node
@@ -837,16 +907,16 @@ class NavigationGraph:
     def find_nearest_node(self, point, goal=None):
         """
         Find the nearest node in the graph to the given point, considering direction and excluding nodes with degree 1.
-        
+
         Args:
             point: Target point (x, y)
             goal: Optional, target point (x, y), used to determine direction from start to goal
-        
+
         Returns:
             nearest_node: The nearest node to the target point
         """
         nearest_node = None
-        min_dist = float('inf')
+        min_dist = float("inf")
 
         # If there is a goal, calculate the direction vector from start to goal
         if goal is not None:
@@ -857,7 +927,9 @@ class NavigationGraph:
             if self.graph.degree(node) == 1:
                 continue
 
-            dist = np.linalg.norm(np.array(node) - np.array(point))  # Calculate Euclidean distance
+            dist = np.linalg.norm(
+                np.array(node) - np.array(point)
+            )  # Calculate Euclidean distance
             if dist < min_dist:
                 # If there is a goal, further check if the node is in the correct direction
                 if goal is not None:
@@ -888,12 +960,15 @@ class NavigationGraph:
         """
         smoothed_path = [path[0]]  # Start from the first point
         for i in range(1, len(path) - 1):
-            prev_point = np.array(path[i-1])
+            prev_point = np.array(path[i - 1])
             current_point = np.array(path[i])
-            next_point = np.array(path[i+1])
+            next_point = np.array(path[i + 1])
 
             # Smooth the current node by weighted average
-            smoothed_point = smoothing_factor * current_point + (1 - smoothing_factor) * (prev_point + next_point) / 2
+            smoothed_point = (
+                smoothing_factor * current_point
+                + (1 - smoothing_factor) * (prev_point + next_point) / 2
+            )
             smoothed_path.append(tuple(smoothed_point))
 
         smoothed_path.append(path[-1])  # End point
@@ -945,11 +1020,11 @@ class NavigationGraph:
     def find_shortest_path(self, start, goal):
         """
         Find the shortest path from start to goal in the Voronoi graph using Dijkstra's algorithm.
-        
+
         Args:
             start: Start point coordinates (x, y)
             goal: Goal point coordinates (x, y)
-        
+
         Returns:
             path: List of nodes representing the shortest path from start to goal
         """
@@ -959,7 +1034,12 @@ class NavigationGraph:
 
         # Use Dijkstra's algorithm to find the shortest path
         try:
-            path = nx.dijkstra_path(self.graph, source=nearest_start_node, target=nearest_goal_node, weight='dist')
+            path = nx.dijkstra_path(
+                self.graph,
+                source=nearest_start_node,
+                target=nearest_goal_node,
+                weight="dist",
+            )
 
             full_path = [start] + path + [goal]
 
@@ -1013,13 +1093,15 @@ class NavigationGraph:
         fig_free = cv2.cvtColor(fig_free, cv2.COLOR_GRAY2BGR)
 
         # Draw the start point
-        cv2.circle(fig_free, tuple(np.int32(start[::-1])), 2, (255, 0, 0), -1)  # Red dot represents start
+        cv2.circle(
+            fig_free, tuple(np.int32(start[::-1])), 2, (255, 0, 0), -1
+        )  # Red dot represents start
 
         # Set up matplotlib image
         fig, ax = plt.subplots(figsize=(10, 10))
-        ax.imshow(fig_free, origin='lower')
+        ax.imshow(fig_free, origin="lower")
         ax.set_title("Click to select Goal Points (Press Q to finish)")
-        ax.axis('off')  # Hide axes
+        ax.axis("off")  # Hide axes
 
         goal = [None]  # Container to store the goal point
         path = [None]  # Container to store the path
@@ -1038,9 +1120,9 @@ class NavigationGraph:
 
             # Clear previously drawn image content
             ax.clear()
-            ax.imshow(fig_free, origin='lower')
+            ax.imshow(fig_free, origin="lower")
             ax.set_title("Click to select Goal Points (Press Q to finish)")
-            ax.axis('off')
+            ax.axis("off")
 
             # Check if the goal point is in free space
             if self.free_space_check(goal[0]):
@@ -1051,7 +1133,9 @@ class NavigationGraph:
 
                 # Find snapped goal point
                 # snapped_goal = self.snap_to_free_space(goal[0], self.free_space)
-                snapped_goal = self.snap_to_free_space_directional(goal[0], start, self.free_space)
+                snapped_goal = self.snap_to_free_space_directional(
+                    goal[0], start, self.free_space
+                )
                 snapped_goal_2d = snapped_goal
                 print(f"Snapped Goal Point: {snapped_goal}, Goal Point: {goal[0]}")
                 ax.plot(
@@ -1074,21 +1158,33 @@ class NavigationGraph:
                 path[0] = self.find_shortest_path(start, nearest_node)
 
             # Draw the goal point and path
-            ax.plot(goal_x, goal_y, 'bo', markersize=10, label="Goal")  # Blue dot represents goal
-            if not self.free_space_check(goal[0]):  # If the goal point is not in free space
-                ax.plot(nearest_node[1], nearest_node[0], 'go', markersize=10, label="Nearest Node")  # Green dot represents nearest node
+            ax.plot(
+                goal_x, goal_y, "bo", markersize=10, label="Goal"
+            )  # Blue dot represents goal
+            if not self.free_space_check(
+                goal[0]
+            ):  # If the goal point is not in free space
+                ax.plot(
+                    nearest_node[1],
+                    nearest_node[0],
+                    "go",
+                    markersize=10,
+                    label="Nearest Node",
+                )  # Green dot represents nearest node
 
             if path[0]:  # If the path is successfully generated, draw the path
                 for i in range(len(path[0]) - 1):
                     src, tar = path[0][i], path[0][i + 1]
-                    ax.plot([src[1], tar[1]], [src[0], tar[0]], 'g-', linewidth=1)  # Green line represents the path
+                    ax.plot(
+                        [src[1], tar[1]], [src[0], tar[0]], "g-", linewidth=1
+                    )  # Green line represents the path
 
             # Update the image
             fig.canvas.draw()
             print(f"Path Generated with length: {len(path[0])}")
 
         # Connect mouse click event
-        cid = fig.canvas.mpl_connect('button_press_event', onclick)
+        cid = fig.canvas.mpl_connect("button_press_event", onclick)
 
         # Display the image and wait for user key press to end
         plt.show()
@@ -1102,17 +1198,18 @@ class NavigationGraph:
     def save_pose_path_to_disk(self, pos_path, filename="pose_path.json"):
         """
         Save the pose_path as a JSON file.
-        
+
         Args:
             pos_path: List of paths to save (3D coordinate list)
             filename: Filename to store, default is "pose_path.json"
         """
         import json
+
         # Convert pos_path to a list format to avoid serialization issues with NumPy arrays
         pos_path_list = [list(pos) for pos in pos_path]
 
         # Save to disk
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             json.dump(pos_path_list, f, indent=4)
         print(f"Pose path saved to {filename}")
 
@@ -1136,7 +1233,13 @@ class NavigationGraph:
             tar = path[i + 1]
 
             # Draw the edge between nodes (line connecting the path)
-            cv2.line(fig_free, tuple(np.int32(src[::-1])), tuple(np.int32(tar[::-1])), (0, 255, 0), 1)
+            cv2.line(
+                fig_free,
+                tuple(np.int32(src[::-1])),
+                tuple(np.int32(tar[::-1])),
+                (0, 255, 0),
+                1,
+            )
 
         # Iterate through path nodes, draw the nodes
         for node in path:
@@ -1144,9 +1247,9 @@ class NavigationGraph:
 
         # Display the path image
         plt.figure(figsize=(10, 10))
-        plt.imshow(fig_free, origin='lower')
+        plt.imshow(fig_free, origin="lower")
         plt.title("Path Visualization")  # Add title
-        plt.axis('off')  # Turn off axis display
+        plt.axis("off")  # Turn off axis display
         plt.show()
 
         return fig_free
@@ -1178,7 +1281,7 @@ class NavigationGraph:
             print("Start point is out of bounds!")
             self.pos_path = None
             return []
-        
+
         if not self.is_in_bounds(goal):
             print("Goal point is out of bounds!")
             self.pos_path = None
@@ -1236,6 +1339,7 @@ def remaining_path(path, current_pose):
     remaining_path = path[closest_idx:]
     return remaining_path
 
+
 def angle_between_points_3d(p1, p2, p3):
     """
     Calculate the angle between three 3D points on the XY plane (in degrees).
@@ -1263,6 +1367,7 @@ def angle_between_points_3d(p1, p2, p3):
     angle = np.degrees(np.arccos(cos_theta))
 
     return angle
+
 
 def remove_sharp_turns_3d(path, angle_threshold=60):
     """
@@ -1300,5 +1405,3 @@ def remove_sharp_turns_3d(path, angle_threshold=60):
         filtered_path = filter_once(filtered_path)
 
     return filtered_path
-
-

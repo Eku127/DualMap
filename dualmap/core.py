@@ -1,34 +1,34 @@
-import os
 import json
-import threading
+import logging
+import os
+
+# Optionally import pdb for debugging purposes
+import pdb
 import queue
+import threading
 import time
 from pathlib import Path
-import logging
-import psutil
 
 import numpy as np
+import psutil
+from omegaconf import DictConfig, OmegaConf
 from scipy.spatial.transform import Rotation as R
-from omegaconf import OmegaConf, DictConfig
 
-from utils.types import DataInput, GoalMode
-from utils.object_detector import Detector
-from utils.local_map_manager import LocalMapManager
 from utils.global_map_manager import GlobalMapManager
-from utils.visualizer import ReRunVisualizer
-from utils.time_utils import (
-    timing_context,
-    print_timing_results,
-    save_timing_results,
-    get_map_memory_usage,
-)
+from utils.local_map_manager import LocalMapManager
 from utils.navigation_helper import (
     remaining_path,
     remove_sharp_turns_3d,
 )
-
-# Optionally import pdb for debugging purposes
-import pdb
+from utils.object_detector import Detector
+from utils.time_utils import (
+    get_map_memory_usage,
+    print_timing_results,
+    save_timing_results,
+    timing_context,
+)
+from utils.types import DataInput, GoalMode
+from utils.visualizer import ReRunVisualizer
 
 # Set up the module-level logger
 logger = logging.getLogger(__name__)
@@ -148,8 +148,10 @@ class Dualmap:
         ]
 
         # if has cfg.ros_dataset_config, add it to the list
-        if 'ros_stream_config_path' in self.cfg:
-            cfg_items.append(("ROS Stream Config Path", self.cfg.ros_stream_config_path))
+        if "ros_stream_config_path" in self.cfg:
+            cfg_items.append(
+                ("ROS Stream Config Path", self.cfg.ros_stream_config_path)
+            )
 
         # Define separator line length
         line_length = 60
@@ -275,7 +277,6 @@ class Dualmap:
             global_obs_list = self.local_map_manager.get_global_observations()
             self.local_map_manager.clear_global_observations()
             self.global_map_manager.process_observations(global_obs_list)
-
 
     def parallel_process(self, data_input: DataInput):
         """
