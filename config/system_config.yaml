@@ -118,6 +118,30 @@ pcd_sample_ratio: 0.04
 # similarity threshold for matching
 sim_threshold: 1.2
 
+# Mobility thresholds
+mobility:
+  # Threshold for similarity comparison for low mobility and high mobility
+  similarity_delta: 0.05
+  # Threshold for descriptor similarity for low mobility and high mobility
+  descriptor_threshold: 0.45
+
+# Object matching thresholds
+object_matching:
+  # Threshold for overlap ratio in object matching
+  overlap_ratio: 0.8
+  # Threshold for score difference in local goal object finding
+  score_difference: 0.1
+
+# Object tracking thresholds
+object_tracking:
+  # Threshold for maximum similarity value for global obs update
+  max_similarity: 0.8
+
+# On relation check thresholds
+on_relation:
+  # Threshold for plane distance in on_relation_check
+  plane_distance: 0.1
+
 ### KEYFRAME CONFIG
 time_threshold: 0.5
 pose_threshold: 0.1

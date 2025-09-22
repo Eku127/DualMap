@@ -393,8 +393,8 @@ class Tracker:
         for obs_idx in range(len_curr_obs):
             max_sim_value = sim_mat[obs_idx].max()
 
-            # TODO: Magic number -> thereshold
-            if max_sim_value > 0.8:
+            # Use configurable threshold
+            if max_sim_value > self.cfg.object_tracking.max_similarity:
                 map_idx = sim_mat[obs_idx].argmax().item()
 
                 # print obs_idx, map_idx, max_sim_value
