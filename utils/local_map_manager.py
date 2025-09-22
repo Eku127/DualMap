@@ -449,15 +449,14 @@ class LocalMapManager(BaseMapManager):
         overlap_ratio = overlap_area_size / test_area
 
         # if the ratio is lower than the threshold, return False
-        # TODO: Magic number -> threshold
-        if overlap_ratio < 0.8:
+        if overlap_ratio < self.cfg.object_matching.overlap_ratio:
             return False
 
         # Check if the down z value of test_obj is near the base_obj's major plane
-        # TODO: Magic number -> threshold of near, currently set as 0.1
+        plane_distance = self.cfg.on_relation.plane_distance
         if not (
-            test_min_bound[2] - 0.1 <= base_obj.major_plane_info
-            and base_obj.major_plane_info <= test_min_bound[2] + 0.2
+            test_min_bound[2] - plane_distance <= base_obj.major_plane_info
+            and base_obj.major_plane_info <= test_min_bound[2] + (plane_distance * 2)
         ):
             return False
 
@@ -476,8 +475,8 @@ class LocalMapManager(BaseMapManager):
         curr_obs.pcd = obj.pcd
         curr_obs.bbox = obj.pcd.get_axis_aligned_bounding_box()
         curr_obs.clip_ft = obj.clip_ft
-        # TODO: Magic number -> downsample voxel size
-        pcd_2d = obj.voxel_downsample_2d(obj.pcd, 0.02)
+        # Use configurable voxel size for downsampling
+        pcd_2d = obj.voxel_downsample_2d(obj.pcd, self.cfg.downsample_voxel_size)
         curr_obs.pcd_2d = pcd_2d
         curr_obs.bbox_2d = pcd_2d.get_axis_aligned_bounding_box()
 
@@ -1022,9 +1021,8 @@ class LocalMapManager(BaseMapManager):
             )
 
             # If the score is very far from the global score, return None
-            # TODO: Magic number, using given threshold to judge whether the local score is okay or not
             diff_score = abs(candidate_score - self.global_score)
-            if diff_score > 0.1:
+            if diff_score > self.cfg.object_matching.score_difference:
                 logger.warning(
                     "[LocalMap][Path] The local score is too far from the global score: ",
                     diff_score,

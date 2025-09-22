@@ -5,6 +5,9 @@ ros_topics:
   depth: "/dominic/forward/depth/image_rect_raw"
   odom: "/dominic/forward/colmap_odom"
 
+# Depth factor for converting depth values from millimeters to meters
+depth_factor: 1000.0
+
 intrinsic:
   fx: 372.4634094238281
   fy: 371.5072021484375

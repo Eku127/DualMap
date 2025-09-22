@@ -6,6 +6,9 @@ ros_topics:
   odom: "/camera/pose"
   camera_info: "/camera_info"
 
+# Depth factor for converting depth values from millimeters to meters
+depth_factor: 1000.0
+
 intrinsic:
   fx: 600
   fy: 600

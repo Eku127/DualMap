@@ -1380,13 +1380,16 @@ class Detector:
         # hl_debug = np.array([sim_lm, sim_hm, sim_lm_des])
         # hl_idx = np.array([lm_idx, hm_idx, lm_des_idx])
 
-        # TODO: Magic number: threshold
-        if sim_lm > sim_hm + 0.05:
+        # Use configurable thresholds
+        similarity_delta = self.cfg.mobility.similarity_delta
+        descriptor_threshold = self.cfg.mobility.descriptor_threshold
+        
+        if sim_lm > sim_hm + similarity_delta:
             res = True
-        elif sim_lm + 0.05 < sim_hm:
+        elif sim_lm + similarity_delta < sim_hm:
             res = False
         else:
-            res = sim_lm_des > 0.45
+            res = sim_lm_des > descriptor_threshold
         return res  # , hl_debug, hl_idx
 
     def get_distance(self, bbox, pose) -> float:

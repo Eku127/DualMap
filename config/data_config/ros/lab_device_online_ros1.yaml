@@ -6,6 +6,9 @@ ros_topics:
   odom: "/fastlio_odom"
   camera_info: "/orbbec_camera/color/camera_info"
 
+# Depth factor for converting depth values from millimeters to meters
+depth_factor: 1000.0
+
 # We use camera to lidar as default extrinsics
 extrinsics:
   - [-0.00860301,  0.35359592,  0.93535871,  0.07900693]
