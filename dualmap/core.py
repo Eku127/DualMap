@@ -77,6 +77,9 @@ class Dualmap:
             logger.info("[Core][Init] Preloading layout...")
             self.detector.load_layout()
             self.global_map_manager.load_wall()
+            
+            layout_pcd = self.detector.get_layout_pointcloud()
+            self.global_map_manager.set_layout_info(layout_pcd)
 
         # Start the file monitoring thread
         self.stop_thread = False  # Signal to stop the thread
