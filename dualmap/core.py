@@ -70,13 +70,21 @@ class Dualmap:
 
         # check if need to preload the global map
         if self.cfg.preload_global_map:
-            logger.info("[Core][Init] Preloading global map...")
+            logger.warning("[Core][Init] Preloading global map...")
             self.global_map_manager.load_map()
 
         if self.cfg.preload_layout:
-            logger.info("[Core][Init] Preloading layout...")
+            logger.warning("[Core][Init] Preloading layout...")
             self.detector.load_layout()
+            
+            # load wall.pcd directly from disk
             self.global_map_manager.load_wall()
+            
+            # only generate wall.pcd if it doesn't exist
+            if self.global_map_manager.layout_map.wall_pcd is None:
+                logger.warning("[Core][Init] wall.pcd not found, generating from layout.pcd...")
+                layout_pcd = self.detector.get_layout_pointcloud()
+                self.global_map_manager.set_layout_info(layout_pcd)
 
         # Start the file monitoring thread
         self.stop_thread = False  # Signal to stop the thread
