@@ -1,8 +1,7 @@
 # DualMap
 <h3>
   <a href="https://eku127.github.io/DualMap/">Project Page</a> |
-  <a href="https://arxiv.org/abs/2506.01950">Arxiv</a> 
-  <!-- <a href="https://youtu.be/ZmZDvhyXL_g">Video</a> -->
+  <a href="https://arxiv.org/abs/2506.01950">arXiv</a> 
 </h3>
 
 <p align="center">
@@ -15,8 +14,6 @@
 The system supports multiple input sources, including offline datasets (**Dataset Mode**), ROS streams & rosbag files (**ROS Mode**), and iPhone video streams (**Record3d Mode**). We provide examples for each input type.
 
 ## News
-
-**[2025.08]** Paper accepted at the IROS 2025 Workshop on [*Open World Navigation in Human-centric Environments*](https://adacompnus.github.io/open-world-navigation-25/).
 
 **[2025.08]**  Full code released! 🎉 Welcome to use, share feedback, and contribute.
 
