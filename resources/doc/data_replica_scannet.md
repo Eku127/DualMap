@@ -85,7 +85,7 @@ If you are using ScanNet (20 classes), the semantic annotations are stored in fi
 
 ```
 <PATH TO ScanNet200>/
-├── tarin/
+├── train/
 └── val/
     ├── scene0011_00.ply
     ├── scene0050_00.ply

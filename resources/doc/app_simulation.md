@@ -52,7 +52,7 @@ Next, open a **new terminal** and start the Habitat Data Collector:
 cd <Path to >/habitat-data-collector
 conda activate habitat_data_collector
 
-source source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.bash
 python -m habitat_data_collector.main
 ```
 
@@ -115,7 +115,7 @@ Next, open a **new terminal** and start the Habitat Data Collector to trigger th
 cd <Path to >/habitat-data-collector
 conda activate habitat_data_collector
 
-source source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.bash
 python -m habitat_data_collector.main
 ```
 You can also use a `rosbag` to trigger the mapping.
