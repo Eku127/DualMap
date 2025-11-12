@@ -1,0 +1,22 @@
+# Additional requirements for DualMap-UniGoal integration
+
+# UniGoal core dependencies
+habitat-sim==0.2.3
+lightglue>=0.1.0
+scikit-image>=0.21.0
+
+# Graph and planning
+networkx>=2.8
+
+# LLM support (optional)
+# Uncomment based on your LLM backend choice:
+
+# For OpenAI
+# openai>=1.0.0
+
+# For local LLM inference
+# transformers>=4.30.0
+# torch>=2.0.0
+
+# Note: For Ollama, install separately:
+# curl -fsSL https://ollama.com/install.sh | sh

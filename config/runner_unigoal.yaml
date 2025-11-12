@@ -1,0 +1,187 @@
+# DualMap-UniGoal Integration Configuration
+
+defaults:
+  - base_config
+  - system_config
+  - _self_
+
+# DualMap Configuration
+dualmap:
+  use_parallel: True
+  active_window_size: 10
+  run_detection: True
+  use_fastsam: True
+  use_weighted_feature: True
+
+  # Keyframe selection
+  keyframe:
+    translation_threshold: 0.1  # meters
+    rotation_threshold: 3.0     # degrees
+    time_threshold: 0.5         # seconds
+
+  # Visualization
+  use_rerun: True
+  use_rviz: False
+
+# UniGoal Configuration
+unigoal:
+  # LLM settings
+  use_llm_decomposition: True
+  llm_backend: "ollama"  # Options: "ollama", "openai", "none"
+  llm_model: "llama3"    # Model name for Ollama or OpenAI
+
+  # OpenAI settings (if using OpenAI backend)
+  openai:
+    api_key: ${oc.env:OPENAI_API_KEY,""}
+    model: "gpt-4"
+    temperature: 0.7
+
+  # Ollama settings (if using Ollama backend)
+  ollama:
+    host: "http://localhost:11434"
+    timeout: 30  # seconds
+
+  # Navigation settings
+  use_graph_representation: True
+  planning_method: "fmm"  # Options: "fmm" (Fast Marching Method), "astar"
+
+  # Goal matching
+  clip_similarity_threshold: 0.25
+  max_goal_distance: 10.0  # meters
+
+  # Path planning
+  planning:
+    grid_resolution: 0.05  # meters per grid cell
+    inflation_radius: 0.3  # meters - obstacle inflation
+    max_iterations: 1000
+    timeout: 5.0  # seconds
+
+# Bridge Configuration
+bridge:
+  # Coordinate system
+  coordinate_system: "habitat"  # Options: "habitat", "ros", "opengl"
+
+  # Map settings
+  map_resolution: 0.05  # meters per pixel
+  map_size: [1000, 1000]  # pixels
+  update_frequency: 10  # Hz
+
+  # Data synchronization
+  max_queue_size: 100
+  sync_timeout: 1.0  # seconds
+
+  # Coordinate transformations
+  transform:
+    translation: [0.0, 0.0, 0.0]
+    rotation: [0.0, 0.0, 0.0]  # euler angles in degrees
+    scale: 1.0
+
+# Navigation Task Configuration
+navigation:
+  # Goal mode
+  goal_mode: "llm_inquiry"  # Options: "inquiry", "llm_inquiry", "image_goal", "random"
+
+  # Navigation parameters
+  max_steps: 500
+  success_threshold: 0.3  # meters - distance to goal for success
+  timeout: 300  # seconds
+
+  # Action parameters
+  linear_velocity:
+    max: 0.5  # m/s
+    min: 0.1
+  angular_velocity:
+    max: 1.0  # rad/s
+    min: 0.1
+
+  # Waypoint following
+  waypoint_threshold: 0.2  # meters - distance to consider waypoint reached
+  look_ahead_distance: 0.5  # meters
+
+  # Recovery behaviors
+  enable_recovery: True
+  max_recovery_attempts: 3
+  recovery_timeout: 10  # seconds
+
+# Evaluation Configuration
+evaluation:
+  enable: True
+  metrics:
+    - "success_rate"
+    - "path_length"
+    - "navigation_time"
+    - "spl"  # Success weighted by Path Length
+
+  # Logging
+  log_trajectory: True
+  log_frequency: 1  # Hz
+  save_trajectory: True
+  output_dir: "outputs/unigoal_eval"
+
+# Dataset Configuration (for offline evaluation)
+dataset:
+  name: "replica"  # Options: "replica", "scannet", "habitat", "custom"
+  scene: "room_0"
+  data_dir: ${base_config.dataset_base_path}
+
+  # Goal dataset
+  goals_file: null  # Path to JSON file with goal specifications
+  num_episodes: 10
+
+# ROS Configuration (for real robot or simulation)
+ros:
+  enable: False
+  version: 2  # 1 for ROS1, 2 for ROS2
+
+  # Topics
+  topics:
+    cmd_vel: "/cmd_vel"
+    odom: "/odom"
+    rgb: "/camera/color/image_raw"
+    depth: "/camera/depth/image_raw"
+    camera_info: "/camera/color/camera_info"
+
+  # Frame IDs
+  frames:
+    map: "map"
+    odom: "odom"
+    base: "base_link"
+
+# Habitat Simulator Configuration
+habitat:
+  enable: False
+  scene_dataset: "replica"
+  scene: "apartment_0"
+
+  # Agent configuration
+  agent:
+    height: 1.5  # meters
+    radius: 0.18  # meters
+    sensor_height: 1.25  # meters
+
+  # Simulator settings
+  physics:
+    enable: True
+    time_step: 0.01
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Options: "DEBUG", "INFO", "WARNING", "ERROR"
+  log_to_file: True
+  log_dir: "logs/unigoal"
+  log_filename: "unigoal_${now:%Y%m%d_%H%M%S}.log"
+
+# Output Configuration
+output:
+  save_maps: True
+  save_trajectories: True
+  save_visualizations: True
+  output_dir: "outputs/unigoal"
+
+# Debug Configuration
+debug:
+  visualize_path: True
+  visualize_goals: True
+  visualize_objects: True
+  print_timing: True
+  save_intermediate_results: False
