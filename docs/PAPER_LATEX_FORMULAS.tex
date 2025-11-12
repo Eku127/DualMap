@@ -1,0 +1,382 @@
+% 论文关键数学公式 - LaTeX格式
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\begin{document}
+
+\section{核心数学公式}
+
+\subsection{问题定义}
+
+% 观测空间
+\textbf{观测空间:}
+\begin{equation}
+o_t = (I_t, D_t) \quad \text{where} \quad I_t \in \mathbb{R}^{H \times W \times 3}, \quad D_t \in \mathbb{R}^{H \times W}
+\end{equation}
+
+% 动作空间
+\textbf{动作空间:}
+\begin{equation}
+a_t \in \mathcal{A} = \{\text{forward}, \text{turn\_left}, \text{turn\_right}, \text{stop}\}
+\end{equation}
+
+% 目标
+\textbf{目标:}
+\begin{equation}
+g \in \mathcal{G} = \text{natural language descriptions}
+\end{equation}
+
+\subsection{特征提取与融合}
+
+% CLIP特征提取
+\textbf{CLIP特征提取:}
+\begin{equation}
+\phi_i^{img} = \text{MobileCLIP}(I_t \odot m_i)
+\end{equation}
+\begin{equation}
+\phi_i^{txt} = \text{MobileCLIP}(\text{class\_name}_i)
+\end{equation}
+
+% 特征融合
+\textbf{视觉-文本特征融合:}
+\begin{equation}
+\phi_i = \alpha \cdot \phi_i^{img} + (1-\alpha) \cdot \phi_i^{txt}, \quad \alpha = 0.7
+\end{equation}
+\begin{equation}
+\phi_i \leftarrow \frac{\phi_i}{\|\phi_i\|_2}
+\end{equation}
+
+\subsection{3D点云反投影}
+
+% 相机坐标系到世界坐标系
+\textbf{深度图反投影:}
+\begin{equation}
+P_i^{cam} = \left\{ K^{-1} \cdot \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} \cdot D_t(u,v) \mid (u,v) \in m_i, D_t(u,v) > 0 \right\}
+\end{equation}
+
+\textbf{世界坐标变换:}
+\begin{equation}
+P_i^{world} = P_t \cdot P_i^{cam}
+\end{equation}
+where $P_t \in SE(3)$ is camera pose in world frame.
+
+% 边界框计算
+\textbf{轴对齐边界框:}
+\begin{equation}
+B_i = [\min(x), \min(y), \min(z), \max(x), \max(y), \max(z)]
+\end{equation}
+where $(x, y, z) \in P_i^{world}$.
+
+\subsection{对象匹配}
+
+% 空间相似度 - 3D IoU
+\textbf{3D Intersection-over-Union:}
+\begin{equation}
+\text{IoU}_{3D}(B_1, B_2) = \frac{\text{Volume}(B_1 \cap B_2)}{\text{Volume}(B_1 \cup B_2)}
+\end{equation}
+
+% 语义相似度
+\textbf{语义相似度 (Cosine Similarity):}
+\begin{equation}
+\text{sim}(\phi_1, \phi_2) = \frac{\phi_1 \cdot \phi_2}{\|\phi_1\| \cdot \|\phi_2\|} = \frac{\phi_1 \cdot \phi_2}{1 \cdot 1}
+\end{equation}
+
+% 匹配评分
+\textbf{匹配评分函数:}
+\begin{equation}
+\text{score}(obs, obj) = \lambda_{spatial} \cdot \text{IoU}_{3D}(B_{obs}, B_{obj}) + \lambda_{semantic} \cdot \text{sim}(\phi_{obs}, \phi_{obj})
+\end{equation}
+where $\lambda_{spatial} = 0.3, \lambda_{semantic} = 0.7$.
+
+% 匹配决策
+\textbf{匹配决策:}
+\begin{equation}
+j^* = \argmax_j \text{score}(obs_i, obj_j)
+\end{equation}
+\begin{equation}
+\text{match} = \begin{cases}
+j^* & \text{if } \text{score}(obs_i, obj_{j^*}) > \tau \\
+\text{new} & \text{otherwise}
+\end{cases}
+\end{equation}
+where $\tau = 0.7$ is matching threshold.
+
+\subsection{特征聚合}
+
+% 置信度加权平均
+\textbf{置信度加权特征聚合:}
+\begin{equation}
+\phi_{global} = \frac{\sum_{i=1}^{N} w_i \cdot \phi_i}{\sum_{i=1}^{N} w_i}
+\end{equation}
+
+% 权重计算
+\textbf{权重计算:}
+\begin{equation}
+w_i = c_i \cdot \left(1 - \frac{d_i}{d_{max}}\right) \cdot q_i
+\end{equation}
+where:
+\begin{itemize}
+\item $c_i$ is detection confidence
+\item $d_i$ is distance to camera
+\item $q_i$ is view quality score
+\end{itemize}
+
+% 视角质量
+\textbf{视角质量评分:}
+\begin{equation}
+q_i = \cos(\theta_i) \cdot \frac{\text{resolution}_i}{\text{resolution}_{max}}
+\end{equation}
+where $\theta_i$ is view angle from normal.
+
+% EMA更新
+\textbf{指数移动平均更新:}
+\begin{equation}
+\phi_t = \beta \cdot \phi_{t-1} + (1-\beta) \cdot \phi_{new}, \quad \beta = 0.9
+\end{equation}
+
+\subsection{Frontier选择与评分}
+
+% Frontier集合
+\textbf{Frontier提取:}
+\begin{equation}
+\mathcal{F} = \{f_k \mid f_k \in \partial(\mathcal{O}_{free} \cap \mathcal{O}_{unknown})\}
+\end{equation}
+where $\mathcal{O}_{free}$ is free space and $\mathcal{O}_{unknown}$ is unexplored space.
+
+% 语义相关度评分
+\textbf{语义相关度评分:}
+\begin{equation}
+s_{sem}(f_k) = \max_{obj \in \mathcal{N}(f_k, r)} \text{sim}(\phi_{goal}, \phi_{obj})
+\end{equation}
+where $\mathcal{N}(f_k, r)$ are objects within radius $r=2$m of frontier $f_k$.
+
+% 信息增益评分
+\textbf{信息增益评分:}
+\begin{equation}
+s_{info}(f_k) = \frac{\text{Area}(\mathcal{O}_{unknown}^{(f_k)})}{\text{Area}_{max}}
+\end{equation}
+where $\mathcal{O}_{unknown}^{(f_k)}$ is unexplored area visible from $f_k$.
+
+% 代价评分
+\textbf{代价评分:}
+\begin{equation}
+s_{cost}(f_k) = \frac{1}{1 + L(p_{curr}, f_k) / L_{max}}
+\end{equation}
+where $L(p_{curr}, f_k)$ is path length from current position to frontier.
+
+% LLM先验评分
+\textbf{LLM空间先验评分:}
+\begin{equation}
+s_{prior}(f_k) = P(\text{room}(f_k) \mid g, \text{LLM})
+\end{equation}
+where room$(f_k)$ is estimated room type of frontier $f_k$.
+
+% 综合评分
+\textbf{综合Frontier评分:}
+\begin{equation}
+\text{Score}(f_k) = \alpha \cdot s_{sem}(f_k) + \beta \cdot s_{info}(f_k) + \gamma \cdot s_{cost}(f_k) + \delta \cdot s_{prior}(f_k)
+\end{equation}
+where $\alpha=0.4, \beta=0.3, \gamma=0.2, \delta=0.1$.
+
+% Frontier选择
+\textbf{Frontier选择:}
+\begin{equation}
+f^* = \argmax_{f_k \in \mathcal{F}} \text{Score}(f_k)
+\end{equation}
+
+\subsection{动态对象检测}
+
+% 速度估计
+\textbf{对象速度估计:}
+\begin{equation}
+v_t(obj) = \frac{\|p_t(obj) - p_{t-\Delta t}(obj)\|}{\Delta t}
+\end{equation}
+
+% 动态判定
+\textbf{动态对象判定:}
+\begin{equation}
+\text{is\_dynamic}(obj) = \begin{cases}
+1 & \text{if } v_t(obj) > v_{threshold} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
+where $v_{threshold} = 0.1$ m/s.
+
+% 置信度更新
+\textbf{置信度更新 (EMA):}
+\begin{equation}
+c_t(obj) = (1-\lambda) \cdot c_{t-1}(obj) + \lambda \cdot c_{detect}, \quad \lambda = 0.3
+\end{equation}
+
+\subsection{移动性评分}
+
+% 特征一致性
+\textbf{特征一致性评分:}
+\begin{equation}
+\text{consistency}(obj) = 1 - \frac{\text{std}(\{\phi_1, \phi_2, ..., \phi_N\})}{\|\text{mean}(\{\phi_1, ..., \phi_N\})\|}
+\end{equation}
+
+% 移动性评分
+\textbf{移动性评分:}
+\begin{equation}
+\text{mobility}(obj) = 1 - \text{consistency}(obj)
+\end{equation}
+
+% 稳定对象判定
+\textbf{稳定对象条件:}
+\begin{equation}
+\text{is\_stable}(obj) = \begin{cases}
+1 & \text{if } N_{obs}(obj) \geq N_{stable} \text{ and } \text{mobility}(obj) < \tau_{mob} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
+where $N_{stable}=8, \tau_{mob}=0.3$.
+
+\subsection{评估指标}
+
+% Success Rate
+\textbf{Success Rate:}
+\begin{equation}
+\text{SR} = \frac{1}{N} \sum_{i=1}^{N} S_i
+\end{equation}
+where $S_i \in \{0, 1\}$ indicates success.
+
+% SPL
+\textbf{Success weighted by Path Length (SPL):}
+\begin{equation}
+\text{SPL} = \frac{1}{N} \sum_{i=1}^{N} S_i \cdot \frac{L_i^*}{\max(L_i^*, L_i)}
+\end{equation}
+where $L_i^*$ is optimal path length and $L_i$ is actual path length.
+
+% Exploration Efficiency Ratio
+\textbf{Exploration Efficiency Ratio (EER):}
+\begin{equation}
+\text{EER} = \frac{D_{toward\_goal}}{D_{total}}
+\end{equation}
+where $D_{toward\_goal}$ is distance traveled toward goal and $D_{total}$ is total distance.
+
+% Coverage Rate
+\textbf{Exploration Coverage Rate (ECR):}
+\begin{equation}
+\text{ECR} = \frac{\text{Area}_{explored}}{T_{elapsed}} \quad [\text{m}^2/\text{s}]
+\end{equation}
+
+\subsection{复杂度分析}
+
+% 时间复杂度
+\textbf{局部地图更新时间复杂度:}
+\begin{equation}
+T_{local} = O(k \log n_{local})
+\end{equation}
+where $k$ is observations per frame and $n_{local}$ is local map size.
+
+\textbf{全局地图更新时间复杂度:}
+\begin{equation}
+T_{global} = O(n_{stable} \log n_{global})
+\end{equation}
+where $n_{stable}$ is stable objects and $n_{global}$ is global map size.
+
+\textbf{总时间复杂度 (per frame):}
+\begin{equation}
+T_{total} = T_{perception} + T_{local} + \frac{T_{global}}{f_{sync}} + T_{planning}
+\end{equation}
+where $f_{sync}$ is global sync frequency (e.g., every 5 frames).
+
+% 空间复杂度
+\textbf{空间复杂度:}
+\begin{equation}
+S_{total} = O(W \cdot n_{local}) + O(n_{global}) + O(H_m \times W_m)
+\end{equation}
+where $W$ is active window size, $(H_m, W_m)$ is occupancy map size.
+
+\section{算法伪代码}
+
+\subsection{主算法}
+
+\begin{algorithm}[H]
+\caption{Dual-Level Semantic Navigation}
+\begin{algorithmic}[1]
+\REQUIRE RGB-D stream $\{(I_t, D_t)\}$, Goal $g$
+\ENSURE Navigation success/failure
+\STATE Initialize $M_{local} \leftarrow \emptyset$, $M_{global} \leftarrow \emptyset$
+\STATE $\text{SubGoals} \leftarrow \text{LLM\_Decompose}(g)$
+\FOR{$g_i$ in SubGoals}
+    \STATE $t \leftarrow 0$, $\text{found} \leftarrow \text{False}$
+    \WHILE{$t < T_{max}$ and not found}
+        \STATE $o_t \leftarrow \text{GetObservation}()$
+        \STATE $\text{Objects}_t \leftarrow \text{Perceive}(o_t)$
+        \STATE $M_{local} \leftarrow \text{UpdateLocalMap}(M_{local}, \text{Objects}_t)$
+        \IF{$t \mod f_{sync} = 0$}
+            \STATE $\text{StableObjs} \leftarrow \text{ExtractStable}(M_{local})$
+            \STATE $M_{global} \leftarrow \text{UpdateGlobalMap}(M_{global}, \text{StableObjs})$
+        \ENDIF
+        \STATE $\text{matches} \leftarrow \text{QueryMap}(M_{global}, g_i)$
+        \IF{matches and $\text{Distance}(\text{matches}[0]) < d_{success}$}
+            \STATE found $\leftarrow$ True
+        \ELSIF{HasPathToGoal()}
+            \STATE $a_t \leftarrow \text{PlanToGoal}(\text{matches}[0])$
+        \ELSE
+            \STATE $f^* \leftarrow \text{SelectSemanticFrontier}(g_i, M_{global})$
+            \STATE $a_t \leftarrow \text{PlanToFrontier}(f^*)$
+        \ENDIF
+        \STATE $\text{ExecuteAction}(a_t)$
+        \STATE $t \leftarrow t + 1$
+    \ENDWHILE
+    \IF{not found}
+        \RETURN Failure
+    \ENDIF
+\ENDFOR
+\RETURN Success
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{对象匹配}
+
+\begin{algorithm}[H]
+\caption{Object Matching in Local Map}
+\begin{algorithmic}[1]
+\REQUIRE Observation $obs$, Local map $M_{local}$
+\ENSURE Matched object or NEW
+\STATE $\text{candidates} \leftarrow \{obj \in M_{local} \mid \text{IoU}_{3D}(obs.B, obj.B) > \tau_{spatial}\}$
+\IF{candidates is empty}
+    \RETURN NEW
+\ENDIF
+\STATE $j^* \leftarrow \argmax_{j \in \text{candidates}} \text{sim}(obs.\phi, obj_j.\phi)$
+\IF{$\text{sim}(obs.\phi, obj_{j^*}.\phi) > \tau_{semantic}$}
+    \RETURN $obj_{j^*}$
+\ELSE
+    \RETURN NEW
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Semantic Frontier Selection}
+
+\begin{algorithm}[H]
+\caption{Semantic-Guided Frontier Selection}
+\begin{algorithmic}[1]
+\REQUIRE Goal $g$, Current position $p$, Map $M_{global}$, Occupancy $\mathcal{O}$
+\ENSURE Best frontier $f^*$
+\STATE $\mathcal{F} \leftarrow \text{ExtractFrontiers}(\mathcal{O})$
+\STATE $\phi_{goal} \leftarrow \text{EncodeCLIP}(g)$
+\STATE $\text{hints} \leftarrow \text{LLM\_Query}(\text{``Where is } g \text{ likely?''})$
+\FOR{$f_k \in \mathcal{F}$}
+    \STATE $s_{sem} \leftarrow \max_{obj \in \mathcal{N}(f_k)} \text{sim}(\phi_{goal}, obj.\phi)$
+    \STATE $s_{info} \leftarrow \text{EstimateUnexploredArea}(f_k) / A_{max}$
+    \STATE $s_{cost} \leftarrow 1 / (1 + L(p, f_k) / L_{max})$
+    \STATE $s_{prior} \leftarrow \text{ComputePrior}(f_k, \text{hints})$
+    \STATE $f_k.\text{score} \leftarrow \alpha s_{sem} + \beta s_{info} + \gamma s_{cost} + \delta s_{prior}$
+\ENDFOR
+\STATE $f^* \leftarrow \argmax_{f \in \mathcal{F}} f.\text{score}$
+\RETURN $f^*$
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}
+
+% 编译命令:
+% pdflatex PAPER_LATEX_FORMULAS.tex
