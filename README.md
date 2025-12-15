@@ -15,6 +15,8 @@ The system supports multiple input sources, including offline datasets (**Datase
 
 ## News
 
+**[2025.12]**  We have added detailed experiment results of dynamic navigation for better reproduction. Check Table IX and X in the updated [Appendix](https://eku127.github.io/DualMap/static/pdf/appendix_compressed.pdf).
+
 **[2025.08]**  Full code released! 🎉 Welcome to use, share feedback, and contribute.
 
 ## Installation
