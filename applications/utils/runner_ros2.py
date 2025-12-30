@@ -90,7 +90,7 @@ class RunnerROS2(Node, RunnerROSBase):
             depth_img = self.decompress_image(depth_msg.data, is_depth=True)
         else:
             rgb_img = self.bridge.imgmsg_to_cv2(rgb_msg, desired_encoding="rgb8")
-            depth_img = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding="16UC1")
+            depth_img = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding="passthrough")
 
         depth_factor = getattr(self.dataset_cfg, 'depth_factor', 1000.0)
         depth_img = depth_img.astype(np.float32) / depth_factor
