@@ -79,8 +79,7 @@ class RunnerROS1(RunnerROSBase):
             depth_img = self.bridge.imgmsg_to_cv2(depth_msg, desired_encoding="passthrough")
 
         depth_factor = getattr(self.dataset_cfg, 'depth_factor', 1000.0)
-        depth_img = depth_img.astype(np.float32) / depth_factor
-        depth_img = np.expand_dims(depth_img, axis=-1)
+        depth_img = self.process_depth_image(depth_img, depth_factor)
 
         translation = np.array(
             [

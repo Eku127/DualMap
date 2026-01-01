@@ -100,6 +100,40 @@ class RunnerROSBase:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         return img
 
+    def process_depth_image(self, depth_img, depth_factor):
+        """
+        Process depth image to convert to meters (float32) with shape (H, W, 1).
+
+        Supports multiple depth formats:
+        - 16UC1 (uint16): Typically in millimeters, requires depth_factor (e.g., 1000.0)
+        - 32FC1 (float32): Typically already in meters, use depth_factor=1.0
+        - 64FC1 (float64): Typically already in meters, use depth_factor=1.0
+
+        Args:
+            depth_img: Raw depth image from sensor/simulator
+            depth_factor: Divisor to convert depth values to meters
+                         - For uint16 mm depth: use 1000.0
+                         - For float32/64 meter depth: use 1.0
+
+        Returns:
+            Processed depth image as float32 with shape (H, W, 1)
+        """
+        if depth_img.dtype == np.uint16:
+            # 16UC1: typically millimeters from real depth cameras (RealSense, Orbbec, etc.)
+            depth_img = depth_img.astype(np.float32) / depth_factor
+        elif depth_img.dtype in [np.float32, np.float64]:
+            # 32FC1 or 64FC1: typically meters from simulators (Isaac Sim, Gazebo, etc.)
+            depth_img = depth_img.astype(np.float32) / depth_factor
+        else:
+            self.logger.warning(
+                f"[Main] Unexpected depth image dtype: {depth_img.dtype}. "
+                "Attempting to convert to float32."
+            )
+            depth_img = depth_img.astype(np.float32) / depth_factor
+
+        depth_img = np.expand_dims(depth_img, axis=-1)
+        return depth_img
+
     def build_pose_matrix(self, translation, quaternion):
         """Construct 4x4 pose matrix from translation and quaternion."""
         rotation_matrix = R.from_quat(quaternion).as_matrix()
