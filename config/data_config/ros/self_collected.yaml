@@ -6,7 +6,9 @@ ros_topics:
   odom: "/camera/pose"
   camera_info: "/camera_info"
 
-# Depth factor for converting depth values from millimeters to meters
+# Depth factor: divisor to convert depth values to meters
+# - For 16UC1 (uint16) depth in millimeters (e.g., RealSense, Orbbec): use 1000.0
+# - For 32FC1 (float32) depth in meters (e.g., Isaac Sim, Gazebo): use 1.0
 depth_factor: 1000.0
 
 intrinsic:
